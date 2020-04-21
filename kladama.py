@@ -109,13 +109,14 @@ class Catalog:
 
     @property
     def vars(self):
+        variables = []
+
         api_token = self._session.api_token
         api_url = self._session.env.var_url
         response = get_from_api(api_token, api_url)
-        root = self._get_root(response)
-        variables = []
-        if root is not None:
-            for var in root['variables']:
+        variables_obj = self._get_variables(response)
+        if variables_obj is not None:
+            for var in variables_obj:
                 variables.append(Variable(var))
 
         return variables
@@ -126,6 +127,14 @@ class Catalog:
             return None
 
         return response['_embedded']
+
+    @staticmethod
+    def _get_variables(response):
+        root = Catalog._get_root(response)
+        if root is None:
+            return None
+
+        return root['variables']
 
 
 def authenticate(env, api_token):
