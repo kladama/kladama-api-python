@@ -3,13 +3,16 @@
 import kladama as kl
 
 
-def test_variables():
+def get_sandbox_session():
     env = kl.Environments().sandbox
     api_token = 'ANYTHING_WORKS_NOW'
-    session = kl.authenticate(env, api_token)
 
-    catalog = kl.catalog(session)
-    variables = catalog.vars
+    return kl.authenticate(env, api_token)
+
+
+def test_variables():
+    session = get_sandbox_session()
+    variables = kl.catalog(session).vars
 
     for var in variables:
         print(var.name, 'from', var.source.name, 'in', var.link)
