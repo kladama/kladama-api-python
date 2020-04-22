@@ -10,8 +10,34 @@ class Environment:
         self._api_url_base = api_url_base
 
     @property
+    def aoi_url(self):
+        return self._get_url('aoi')
+
+    @property
     def var_url(self):
-        return '{0}/var'.format(self._api_url_base)
+        return self._get_url('var')
+
+    @property
+    def src_url(self):
+        return self._get_url('src')
+
+    @property
+    def phenom_url(self):
+        return self._get_url('phenom')
+
+    @property
+    def org_url(self):
+        return self._get_url('org')
+
+    @property
+    def user_url(self):
+        return self._get_url('user')
+
+    def aoi_url_for_user(self, user):
+        return "{0}/user/{1}".format(self.aoi_url, user)
+
+    def _get_url(self, path):
+        return '{0}/{1}'.format(self._api_url_base, path)
 
 
 class Environments:
@@ -44,11 +70,17 @@ class Identifiable:
 
     def __init__(self, obj):
         self._name = obj['name']
-        self._description = obj['description']
 
     @property
     def name(self):
         return self._name
+
+
+class Describable(Identifiable):
+
+    def __init__(self, obj):
+        Identifiable.__init__(self, obj)
+        self._description = obj['description']
 
     @property
     def description(self):
@@ -61,30 +93,47 @@ class Linkable:
         links = obj['_links']
         self_link = links['self']
         self._link = self_link['href']
+        all_links = {}
+        for key in list(links.keys()):
+            link = links[key]
+            all_links[key] = link['href']
+
+        self._all_links = all_links
 
     @property
     def link(self):
         return self._link
 
+    @property
+    def all_links(self):
+        return self._all_links
 
-class Phenomenon(Identifiable, Linkable):
+
+class AreaOfInterest(Describable, Linkable):
 
     def __init__(self, obj):
-        Identifiable.__init__(self, obj)
+        Describable.__init__(self, obj)
         Linkable.__init__(self, obj)
 
 
-class Source(Identifiable, Linkable):
+class Phenomenon(Describable, Linkable):
 
     def __init__(self, obj):
-        Identifiable.__init__(self, obj)
+        Describable.__init__(self, obj)
         Linkable.__init__(self, obj)
 
 
-class Variable(Identifiable, Linkable):
+class Source(Describable, Linkable):
 
     def __init__(self, obj):
-        Identifiable.__init__(self, obj)
+        Describable.__init__(self, obj)
+        Linkable.__init__(self, obj)
+
+
+class Variable(Describable, Linkable):
+
+    def __init__(self, obj):
+        Describable.__init__(self, obj)
         Linkable.__init__(self, obj)
         self._type = obj['type']
         self._format = obj['format']
@@ -102,21 +151,96 @@ class Variable(Identifiable, Linkable):
         return self._source
 
 
+class Organization(Identifiable, Linkable):
+
+    def __init__(self, obj):
+        Identifiable.__init__(self, obj)
+        Linkable.__init__(self, obj)
+        self._acronym = obj['acronym']
+        self._juridic_id = obj['juridicId']
+        self._address = obj['address']
+        self._actual_credits = obj['actualCredits']
+        self._migrated_credits = obj['migratedCredits']
+
+    @property
+    def acronym(self):
+        return self._acronym
+
+    @property
+    def juridic_id(self):
+        return self._juridic_id
+
+    @property
+    def address(self):
+        return self._address
+
+    @property
+    def actual_credits(self):
+        return self._actual_credits
+
+    @property
+    def migrated_credits(self):
+        return self._migrated_credits
+
+
+class User(Identifiable, Linkable):
+
+    def __init__(self, obj):
+        Identifiable.__init__(self, obj)
+        Linkable.__init__(self, obj)
+        self._username = obj['login']
+        self._organization = Organization(obj['organization'])
+
+    @property
+    def username(self):
+        return self._username
+
+    @property
+    def organization(self):
+        return self._organization
+
+
 class Catalog:
+
+    _aoi_entity_name = 'Areas of Interest'
+    _phenomena_entity_name = 'phenomena'
+    _org_entity_name = 'organizations'
+    _src_entity_name = 'sources'
+    _users_entity_name = 'users'
+    _var_entity_name = 'variables'
 
     def __init__(self, session):
         self._session = session
 
     @property
+    def areas_of_interest(self):
+        return self._get_entities(self._session.env.aoi_url, Catalog._aoi_entity_name, AreaOfInterest)
+
+    @property
     def vars(self):
-        return self._get_entities('variables', Variable)
+        return self._get_entities(self._session.env.var_url, Catalog._var_entity_name, Variable)
 
     @property
     def src(self):
-        return self._get_entities('sources', Source)
+        return self._get_entities(self._session.env.src_url, Catalog._src_entity_name, Source)
 
-    def _get_entities(self, entity_name, entity_class):
-        obj = self._get_resource(entity_name)
+    @property
+    def phenom(self):
+        return self._get_entities(self._session.env.phenom_url, Catalog._phenomena_entity_name, Source)
+
+    @property
+    def organizations(self):
+        return self._get_entities(self._session.env.org_url, Catalog._org_entity_name, Organization)
+
+    @property
+    def users(self):
+        return self._get_entities(self._session.env.user_url, Catalog._users_entity_name, User)
+
+    def areas_of_interest_for_user(self, user):
+        return self._get_entities(self._session.env.aoi_url_for_user(user), self._aoi_entity_name, AreaOfInterest)
+
+    def _get_entities(self, api_url, entity_name, entity_class):
+        obj = self._get_resource(api_url, entity_name)
 
         entities = []
         if obj is not None:
@@ -125,9 +249,8 @@ class Catalog:
 
         return entities
 
-    def _get_resource(self, resource_name):
+    def _get_resource(self, api_url, resource_name):
         api_token = self._session.api_token
-        api_url = self._session.env.var_url
         response = get_from_api(api_token, api_url)
         if response is not None:
             root = response['_embedded']
