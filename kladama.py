@@ -109,32 +109,31 @@ class Catalog:
 
     @property
     def vars(self):
-        variables = []
+        return self._get_entities('variables', Variable)
 
+    @property
+    def src(self):
+        return self._get_entities('sources', Source)
+
+    def _get_entities(self, entity_name, entity_class):
+        obj = self._get_resource(entity_name)
+
+        entities = []
+        if obj is not None:
+            for entity in obj:
+                entities.append(entity_class(entity))
+
+        return entities
+
+    def _get_resource(self, resource_name):
         api_token = self._session.api_token
         api_url = self._session.env.var_url
         response = get_from_api(api_token, api_url)
-        variables_obj = self._get_variables(response)
-        if variables_obj is not None:
-            for var in variables_obj:
-                variables.append(Variable(var))
+        if response is not None:
+            root = response['_embedded']
+            return root[resource_name]
 
-        return variables
-
-    @staticmethod
-    def _get_root(response):
-        if response is None:
-            return None
-
-        return response['_embedded']
-
-    @staticmethod
-    def _get_variables(response):
-        root = Catalog._get_root(response)
-        if root is None:
-            return None
-
-        return root['variables']
+        return None
 
 
 def authenticate(env, api_token):
