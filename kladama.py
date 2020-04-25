@@ -214,30 +214,57 @@ class Catalog:
 
     @property
     def areas_of_interest(self):
-        return self._get_entities(self._session.env.aoi_url, Catalog._aoi_entity_name, AreaOfInterest)
+        return self._get_entities(
+            self._session.env.aoi_url,
+            Catalog._aoi_entity_name,
+            AreaOfInterest
+        )
 
     @property
     def vars(self):
-        return self._get_entities(self._session.env.var_url, Catalog._var_entity_name, Variable)
+        return self._get_entities(
+            self._session.env.var_url,
+            Catalog._var_entity_name,
+            Variable
+        )
 
     @property
     def src(self):
-        return self._get_entities(self._session.env.src_url, Catalog._src_entity_name, Source)
+        return self._get_entities(
+            self._session.env.src_url,
+            Catalog._src_entity_name,
+            Source
+        )
 
     @property
     def phenom(self):
-        return self._get_entities(self._session.env.phenom_url, Catalog._phenomena_entity_name, Source)
+        return self._get_entities(
+            self._session.env.phenom_url,
+            Catalog._phenomena_entity_name,
+            Phenomenon
+        )
 
     @property
     def organizations(self):
-        return self._get_entities(self._session.env.org_url, Catalog._org_entity_name, Organization)
+        return self._get_entities(
+            self._session.env.org_url,
+            Catalog._org_entity_name,
+            Organization
+        )
 
     @property
     def users(self):
-        return self._get_entities(self._session.env.user_url, Catalog._users_entity_name, User)
+        return self._get_entities(
+            self._session.env.user_url,
+            Catalog._users_entity_name,
+            User
+        )
 
     def areas_of_interest_for_user(self, user):
-        return self._get_entities(self._session.env.aoi_url_for_user(user), self._aoi_entity_name, AreaOfInterest)
+        return self._get_entities(
+            self._session.env.aoi_url_for_user(user),
+            self._aoi_entity_name, AreaOfInterest
+        )
 
     def _get_entities(self, api_url, entity_name, entity_class):
         obj = self._get_resource(api_url, entity_name)
