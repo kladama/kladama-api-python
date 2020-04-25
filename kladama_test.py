@@ -83,10 +83,7 @@ def test_organizations():
     assert len(organizations) > 0
     for organization in organizations:
         assert isinstance(organization, kl.Organization)
-        print(
-            organization.name, ':', organization.acronym,
-            'in', organization.link
-        )
+        print(organization.name, ':', organization.acronym, 'in', organization.link)
 
     print('\n')
 
