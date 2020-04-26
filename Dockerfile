@@ -6,5 +6,4 @@ RUN apt-get update && \
     python3-pip && \
     pip3 install -r requirements.txt
 COPY . /app/
-RUN cd /app/src/ && \
-    python3 kladama_test.py
+RUN python3 /app/kladama_test.py
