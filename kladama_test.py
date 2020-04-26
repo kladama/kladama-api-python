@@ -23,8 +23,8 @@ def test_areas_of_interest():
     print('\n')
 
 
-def test_areas_of_interest_for_dev():
-    print('Testing Areas of Interest for dev ========================')
+def test_get_areas_of_interest_by_user_dev():
+    print('Testing Areas of Interest for user dev ========================')
 
     session = get_sandbox_session()
     aois = kl.catalog(session).get_areas_of_interest_by_user('dev')
@@ -85,18 +85,22 @@ def test_phenoms_by_not_existing_name():
 
 
 def test_get_phenomena_by_name():
-    print('Testing Phenom by name ========================')
-
     session = get_sandbox_session()
     catalog = kl.catalog(session)
-    phenoms = catalog.phenomenas
 
-    phenom_names = []
-    for phenom in phenoms:
-        phenom_names.append(phenom.name)
+    phenom_names = [
+        'rain',
+        'temperature',
+        'soil moisture',
+        'vegetation',
+        'color',
+        'solar radiation',
+        'evaporation',
+    ]
 
     assert len(phenom_names) > 0
     for phenom_name in phenom_names:
+        print('Testing Phenom by name: ', phenom_name, ' ========================')
         phenom = catalog.get_phenomena_by_name(phenom_name)
 
         assert isinstance(phenom, kl.Phenomenon)
@@ -145,7 +149,7 @@ def test_subscriptions():
 
 if __name__ == '__main__':
     test_areas_of_interest()
-    test_areas_of_interest_for_dev()
+    test_get_areas_of_interest_by_user_dev()
     test_variables()
     test_sources()
     test_phenomenas()
