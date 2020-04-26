@@ -37,8 +37,11 @@ class Environment:
     def subscription_url(self):
         return self._get_url('subsc')
 
-    def aoi_url_for_user(self, user):
+    def get_aoi_by_user_url(self, user):
         return "{0}/user/{1}".format(self.aoi_url, user)
+
+    def get_phenomena_by_name_url(self, name):
+        return "{0}/{1}".format(self.phenom_url, name)
 
     def _get_url(self, path):
         return '{0}/{1}'.format(self._api_url_base, path)
@@ -281,7 +284,7 @@ class Catalog:
         return self._get_entities(self._session.env.src_url, Catalog._src_entity_name, Source)
 
     @property
-    def phenom(self):
+    def phenomenas(self):
         return self._get_entities(self._session.env.phenom_url, Catalog._phenomena_entity_name, Phenomenon)
 
     @property
@@ -296,8 +299,15 @@ class Catalog:
     def subscriptions(self):
         return self._get_entities(self._session.env.subscription_url, Catalog._subscriptions_entity_name, Subscription)
 
-    def areas_of_interest_for_user(self, user):
-        return self._get_entities(self._session.env.aoi_url_for_user(user), self._aoi_entity_name, AreaOfInterest)
+    def get_areas_of_interest_by_user(self, user):
+        return self._get_entities(self._session.env.get_aoi_by_user_url(user), self._aoi_entity_name, AreaOfInterest)
+
+    def get_phenomena_by_name(self, name):
+        entities = self._get_entities(self._session.env.get_phenomena_by_name_url(name), self._phenomena_entity_name, Phenomenon)
+        if len(entities) > 0:
+            return entities[0]
+
+        return None
 
     def _get_entities(self, api_url, entity_name, entity_class):
         obj = self._get_resource(api_url, entity_name)

@@ -27,7 +27,7 @@ def test_areas_of_interest_for_dev():
     print('Testing Areas of Interest for dev ========================')
 
     session = get_sandbox_session()
-    aois = kl.catalog(session).areas_of_interest_for_user('dev')
+    aois = kl.catalog(session).get_areas_of_interest_by_user('dev')
     assert len(aois) > 0
     for aoi in aois:
         assert isinstance(aoi, kl.AreaOfInterest)
@@ -62,17 +62,46 @@ def test_sources():
     print('\n')
 
 
-def test_phenoms():
+def test_phenomenas():
     print('Testing Phenoms ========================')
 
     session = get_sandbox_session()
-    phenoms = kl.catalog(session).phenom
+    phenoms = kl.catalog(session).phenomenas
     assert len(phenoms) > 0
     for phenom in phenoms:
         assert isinstance(phenom, kl.Phenomenon)
         print(phenom.name, ':', phenom.description, 'in', phenom.link)
 
     print('\n')
+
+
+def test_phenoms_by_not_existing_name():
+    print('Testing Phenom by not existing name ========================')
+
+    session = get_sandbox_session()
+    catalog = kl.catalog(session)
+    phenom = catalog.get_phenomena_by_name('FAKE NAME')
+    assert phenom is None
+
+
+def test_get_phenomena_by_name():
+    print('Testing Phenom by name ========================')
+
+    session = get_sandbox_session()
+    catalog = kl.catalog(session)
+    phenoms = catalog.phenomenas
+
+    phenom_names = []
+    for phenom in phenoms:
+        phenom_names.append(phenom.name)
+
+    assert len(phenom_names) > 0
+    for phenom_name in phenom_names:
+        phenom = catalog.get_phenomena_by_name(phenom_name)
+
+        assert isinstance(phenom, kl.Phenomenon)
+        print(phenom_name, ':', phenom.description, 'in', phenom.link)
+        print('\n')
 
 
 def test_organizations():
@@ -119,7 +148,8 @@ if __name__ == '__main__':
     test_areas_of_interest_for_dev()
     test_variables()
     test_sources()
-    test_phenoms()
+    test_phenomenas()
+    test_get_phenomena_by_name()
     test_subscriptions()
     test_users()
     test_organizations()
