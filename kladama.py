@@ -33,6 +33,10 @@ class Environment:
     def user_url(self):
         return self._get_url('user')
 
+    @property
+    def subscription_url(self):
+        return self._get_url('subsc')
+
     def aoi_url_for_user(self, user):
         return "{0}/user/{1}".format(self.aoi_url, user)
 
@@ -200,6 +204,57 @@ class User(Identifiable, Linkable):
         return self._organization
 
 
+class Subscription(Linkable):
+
+    def __init__(self, obj):
+        Linkable.__init__(self, obj)
+        self._code = obj['code']
+        self._owner = obj['owner']
+        self._type = obj['type']
+        self._created_timestamp = obj['createdTimestamp']
+        self._spatial_operation = obj['spatialOperation']
+        self._status = obj['status']
+        self._schedule = obj['schedule']
+        self._aoi = obj['aoi']
+        self._variable = Variable(obj['variable'])
+
+    @property
+    def code(self):
+        return self._code
+
+    @property
+    def owner(self):
+        return self._owner
+
+    @property
+    def type(self):
+        return self._type
+
+    @property
+    def created_timestamp(self):
+        return self._created_timestamp
+
+    @property
+    def spatial_operation(self):
+        return self._spatial_operation
+
+    @property
+    def status(self):
+        return self._status
+
+    @property
+    def schedule(self):
+        return self._schedule
+
+    @property
+    def aoi(self):
+        return self._aoi
+
+    @property
+    def variable(self):
+        return self._variable
+
+
 class Catalog:
 
     _aoi_entity_name = 'Areas of Interest'
@@ -208,6 +263,7 @@ class Catalog:
     _src_entity_name = 'sources'
     _users_entity_name = 'users'
     _var_entity_name = 'variables'
+    _subscriptions_entity_name = 'subscriptions'
 
     def __init__(self, session):
         self._session = session
@@ -235,6 +291,10 @@ class Catalog:
     @property
     def users(self):
         return self._get_entities(self._session.env.user_url, Catalog._users_entity_name, User)
+
+    @property
+    def subscriptions(self):
+        return self._get_entities(self._session.env.subscription_url, Catalog._subscriptions_entity_name, Subscription)
 
     def areas_of_interest_for_user(self, user):
         return self._get_entities(self._session.env.aoi_url_for_user(user), self._aoi_entity_name, AreaOfInterest)
