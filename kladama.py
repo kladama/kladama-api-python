@@ -287,6 +287,8 @@ class Catalog:
     def __init__(self, session):
         self._session = session
 
+    # areas of interest
+
     @property
     def areas_of_interest(self):
         env = self._session.env
@@ -298,11 +300,72 @@ class Catalog:
         url = Environment.get_resource_by_user_url(env.aoi_url, user)
         return self._get_entities(url, self._aoi_entity_name, AreaOfInterest)
 
+    # variables
+
     @property
     def variables(self):
         env = self._session.env
         url = env.var_url
         return self._get_entities(url, Catalog._var_entity_name, Variable)
+
+    @property
+    def variables_forecast(self):
+        env = self._session.env
+        url = Environment.get_resource_forecast_url(env.var_url)
+        return self._get_entities(url, Catalog._forecast_entity_name, Forecast)
+
+    def variable_by_name(self, name):
+        env = self._session.env
+        url = Environment.get_resource_by_name_url(env.var_url, name)
+        return self._get_first_entity(url, self._var_entity_name, Variable)
+
+    def variables_by_phenomena(self, phenomena):
+        env = self._session.env
+        url = Environment.get_resource_by_phenomena_url(env.var_url, phenomena)
+        return self._get_entities(url, self._var_entity_name, Variable)
+
+    def variables_by_phenomena_forecast(self, phenomena):
+        env = self._session.env
+        resource_url = Environment.get_resource_by_phenomena_url(env.var_url, phenomena)
+        url = Environment.get_resource_forecast_url(resource_url)
+        return self._get_entities(url, self._var_entity_name, Variable)
+
+    def variables_by_sources(self, sources):
+        env = self._session.env
+        url = Environment.get_resource_by_sources_url(env.var_url, sources)
+        return self._get_entities(url, self._var_entity_name, Variable)
+
+    def variables_by_sources_forecast(self, sources):
+        env = self._session.env
+        resource_url = Environment.get_resource_by_sources_url(env.var_url, sources)
+        url = Environment.get_resource_forecast_url(resource_url)
+        return self._get_entities(url, self._var_entity_name, Variable)
+
+    @property
+    def observed_variables(self):
+        env = self._session.env
+        url = Environment.get_observed_resource_url(env.var_url)
+        return self._get_entities(url, Catalog._var_entity_name, Variable)
+
+    def observed_variables_by_name(self, name):
+        env = self._session.env
+        resource_url = Environment.get_resource_by_name_url(env.var_url, name)
+        url = Environment.get_observed_resource_url(resource_url)
+        return self._get_entities(url, self._var_entity_name, Variable)
+
+    def observed_variables_by_phenomena(self, phenomena):
+        env = self._session.env
+        resource_url = Environment.get_resource_by_phenomena_url(env.var_url, phenomena)
+        url = Environment.get_observed_resource_url(resource_url)
+        return self._get_entities(url, self._var_entity_name, Variable)
+
+    def observed_variables_by_sources(self, sources):
+        env = self._session.env
+        resource_url = Environment.get_resource_by_sources_url(env.var_url, sources)
+        url = Environment.get_observed_resource_url(resource_url)
+        return self._get_entities(url, self._var_entity_name, Variable)
+
+    # sources
 
     @property
     def sources(self):
@@ -350,6 +413,8 @@ class Catalog:
         url = Environment.get_observed_resource_url(resource_url)
         return self._get_entities(url, self._src_entity_name, Source)
 
+    # phenomenas
+
     @property
     def phenomenas(self):
         env = self._session.env
@@ -390,17 +455,29 @@ class Catalog:
         url = Environment.get_observed_resource_url(resource_url)
         return self._get_entities(url, self._phenomena_entity_name, Phenomenon)
 
+    def observed_phenomenas_by_sources(self, sources):
+        env = self._session.env
+        resource_url = Environment.get_resource_by_sources_url(env.phenomena_url, sources)
+        url = Environment.get_observed_resource_url(resource_url)
+        return self._get_entities(url, self._phenomena_entity_name, Phenomenon)
+
+    # organizations
+
     @property
     def organizations(self):
         env = self._session.env
         url = env.org_url
         return self._get_entities(url, Catalog._org_entity_name, Organization)
 
+    # users
+
     @property
     def users(self):
         env = self._session.env
         url = env.user_url
         return self._get_entities(url, Catalog._users_entity_name, User)
+
+    # subscriptions
 
     @property
     def subscriptions(self):
