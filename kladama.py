@@ -22,7 +22,7 @@ class Environment:
         return self._get_url('src')
 
     @property
-    def phenom_url(self):
+    def phenomena_url(self):
         return self._get_url('phenom')
 
     @property
@@ -37,11 +37,29 @@ class Environment:
     def subscription_url(self):
         return self._get_url('subsc')
 
-    def get_aoi_by_user_url(self, user):
-        return "{0}/user/{1}".format(self.aoi_url, user)
+    @staticmethod
+    def get_resource_by_phenomena_url(resource_url, phenomena):
+        return "{0}/phenom/{1}".format(resource_url, phenomena)
 
-    def get_phenomena_by_name_url(self, name):
-        return "{0}/{1}".format(self.phenom_url, name)
+    @staticmethod
+    def get_resource_by_name_url(resource_url, name):
+        return "{0}/{1}".format(resource_url, name)
+
+    @staticmethod
+    def get_resource_by_user_url(resource_url, user):
+        return "{0}/user/{1}".format(resource_url, user)
+
+    @staticmethod
+    def get_resource_by_sources_url(resource_url, sources):
+        return "{0}/src/{1}".format(resource_url, ','.join(sources))
+
+    @staticmethod
+    def get_observed_resource_url(resource_url):
+        return "{0}/{1}".format(resource_url, 'observed')
+
+    @staticmethod
+    def get_resource_forecast_url(resource_url):
+        return "{0}/{1}".format(resource_url, 'forecast')
 
     def _get_url(self, path):
         return '{0}/{1}'.format(self._api_url_base, path)
@@ -258,7 +276,139 @@ class Subscription(Linkable):
         return self._variable
 
 
+class Forecast:
+
+    def __init__(self, _obj):
+        pass
+
+
 class Catalog:
+
+    def __init__(self, session):
+        self._session = session
+
+    @property
+    def areas_of_interest(self):
+        env = self._session.env
+        url = env.aoi_url
+        return self._get_entities(url, Catalog._aoi_entity_name, AreaOfInterest)
+
+    def areas_of_interest_by_user(self, user):
+        env = self._session.env
+        url = Environment.get_resource_by_user_url(env.aoi_url, user)
+        return self._get_entities(url, self._aoi_entity_name, AreaOfInterest)
+
+    @property
+    def variables(self):
+        env = self._session.env
+        url = env.var_url
+        return self._get_entities(url, Catalog._var_entity_name, Variable)
+
+    @property
+    def sources(self):
+        env = self._session.env
+        url = env.src_url
+        return self._get_entities(url, Catalog._src_entity_name, Source)
+
+    @property
+    def sources_forecast(self):
+        env = self._session.env
+        url = Environment.get_resource_forecast_url(env.src_url)
+        return self._get_entities(url, Catalog._forecast_entity_name, Forecast)
+
+    def source_by_name(self, name):
+        env = self._session.env
+        url = Environment.get_resource_by_name_url(env.src_url, name)
+        return self._get_first_entity(url, self._src_entity_name, Source)
+
+    def sources_by_phenomena(self, phenomena):
+        env = self._session.env
+        url = Environment.get_resource_by_phenomena_url(env.src_url, phenomena)
+        return self._get_entities(url, self._src_entity_name, Source)
+
+    def sources_by_phenomena_forecast(self, phenomena):
+        env = self._session.env
+        resource_url = Environment.get_resource_by_phenomena_url(env.src_url, phenomena)
+        url = Environment.get_resource_forecast_url(resource_url)
+        return self._get_entities(url, self._src_entity_name, Source)
+
+    @property
+    def observed_sources(self):
+        env = self._session.env
+        url = Environment.get_observed_resource_url(env.src_url)
+        return self._get_entities(url, Catalog._src_entity_name, Source)
+
+    def observed_sources_by_name(self, name):
+        env = self._session.env
+        resource_url = Environment.get_resource_by_name_url(env.src_url, name)
+        url = Environment.get_observed_resource_url(resource_url)
+        return self._get_entities(url, self._src_entity_name, Source)
+
+    def observed_sources_by_phenomena(self, phenomena):
+        env = self._session.env
+        resource_url = Environment.get_resource_by_phenomena_url(env.src_url, phenomena)
+        url = Environment.get_observed_resource_url(resource_url)
+        return self._get_entities(url, self._src_entity_name, Source)
+
+    @property
+    def phenomenas(self):
+        env = self._session.env
+        url = env.phenomena_url
+        return self._get_entities(url, Catalog._phenomena_entity_name, Phenomenon)
+
+    @property
+    def phenomenas_forecast(self):
+        env = self._session.env
+        url = Environment.get_resource_forecast_url(env.phenomena_url)
+        return self._get_entities(url, Catalog._forecast_entity_name, Forecast)
+
+    def phenomena_by_name(self, name):
+        env = self._session.env
+        url = Environment.get_resource_by_name_url(env.phenomena_url, name)
+        return self._get_first_entity(url, self._phenomena_entity_name, Phenomenon)
+
+    def phenomenas_by_sources(self, sources):
+        env = self._session.env
+        url = Environment.get_resource_by_sources_url(env.phenomena_url, sources)
+        return self._get_entities(url, self._phenomena_entity_name, Phenomenon)
+
+    def phenomenas_by_sources_forecast(self, sources):
+        env = self._session.env
+        resource_url = Environment.get_resource_by_sources_url(env.phenomena_url, sources)
+        url = Environment.get_resource_forecast_url(resource_url)
+        return self._get_entities(url, self._forecast_entity_name, Forecast)
+
+    @property
+    def observed_phenomenas(self):
+        env = self._session.env
+        url = Environment.get_observed_resource_url(env.phenomena_url)
+        return self._get_entities(url, Catalog._phenomena_entity_name, Phenomenon)
+
+    def observed_phenomenas_by_name(self, name):
+        env = self._session.env
+        resource_url = Environment.get_resource_by_name_url(env.phenomena_url, name)
+        url = Environment.get_observed_resource_url(resource_url)
+        return self._get_entities(url, self._phenomena_entity_name, Phenomenon)
+
+    @property
+    def organizations(self):
+        env = self._session.env
+        url = env.org_url
+        return self._get_entities(url, Catalog._org_entity_name, Organization)
+
+    @property
+    def users(self):
+        env = self._session.env
+        url = env.user_url
+        return self._get_entities(url, Catalog._users_entity_name, User)
+
+    @property
+    def subscriptions(self):
+        env = self._session.env
+        url = env.subscription_url
+        return self._get_entities(url, Catalog._subscriptions_entity_name, Subscription)
+
+    # private members
 
     _aoi_entity_name = 'Areas of Interest'
     _phenomena_entity_name = 'phenomena'
@@ -267,47 +417,7 @@ class Catalog:
     _users_entity_name = 'users'
     _var_entity_name = 'variables'
     _subscriptions_entity_name = 'subscriptions'
-
-    def __init__(self, session):
-        self._session = session
-
-    @property
-    def areas_of_interest(self):
-        return self._get_entities(self._session.env.aoi_url, Catalog._aoi_entity_name, AreaOfInterest)
-
-    @property
-    def vars(self):
-        return self._get_entities(self._session.env.var_url, Catalog._var_entity_name, Variable)
-
-    @property
-    def src(self):
-        return self._get_entities(self._session.env.src_url, Catalog._src_entity_name, Source)
-
-    @property
-    def phenomenas(self):
-        return self._get_entities(self._session.env.phenom_url, Catalog._phenomena_entity_name, Phenomenon)
-
-    @property
-    def organizations(self):
-        return self._get_entities(self._session.env.org_url, Catalog._org_entity_name, Organization)
-
-    @property
-    def users(self):
-        return self._get_entities(self._session.env.user_url, Catalog._users_entity_name, User)
-
-    @property
-    def subscriptions(self):
-        return self._get_entities(self._session.env.subscription_url, Catalog._subscriptions_entity_name, Subscription)
-
-    def get_areas_of_interest_by_user(self, user):
-        return self._get_entities(self._session.env.get_aoi_by_user_url(user), self._aoi_entity_name, AreaOfInterest)
-
-    def get_phenomena_by_name(self, name):
-        entities = self._get_entities(self._session.env.get_phenomena_by_name_url(name), self._phenomena_entity_name, Phenomenon)
-        if len(entities) > 0:
-            return entities[0]
-
-        return None
+    _forecast_entity_name = 'forecasts'
 
     def _get_entities(self, api_url, entity_name, entity_class):
         obj = self._get_resource(api_url, entity_name)
@@ -318,6 +428,13 @@ class Catalog:
                 entities.append(entity_class(entity))
 
         return entities
+
+    def _get_first_entity(self, api_url, entity_name, entity_class):
+        entities = self._get_entities(api_url, entity_name, entity_class)
+        if len(entities) > 0:
+            return entities[0]
+
+        return None
 
     def _get_resource(self, api_url, resource_name):
         api_token = self._session.api_token

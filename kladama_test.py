@@ -27,7 +27,7 @@ def test_get_areas_of_interest_by_user_dev():
     print('Testing Areas of Interest for user dev ========================')
 
     session = get_sandbox_session()
-    aois = kl.catalog(session).get_areas_of_interest_by_user('dev')
+    aois = kl.catalog(session).areas_of_interest_by_user('dev')
     assert len(aois) > 0
     for aoi in aois:
         assert isinstance(aoi, kl.AreaOfInterest)
@@ -40,7 +40,7 @@ def test_variables():
     print('Testing Variables ========================')
 
     session = get_sandbox_session()
-    variables = kl.catalog(session).vars
+    variables = kl.catalog(session).variables
     assert len(variables) > 0
     for var in variables:
         assert isinstance(var, kl.Variable)
@@ -53,13 +53,36 @@ def test_sources():
     print('Testing Sources ========================')
 
     session = get_sandbox_session()
-    sources = kl.catalog(session).src
+    sources = kl.catalog(session).sources
     assert len(sources) > 0
     for source in sources:
         assert isinstance(source, kl.Source)
         print(source.name, ':', source.description, 'in', source.link)
 
     print('\n')
+
+
+def test_get_source_by_name():
+    session = get_sandbox_session()
+    catalog = kl.catalog(session)
+
+    source_names = [
+        'ECMWF',
+        'NOAA-NWS',
+        'NOAA-CPC',
+        'NOAA-STAR',
+        'ESA',
+    ]
+
+    assert len(source_names) > 0
+    for source_name in source_names:
+        print('Testing Source by name: ', source_name, ' ========================')
+        source = catalog.source_by_name(source_name)
+
+        assert isinstance(source, kl.Source)
+        assert source.name == source_name
+        print(source_name, ':', source.description, 'in', source.link)
+        print('\n')
 
 
 def test_phenomenas():
@@ -80,7 +103,7 @@ def test_phenoms_by_not_existing_name():
 
     session = get_sandbox_session()
     catalog = kl.catalog(session)
-    phenom = catalog.get_phenomena_by_name('FAKE NAME')
+    phenom = catalog.phenomena_by_name('FAKE NAME')
     assert phenom is None
 
 
@@ -101,10 +124,24 @@ def test_get_phenomena_by_name():
     assert len(phenom_names) > 0
     for phenom_name in phenom_names:
         print('Testing Phenom by name: ', phenom_name, ' ========================')
-        phenom = catalog.get_phenomena_by_name(phenom_name)
+        phenom = catalog.phenomena_by_name(phenom_name)
 
         assert isinstance(phenom, kl.Phenomenon)
+        assert phenom.name == phenom_name
         print(phenom_name, ':', phenom.description, 'in', phenom.link)
+        print('\n')
+
+
+def test_get_phenomena_from_esa_and_cpc():
+    print('Testing Phenom from ESA and NOAA-CPC ========================')
+    session = get_sandbox_session()
+    catalog = kl.catalog(session)
+
+    phenomenas = catalog.phenomenas_by_sources(['ESA', 'NOAA-CPC'])
+    assert len(phenomenas) > 0
+    for phenomena in phenomenas:
+        assert isinstance(phenomena, kl.Phenomenon)
+        print(phenomena.name, ':', phenomena.description, 'in', phenomena.link)
         print('\n')
 
 
@@ -149,11 +186,9 @@ def test_subscriptions():
 
 if __name__ == '__main__':
     test_areas_of_interest()
-    test_get_areas_of_interest_by_user_dev()
     test_variables()
     test_sources()
     test_phenomenas()
-    test_get_phenomena_by_name()
     test_subscriptions()
     test_users()
     test_organizations()
