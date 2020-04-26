@@ -101,11 +101,25 @@ def test_users():
     print('\n')
 
 
+def test_subscriptions():
+    print('Testing Subscriptions ========================')
+
+    session = get_sandbox_session()
+    subscriptions = kl.catalog(session).subscriptions
+    assert len(subscriptions) > 0
+    for subscription in subscriptions:
+        assert isinstance(subscription, kl.Subscription)
+        print(subscription.code, 'from', subscription.owner, 'in', subscription.link)
+
+    print('\n')
+
+
 if __name__ == '__main__':
     test_areas_of_interest()
     test_areas_of_interest_for_dev()
     test_variables()
     test_sources()
     test_phenoms()
+    test_subscriptions()
     test_users()
     test_organizations()
