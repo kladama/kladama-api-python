@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import unittest
 from kladama import *
 from kladama.entities import *
@@ -23,7 +21,7 @@ class IntegrationTest(unittest.TestCase):
         query = Query().aoi
 
         # when
-        aois = Context(session).all(query)
+        aois = Context(session).get(query)
 
         # then
         assert len(aois) > 0
@@ -42,7 +40,7 @@ class IntegrationTest(unittest.TestCase):
         query = Query().aoi.by_user('dev')
 
         # when
-        aois = Context(session).all(query)
+        aois = Context(session).get(query)
 
         # then
         assert len(aois) > 0
@@ -61,7 +59,7 @@ class IntegrationTest(unittest.TestCase):
         query = Query().var
 
         # when
-        variables = Context(session).all(query)
+        variables = Context(session).get(query)
 
         # then
         assert len(variables) > 0
@@ -80,7 +78,7 @@ class IntegrationTest(unittest.TestCase):
         query = Query().src
 
         # when
-        sources = Context(session).all(query)
+        sources = Context(session).get(query)
 
         # then
         assert len(sources) > 0
@@ -111,7 +109,7 @@ class IntegrationTest(unittest.TestCase):
             query = Query().src.by_name(source_name)
 
             # when
-            source = ctx.first(query)
+            source = ctx.get(query)
 
             # then
             assert isinstance(source, Source)
@@ -128,7 +126,7 @@ class IntegrationTest(unittest.TestCase):
         query = Query().phenom
 
         # when
-        phenoms = Context(session).all(query)
+        phenoms = Context(session).get(query)
 
         # then
         assert len(phenoms) > 0
@@ -147,7 +145,7 @@ class IntegrationTest(unittest.TestCase):
         query = Query().phenom.by_name('FAKE NAME')
 
         # when
-        phenom = Context(session).first(query)
+        phenom = Context(session).get(query)
 
         # then
         assert phenom is None
@@ -175,7 +173,7 @@ class IntegrationTest(unittest.TestCase):
             query = Query().phenom.by_name(phenom_name)
 
             # when
-            phenom = ctx.first(query)
+            phenom = ctx.get(query)
 
             # then
             assert isinstance(phenom, Phenomena)
@@ -192,7 +190,7 @@ class IntegrationTest(unittest.TestCase):
         query = Query().phenom.by_sources('ESA', 'NOAA-CPC')
 
         # when
-        phenomenas = Context(session).all(query)
+        phenomenas = Context(session).get(query)
 
         # then
         assert len(phenomenas) > 0
@@ -210,7 +208,7 @@ class IntegrationTest(unittest.TestCase):
         query = Query().org
 
         # when
-        organizations = Context(session).all(query)
+        organizations = Context(session).get(query)
 
         # then
         assert len(organizations) > 0
@@ -229,7 +227,7 @@ class IntegrationTest(unittest.TestCase):
         query = Query().user
 
         # when
-        users = Context(session).all(query)
+        users = Context(session).get(query)
 
         # then
         assert len(users) > 0
@@ -248,7 +246,7 @@ class IntegrationTest(unittest.TestCase):
         query = Query().subsc
 
         # when
-        subscriptions = Context(session).all(query)
+        subscriptions = Context(session).get(query)
 
         # then
         assert len(subscriptions) > 0

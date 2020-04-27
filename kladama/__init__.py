@@ -1,5 +1,6 @@
 import json
 import requests
+from kladama.queries import SimpleResultsQuery
 
 
 class Environment:
@@ -54,11 +55,11 @@ class Context:
     def session(self):
         return self._session
 
-    def all(self, query):
-        return self._get_entities(query)
+    def get(self, query):
+        if isinstance(query, SimpleResultsQuery):
+            return self._get_first_entity(query)
 
-    def first(self, query):
-        return self._get_first_entity(query)
+        return self._get_entities(query)
 
     # private methods
 

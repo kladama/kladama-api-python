@@ -46,10 +46,22 @@ class Query:
 # query aggregates
 
 
-class EntityQuery(QueryBase):
+class SimpleResultsQuery(QueryBase):
+
+    def __init__(self):
+        QueryBase.__init__(self)
+
+
+class MultipleResultsQuery(QueryBase):
+
+    def __init__(self):
+        QueryBase.__init__(self)
+
+
+class EntityQuery(MultipleResultsQuery):
 
     def __init__(self, entity_meta):
-        QueryBase.__init__(self)
+        MultipleResultsQuery.__init__(self)
         self._entity_meta = entity_meta
         self._url_path = '/' + entity_meta.url_base_path
 
@@ -62,10 +74,10 @@ class EntityQuery(QueryBase):
         return self._url_path
 
 
-class SubClassedFilterQuery(QueryBase):
+class SubClassedFilterQuery(MultipleResultsQuery):
 
     def __init__(self, sub_query, sub_class_path):
-        QueryBase.__init__(self)
+        MultipleResultsQuery.__init__(self)
         self._sub_query = sub_query
         self._sub_class_path = sub_class_path
 
@@ -90,57 +102,57 @@ class ObservedQuery(SubClassedFilterQuery):
         SubClassedFilterQuery.__init__(self, sub_query, 'observed')
 
 
-class PredictableEntityQuery(QueryBase):
+class PredictableEntityQuery(MultipleResultsQuery):
 
     def __init__(self):
-        QueryBase.__init__(self)
+        MultipleResultsQuery.__init__(self)
 
     @property
     def forecast(self):
         return ForecastQuery(self)
 
 
-class ObservableEntityQuery(QueryBase):
+class ObservableEntityQuery(MultipleResultsQuery):
 
     def __init__(self):
-        QueryBase.__init__(self)
+        MultipleResultsQuery.__init__(self)
 
     @property
     def observed(self):
         return ObservedQuery(self)
 
 
-class ByNameQueryable(QueryBase):
+class ByNameQueryable(MultipleResultsQuery):
 
     def __init__(self):
-        QueryBase.__init__(self)
+        MultipleResultsQuery.__init__(self)
 
     def by_name(self, name_value):
         return ByNameQuery(self, name_value)
 
 
-class ByPhenomenaQueryable(QueryBase):
+class ByPhenomenaQueryable(MultipleResultsQuery):
 
     def __init__(self):
-        QueryBase.__init__(self)
+        MultipleResultsQuery.__init__(self)
 
     def by_phenomena(self, phenomena):
         return ByPhenomenaQuery(self, phenomena)
 
 
-class BySourceQueryable(QueryBase):
+class BySourceQueryable(MultipleResultsQuery):
 
     def __init__(self):
-        QueryBase.__init__(self)
+        MultipleResultsQuery.__init__(self)
 
     def by_sources(self, *sources):
         return BySourceQuery(self, sources)
 
 
-class ByUserQueryable(QueryBase):
+class ByUserQueryable(MultipleResultsQuery):
 
     def __init__(self):
-        QueryBase.__init__(self)
+        MultipleResultsQuery.__init__(self)
 
     def by_user(self, user):
         return ByUserQuery(self, user)
@@ -169,11 +181,12 @@ class FilterQuery(QueryBase):
         return self._filter_value
 
 
-class ByNameQuery(FilterQuery):
+class ByNameQuery(FilterQuery, SimpleResultsQuery):
 
     def __init__(self, query_base, name_value):
         assert isinstance(query_base, ByNameQueryable)
         FilterQuery.__init__(self, query_base, name_value)
+        SimpleResultsQuery.__init__(self)
 
     @property
     def url_path(self):
