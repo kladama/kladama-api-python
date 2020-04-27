@@ -41,7 +41,7 @@ def authenticate(env, api_token):
     return Session(env, api_token)
 
 
-class QueryExecutor:
+class Context:
 
     def __init__(self, session):
         self._session = session
