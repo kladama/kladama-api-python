@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import kladama as kl
+import kladama_queries as klq
+import kladama_entities as kle
 
 
 def get_sandbox_session():
@@ -13,11 +15,17 @@ def get_sandbox_session():
 def test_areas_of_interest():
     print('Testing Areas of Interest ========================')
 
+    # given
     session = get_sandbox_session()
-    aois = kl.catalog(session).areas_of_interest
+    query = klq.Query().aoi
+
+    # when
+    aois = kl.QueryExecutor(session).all(query)
+
+    # then
     assert len(aois) > 0
     for aoi in aois:
-        assert isinstance(aoi, kl.AreaOfInterest)
+        assert isinstance(aoi, kle.AreaOfInterest)
         print(aoi.name, '-', aoi.description, 'in', aoi.link)
 
     print('\n')
@@ -26,11 +34,17 @@ def test_areas_of_interest():
 def test_get_areas_of_interest_by_user_dev():
     print('Testing Areas of Interest for user dev ========================')
 
+    # given
     session = get_sandbox_session()
-    aois = kl.catalog(session).areas_of_interest_by_user('dev')
+    query = klq.Query().aoi.by_user('dev')
+
+    # when
+    aois = kl.QueryExecutor(session).all(query)
+
+    # then
     assert len(aois) > 0
     for aoi in aois:
-        assert isinstance(aoi, kl.AreaOfInterest)
+        assert isinstance(aoi, kle.AreaOfInterest)
         print(aoi.name, '-', aoi.description, 'in', aoi.link)
 
     print('\n')
@@ -39,11 +53,17 @@ def test_get_areas_of_interest_by_user_dev():
 def test_variables():
     print('Testing Variables ========================')
 
+    # given
     session = get_sandbox_session()
-    variables = kl.catalog(session).variables
+    query = klq.Query().var
+
+    # when
+    variables = kl.QueryExecutor(session).all(query)
+
+    # then
     assert len(variables) > 0
     for var in variables:
-        assert isinstance(var, kl.Variable)
+        assert isinstance(var, kle.Variable)
         print(var.name, 'from', var.source.name, 'in', var.link)
 
     print('\n')
@@ -52,20 +72,25 @@ def test_variables():
 def test_sources():
     print('Testing Sources ========================')
 
+    # given
     session = get_sandbox_session()
-    sources = kl.catalog(session).sources
+    query = klq.Query().src
+
+    # when
+    sources = kl.QueryExecutor(session).all(query)
+
+    # then
     assert len(sources) > 0
     for source in sources:
-        assert isinstance(source, kl.Source)
+        assert isinstance(source, kle.Source)
         print(source.name, ':', source.description, 'in', source.link)
 
     print('\n')
 
 
 def test_get_source_by_name():
-    session = get_sandbox_session()
-    catalog = kl.catalog(session)
 
+    # given
     source_names = [
         'ECMWF',
         'NOAA-NWS',
@@ -73,13 +98,20 @@ def test_get_source_by_name():
         'NOAA-STAR',
         'ESA',
     ]
+    session = get_sandbox_session()
+    executor = kl.QueryExecutor(session)
 
-    assert len(source_names) > 0
     for source_name in source_names:
         print('Testing Source by name: ', source_name, ' ========================')
-        source = catalog.source_by_name(source_name)
 
-        assert isinstance(source, kl.Source)
+        # given
+        query = klq.Query().src.by_name(source_name)
+
+        # when
+        source = executor.first(query)
+
+        # then
+        assert isinstance(source, kle.Source)
         assert source.name == source_name
         print(source_name, ':', source.description, 'in', source.link)
         print('\n')
@@ -88,11 +120,17 @@ def test_get_source_by_name():
 def test_phenomenas():
     print('Testing Phenoms ========================')
 
+    # given
     session = get_sandbox_session()
-    phenoms = kl.catalog(session).phenomenas
+    query = klq.Query().phenom
+
+    # when
+    phenoms = kl.QueryExecutor(session).all(query)
+
+    # then
     assert len(phenoms) > 0
     for phenom in phenoms:
-        assert isinstance(phenom, kl.Phenomenon)
+        assert isinstance(phenom, kle.Phenomena)
         print(phenom.name, ':', phenom.description, 'in', phenom.link)
 
     print('\n')
@@ -101,16 +139,20 @@ def test_phenomenas():
 def test_phenoms_by_not_existing_name():
     print('Testing Phenom by not existing name ========================')
 
+    # given
     session = get_sandbox_session()
-    catalog = kl.catalog(session)
-    phenom = catalog.phenomena_by_name('FAKE NAME')
+    query = klq.Query().phenom.by_name('FAKE NAME')
+
+    # when
+    phenom = kl.QueryExecutor(session).first(query)
+
+    # then
     assert phenom is None
 
 
 def test_get_phenomena_by_name():
-    session = get_sandbox_session()
-    catalog = kl.catalog(session)
 
+    # given
     phenom_names = [
         'rain',
         'temperature',
@@ -120,13 +162,20 @@ def test_get_phenomena_by_name():
         'solar radiation',
         'evaporation',
     ]
+    session = get_sandbox_session()
+    executor = kl.QueryExecutor(session)
 
-    assert len(phenom_names) > 0
     for phenom_name in phenom_names:
         print('Testing Phenom by name: ', phenom_name, ' ========================')
-        phenom = catalog.phenomena_by_name(phenom_name)
 
-        assert isinstance(phenom, kl.Phenomenon)
+        # given
+        query = klq.Query().phenom.by_name(phenom_name)
+
+        # when
+        phenom = executor.first(query)
+
+        # then
+        assert isinstance(phenom, kle.Phenomena)
         assert phenom.name == phenom_name
         print(phenom_name, ':', phenom.description, 'in', phenom.link)
         print('\n')
@@ -134,13 +183,18 @@ def test_get_phenomena_by_name():
 
 def test_get_phenomena_from_esa_and_cpc():
     print('Testing Phenom from ESA and NOAA-CPC ========================')
-    session = get_sandbox_session()
-    catalog = kl.catalog(session)
 
-    phenomenas = catalog.phenomenas_by_sources(['ESA', 'NOAA-CPC'])
+    # given
+    session = get_sandbox_session()
+    query = klq.Query().phenom.by_sources('ESA', 'NOAA-CPC')
+
+    # when
+    phenomenas = kl.QueryExecutor(session).all(query)
+
+    # then
     assert len(phenomenas) > 0
     for phenomena in phenomenas:
-        assert isinstance(phenomena, kl.Phenomenon)
+        assert isinstance(phenomena, kle.Phenomena)
         print(phenomena.name, ':', phenomena.description, 'in', phenomena.link)
         print('\n')
 
@@ -148,11 +202,17 @@ def test_get_phenomena_from_esa_and_cpc():
 def test_organizations():
     print('Testing Organizations ========================')
 
+    # given
     session = get_sandbox_session()
-    organizations = kl.catalog(session).organizations
+    query = klq.Query().org
+
+    # when
+    organizations = kl.QueryExecutor(session).all(query)
+
+    # then
     assert len(organizations) > 0
     for organization in organizations:
-        assert isinstance(organization, kl.Organization)
+        assert isinstance(organization, kle.Organization)
         print(organization.name, ':', organization.acronym, 'in', organization.link)
 
     print('\n')
@@ -161,11 +221,17 @@ def test_organizations():
 def test_users():
     print('Testing Users ========================')
 
+    # given
     session = get_sandbox_session()
-    users = kl.catalog(session).users
+    query = klq.Query().user
+
+    # when
+    users = kl.QueryExecutor(session).all(query)
+
+    # then
     assert len(users) > 0
     for user in users:
-        assert isinstance(user, kl.User)
+        assert isinstance(user, kle.User)
         print(user.username, 'from', user.organization.name, 'in', user.link)
 
     print('\n')
@@ -174,11 +240,17 @@ def test_users():
 def test_subscriptions():
     print('Testing Subscriptions ========================')
 
+    # given
     session = get_sandbox_session()
-    subscriptions = kl.catalog(session).subscriptions
+    query = klq.Query().subsc
+
+    # when
+    subscriptions = kl.QueryExecutor(session).all(query)
+
+    # then
     assert len(subscriptions) > 0
     for subscription in subscriptions:
-        assert isinstance(subscription, kl.Subscription)
+        assert isinstance(subscription, kle.Subscription)
         print(subscription.code, 'from', subscription.owner, 'in', subscription.link)
 
     print('\n')
