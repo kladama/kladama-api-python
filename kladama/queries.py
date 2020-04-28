@@ -12,50 +12,147 @@ class QueryBase:
         pass
 
 
-class Query:
-
-    @property
-    def aoi(self):
-        return AreaOfInterestQuery()
-
-    @property
-    def phenom(self):
-        return PhenomenaQuery()
-
-    @property
-    def org(self):
-        return OrganizationQuery()
-
-    @property
-    def subsc(self):
-        return SubscriptionQuery()
-
-    @property
-    def src(self):
-        return SourceQuery()
-
-    @property
-    def user(self):
-        return UserQuery()
-
-    @property
-    def var(self):
-        return VariableQuery()
-
-
-# query aggregates
-
-
-class SimpleResultsQuery(QueryBase):
-
-    def __init__(self):
-        QueryBase.__init__(self)
-
-
 class MultipleResultsQuery(QueryBase):
 
     def __init__(self):
         QueryBase.__init__(self)
+
+    @property
+    def last(self):
+        return LastQuery(self)
+
+    def last_n(self, amount: int):
+        return LastNQuery(self, amount)
+
+
+class SimpleResultsQuery(QueryBase):
+
+    def __init__(self, query_base: MultipleResultsQuery):
+        QueryBase.__init__(self)
+        self._query_base = query_base
+
+    @property
+    def entity_meta(self):
+        return self._query_base.entity_meta
+
+
+# binary data queries
+
+
+class BinaryDataQuery(QueryBase):
+
+    def __init__(self, query_base: SimpleResultsQuery):
+        QueryBase.__init__(self)
+        self._query_base = query_base
+
+    @property
+    def entity_meta(self):
+        return None
+
+
+class AroundQuery(BinaryDataQuery):
+
+    def __init__(self, query_base: SimpleResultsQuery, days: int, *dates):
+        BinaryDataQuery.__init__(self, query_base)
+        self._days = days
+        self._dates = dates
+
+    @property
+    def url_path(self) -> str:
+        return '{0}/{1}around/{2}'.format(self._query_base.url_path, self._days, ','.join(*self._dates))
+
+
+class DatesQuery(BinaryDataQuery):
+
+    def __init__(self, query_base: SimpleResultsQuery, *dates):
+        BinaryDataQuery.__init__(self, query_base)
+        self._dates = dates
+
+    @property
+    def url_path(self) -> str:
+        return '{0}/dates/{1}'.format(self._query_base.url_path, ','.join(*self._dates))
+
+
+class LastQuery(BinaryDataQuery):
+
+    def __init__(self, query_base: SimpleResultsQuery):
+        BinaryDataQuery.__init__(self, query_base)
+
+    @property
+    def url_path(self) -> str:
+        return '{0}/last'.format(self._query_base.url_path)
+
+
+class LastNQuery(BinaryDataQuery):
+
+    def __init__(self, query_base: SimpleResultsQuery, amount: int):
+        BinaryDataQuery.__init__(self, query_base)
+        self._amount = amount
+
+    @property
+    def url_path(self) -> str:
+        return '{0}/last{1}'.format(self._query_base.url_path, self._amount)
+
+
+class LastYearsQuery(BinaryDataQuery):
+
+    def __init__(self, query_base: SimpleResultsQuery, years: int, *dates):
+        BinaryDataQuery.__init__(self, query_base)
+        self._years = years
+        self._dates = dates
+
+    @property
+    def url_path(self) -> str:
+        return '{0}/{1}years/{2}'.format(self._query_base.url_path, self._years, ','.join(*self._dates))
+
+
+class PeriodQuery(BinaryDataQuery):
+
+    def __init__(self, query_base: SimpleResultsQuery, from_, to):
+        BinaryDataQuery.__init__(self, query_base)
+        self._from = from_
+        self._to = to
+
+    @property
+    def url_path(self) -> str:
+        return '{0}/period/{1}TO{2}'.format(self._query_base.url_path, self._from, self._to)
+
+
+class BinaryAccessibleQuery(QueryBase):
+
+    def __init__(self, query_base: SimpleResultsQuery):
+        QueryBase.__init__(self)
+        self._query_base = query_base
+
+    @property
+    def query_base(self) -> SimpleResultsQuery:
+        return self._query_base
+
+    @property
+    def url_path(self):
+        return self._query_base.url_path
+
+    def around(self, days: int, *dates):
+        return AroundQuery(self.query_base, days, dates)
+
+    def dates(self, *dates):
+        return DatesQuery(self.query_base, dates)
+
+    @property
+    def last(self):
+        return LastQuery(self.query_base)
+
+    def last_n(self, amount: int):
+        return LastNQuery(self.query_base, amount)
+
+    def last_years(self, years: int, *dates):
+        return LastYearsQuery(self.query_base, years, dates)
+
+    def period(self, from_, to):
+        return PeriodQuery(self._query_base, from_, to)
+
+
+# categorized queries
 
 
 class EntityQuery(MultipleResultsQuery):
@@ -183,10 +280,9 @@ class FilterQuery(QueryBase):
 
 class ByNameQuery(FilterQuery, SimpleResultsQuery):
 
-    def __init__(self, query_base, name_value):
-        assert isinstance(query_base, ByNameQueryable)
+    def __init__(self, query_base: ByNameQueryable, name_value):
         FilterQuery.__init__(self, query_base, name_value)
-        SimpleResultsQuery.__init__(self)
+        SimpleResultsQuery.__init__(self, query_base)
 
     @property
     def url_path(self):
@@ -227,7 +323,7 @@ class ByUserQuery(FilterQuery, ByNameQueryable):
         ByNameQueryable.__init__(self)
 
     def filter_by(self, name):
-        return ByNameQuery(self, name)
+        return BinaryAccessibleQuery(ByNameQuery(self, name))
 
     @property
     def url_path(self):
@@ -311,3 +407,36 @@ class VariableQuery(
         BySourceQueryable.__init__(self)
         ObservableEntityQuery.__init__(self)
         PredictableEntityQuery.__init__(self)
+
+
+# Query accessor
+
+class Query:
+
+    @property
+    def aoi(self):
+        return AreaOfInterestQuery()
+
+    @property
+    def phenom(self):
+        return PhenomenaQuery()
+
+    @property
+    def org(self):
+        return OrganizationQuery()
+
+    @property
+    def subsc(self):
+        return SubscriptionQuery()
+
+    @property
+    def src(self):
+        return SourceQuery()
+
+    @property
+    def user(self):
+        return UserQuery()
+
+    @property
+    def var(self):
+        return VariableQuery()

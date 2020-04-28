@@ -6,7 +6,6 @@ class UnitTest(unittest.TestCase):
 
     @staticmethod
     def test_url_paths():
-
         assert Query().aoi.url_path == '/aoi'
         assert Query().aoi.by_name('aoi-name').url_path == '/aoi/aoi-name'
         assert Query().aoi.by_user('user-name').url_path == '/aoi/user/user-name'
@@ -49,6 +48,19 @@ class UnitTest(unittest.TestCase):
         assert Query().var.by_sources('source-1', 'source-2').url_path == '/var/src/source-1,source-2'
         assert Query().var.by_sources('source-1').observed.url_path == '/var/src/source-1/observed'
         assert Query().var.by_sources('source-1').forecast.url_path == '/var/src/source-1/forecast'
+
+        assert Query().subsc.by_user('user-name').filter_by('subscription').last\
+                   .url_path == '/subsc/user/user-name/subscription/last'
+        assert Query().subsc.by_user('user-name').filter_by('subscription').last_n(5)\
+                   .url_path == '/subsc/user/user-name/subscription/last5'
+        assert Query().subsc.by_user('user-name').filter_by('subscription').last_years(5, '20200101', '20200215')\
+                   .url_path == '/subsc/user/user-name/subscription/5years/20200101,20200215'
+        assert Query().subsc.by_user('user-name').filter_by('subscription').around(5, '20200101', '20200215')\
+                   .url_path == '/subsc/user/user-name/subscription/5around/20200101,20200215'
+        assert Query().subsc.by_user('user-name').filter_by('subscription').dates('20200101', '20200215')\
+                   .url_path == '/subsc/user/user-name/subscription/dates/20200101,20200215'
+        assert Query().subsc.by_user('user-name').filter_by('subscription').period('20200101', '20200215')\
+                   .url_path == '/subsc/user/user-name/subscription/period/20200101TO20200215'
 
 
 if __name__ == '__main__':

@@ -256,6 +256,105 @@ class IntegrationTest(unittest.TestCase):
 
         print('\n')
 
+    @staticmethod
+    def test_around():
+        # given
+        user = 'ensoag'
+        subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
+        session = IntegrationTest._get_sandbox_session()
+        query = Query().subsc.by_user(user).filter_by(subscription).around(5, '20200105', '20200115')
+
+        # when
+        entity = Context(session).get(query)
+
+        # then
+        assert isinstance(entity, BinaryData)
+        assert subscription in entity.name
+        assert len(entity.content) > 0
+
+    @staticmethod
+    def test_last():
+        # given
+        user = 'ensoag'
+        subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
+        session = IntegrationTest._get_sandbox_session()
+        query = Query().subsc.by_user(user).filter_by(subscription).last
+
+        # when
+        entity = Context(session).get(query)
+
+        # then
+        assert isinstance(entity, BinaryData)
+        assert subscription in entity.name
+        assert len(entity.content) > 0
+
+    @staticmethod
+    def test_last_n():
+        # given
+        user = 'ensoag'
+        subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
+        session = IntegrationTest._get_sandbox_session()
+        query = Query().subsc.by_user(user).filter_by(subscription).last_n(5)
+
+        # when
+        entity = Context(session).get(query)
+
+        # then
+        assert isinstance(entity, BinaryData)
+        assert subscription in entity.name
+        assert len(entity.content) > 0
+
+    @staticmethod
+    def test_last_years():
+        # given
+        user = 'ensoag'
+        subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
+        session = IntegrationTest._get_sandbox_session()
+        query = Query().subsc.by_user(user).filter_by(subscription).last_years(5, '20200105', '20200115')
+
+        # when
+        entity = Context(session).get(query)
+
+        # then
+        assert isinstance(entity, BinaryData)
+        assert subscription in entity.name
+        assert len(entity.content) > 0
+
+    @staticmethod
+    def test_dates():
+        # given
+        user = 'ensoag'
+        subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
+        session = IntegrationTest._get_sandbox_session()
+        query = Query().subsc.by_user(user).filter_by(subscription).dates('20200105', '20200115')
+
+        # when
+        entity = Context(session).get(query)
+
+        # then
+        assert isinstance(entity, BinaryData)
+        assert subscription in entity.name
+        assert len(entity.content) > 0
+
+    @staticmethod
+    def test_period():
+        # given
+        user = 'ensoag'
+        subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
+        from_ = '20200101'
+        to = '20200301'
+        session = IntegrationTest._get_sandbox_session()
+        query = Query().subsc.by_user(user).filter_by(subscription).period(from_, to)
+
+        # when
+        entity = Context(session).get(query)
+
+        # then
+        assert isinstance(entity, BinaryData)
+        assert subscription in entity.name
+        assert '{0}_TO_{1}'.format(from_, to) in entity.name
+        assert len(entity.content) > 0
+
 
 if __name__ == '__main__':
     unittest.main()
