@@ -103,6 +103,18 @@ class AreaOfInterest(Entity, Describable, Linkable):
         Linkable.__init__(self, obj)
 
 
+class BinaryData(Entity, Identifiable):
+
+    def __init__(self, obj):
+        Entity.__init__(self)
+        Identifiable.__init__(self, obj)
+        self._content = obj['content']
+
+    @property
+    def content(self):
+        return self._content
+
+
 class Phenomena(Entity, Describable, Linkable):
 
     def __init__(self, obj):

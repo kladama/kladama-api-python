@@ -1,6 +1,9 @@
 import json
 import requests
+import re
+from kladama.queries import BinaryDataQuery
 from kladama.queries import SimpleResultsQuery
+from kladama.entities import BinaryData
 
 
 class Environment:
@@ -56,6 +59,9 @@ class Context:
         return self._session
 
     def get(self, query):
+        if isinstance(query, BinaryDataQuery):
+            return self._get_binary_data(query)
+
         if isinstance(query, SimpleResultsQuery):
             return self._get_first_entity(query)
 
@@ -63,15 +69,22 @@ class Context:
 
     # private methods
 
-    def _request_from_service(self, api_url):
+    @staticmethod
+    def _is_successfully_response(response):
+        return 200 <= response.status_code < 300
+
+    def _web_get(self, url):
         api_token = self.session.api_token
         headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer {0}'.format(api_token)
         }
 
-        response = requests.get(api_url, headers)
-        if response.status_code == 200:
+        return requests.get(url, headers)
+
+    def _web_get_json(self, api_url):
+        response = self._web_get(api_url)
+        if self._is_successfully_response(response):
             return json.loads(response.content.decode('utf-8'))
 
         return None
@@ -79,7 +92,7 @@ class Context:
     def _get_resource(self, query):
         url = self.env.get_url_from(query.url_path)
         json_obj = query.entity_meta.json_obj
-        response = self._request_from_service(url)
+        response = self._web_get_json(url)
         if response is not None:
             root = response['_embedded']
             return root[json_obj]
@@ -101,5 +114,18 @@ class Context:
         entities = self._get_entities(query)
         if len(entities) > 0:
             return entities[0]
+
+        return None
+
+    def _get_binary_data(self, query: BinaryDataQuery):
+
+        url = self.env.get_url_from(query.url_path)
+        response = self._web_get(url)
+        if self._is_successfully_response(response):
+            filename_match = re.match('.* filename=(.*)', response.headers['Content-disposition'], re.M|re.I)
+            return BinaryData({
+                'name': filename_match.group(1),
+                'content': response.content
+            })
 
         return None
