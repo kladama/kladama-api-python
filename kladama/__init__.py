@@ -41,6 +41,21 @@ class Session:
         return self._api_token
 
 
+class Error:
+
+    def __init__(self, code, message: str):
+        self._code = code
+        self._message = message
+
+    @property
+    def code(self):
+        return self._code
+
+    @property
+    def message(self) -> str:
+        return self._message
+
+
 def authenticate(env, api_token):
     return Session(env, api_token)
 
@@ -80,52 +95,60 @@ class Context:
             'Authorization': 'Bearer {0}'.format(api_token)
         }
 
-        return requests.get(url, headers)
+        response = requests.get(url, headers)
+        if self._is_successfully_response(response):
+            return response
+
+        return Error(response.status_code, response.content.decode('utf-8'))
 
     def _web_get_json(self, api_url):
         response = self._web_get(api_url)
-        if self._is_successfully_response(response):
-            return json.loads(response.content.decode('utf-8'))
+        if isinstance(response, Error):
+            return response
 
-        return None
+        return json.loads(response.content.decode('utf-8'))
 
-    def _get_resource(self, query):
+    def _get_root_obj(self, query):
         url = self.env.get_url_from(query.url_path)
         json_obj = query.entity_meta.json_obj
-        response = self._web_get_json(url)
-        if response is not None:
-            root = response['_embedded']
-            return root[json_obj]
 
-        return None
+        response = self._web_get_json(url)
+        if isinstance(response, Error):
+            return response
+
+        root = response['_embedded']
+        return root[json_obj]
 
     def _get_entities(self, query):
-        obj = self._get_resource(query)
+        root_obj = self._get_root_obj(query)
+        if isinstance(root_obj, Error):
+            return root_obj
+
         entity_class = query.entity_meta.entity_class
+        entity_list = []
+        for entity in root_obj:
+            entity_list.append(entity_class(entity))
 
-        entities = []
-        if obj is not None:
-            for entity in obj:
-                entities.append(entity_class(entity))
-
-        return entities
+        return entity_list
 
     def _get_first_entity(self, query):
-        entities = self._get_entities(query)
-        if len(entities) > 0:
-            return entities[0]
+        entity_list = self._get_entities(query)
+        if isinstance(entity_list, Error):
+            return entity_list
+
+        if len(entity_list) > 0:
+            return entity_list[0]
 
         return None
 
     def _get_binary_data(self, query: BinaryDataQuery):
-
         url = self.env.get_url_from(query.url_path)
         response = self._web_get(url)
-        if self._is_successfully_response(response):
-            filename_match = re.match('.* filename=(.*)', response.headers['Content-disposition'], re.M|re.I)
-            return BinaryData({
-                'name': filename_match.group(1),
-                'content': response.content
-            })
+        if isinstance(response, Error):
+            return response
 
-        return None
+        filename_match = re.match('.* filename=(.*)', response.headers['Content-disposition'], re.M|re.I)
+        return BinaryData({
+            'name': filename_match.group(1),
+            'content': response.content
+        })
