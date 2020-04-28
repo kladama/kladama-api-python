@@ -148,7 +148,9 @@ class IntegrationTest(unittest.TestCase):
         phenom = Context(session).get(query)
 
         # then
-        assert phenom is None
+        assert isinstance(phenom, Error)
+        assert phenom.code == 404
+        print('Expected error message: {0}'.format(phenom.message))
 
     @staticmethod
     def test_get_phenomena_by_name():
