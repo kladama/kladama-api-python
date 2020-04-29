@@ -4,19 +4,27 @@ with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="kladama-api-pkg-hdkrus", # Replace with your own username
-    version="0.9.0",
+    name="kladama-api", # Replace with your own username
+    version="0.9.1",
     author="Plexilar",
     author_email="hdkrus@gmail.com",
     description="Kladama API package",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/hdkrus/kladama_api_python",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(include=['kladama', 'kladama.*']),
     classifiers=[
         "Programming Language :: Python :: 3",
+        "Development Status :: 3 - Alpha",
+        'Intended Audience :: Developers',
+        'Topic :: Software Development :: Libraries :: Python Modules',
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.8',
+    keywords='kladama api',
+    install_requires=[
+        'jsonlib-python3',
+        'requests'
+    ],
+    python_requires='>=3.6',
 )
