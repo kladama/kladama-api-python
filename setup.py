@@ -11,7 +11,7 @@ setuptools.setup(
     description="Kladama API package",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/hdkrus/kladama_api_python",
+    url="https://github.com/plexilar/kladama-api-python",
     packages=setuptools.find_packages(include=['kladama', 'kladama.*']),
     classifiers=[
         "Programming Language :: Python :: 3",
