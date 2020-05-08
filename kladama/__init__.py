@@ -4,6 +4,9 @@ import re
 from kladama.queries import BinaryDataQuery
 from kladama.queries import SimpleResultsQuery
 from kladama.entities import BinaryData
+from kladama.operations import Operation
+from kladama.operations import DeleteOperation
+from kladama.operations import PostOperation
 
 
 class Environment:
@@ -56,6 +59,16 @@ class Error:
         return self._message
 
 
+class Success:
+
+    def __init__(self, result):
+        self._result = result
+
+    @property
+    def result(self):
+        return self._result
+
+
 def authenticate(env, api_token):
     return Session(env, api_token)
 
@@ -82,22 +95,54 @@ class Context:
 
         return self._get_entities(query)
 
+    def execute(self, operation: Operation):
+        url = self.env.get_url_from(operation.url_path)
+
+        if isinstance(operation, PostOperation):
+            return self._web_post(url, operation.post_obj)
+
+        if isinstance(operation, DeleteOperation):
+            return self._web_delete(url)
+
+        return Error(400, 'Operation not defined')
+
     # private methods
 
     @staticmethod
     def _is_successfully_response(response):
         return 200 <= response.status_code < 300
 
-    def _web_get(self, url):
+    def _get_web_headers(self):
         api_token = self.session.api_token
-        headers = {
+        return {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer {0}'.format(api_token)
         }
 
+    def _web_get(self, url):
+        headers = self._get_web_headers()
+
         response = requests.get(url, headers)
         if self._is_successfully_response(response):
             return response
+
+        return Error(response.status_code, response.content.decode('utf-8'))
+
+    def _web_delete(self, url):
+        headers = self._get_web_headers()
+
+        response = requests.delete(url, headers=headers)
+        if self._is_successfully_response(response):
+            return Success(None)
+
+        return Error(response.status_code, response.content.decode('utf-8'))
+
+    def _web_post(self, url, data):
+        headers = self._get_web_headers()
+
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+        if self._is_successfully_response(response):
+            return Success(response.content)
 
         return Error(response.status_code, response.content.decode('utf-8'))
 

@@ -1,11 +1,12 @@
 import unittest
+from kladama.operations import *
 from kladama.queries import Query
 
 
 class UnitTest(unittest.TestCase):
 
     @staticmethod
-    def test_url_paths():
+    def test_query_url_paths():
         assert Query().aoi.url_path == '/aoi'
         assert Query().aoi.by_name('aoi-name').url_path == '/aoi/aoi-name'
         assert Query().aoi.by_user('user-name').url_path == '/aoi/user/user-name'
@@ -61,6 +62,26 @@ class UnitTest(unittest.TestCase):
                    .url_path == '/subsc/user/user-name/subscription/dates/20200101,20200215'
         assert Query().subsc.by_user('user-name').filter_by('subscription').period('20200101', '20200215')\
                    .url_path == '/subsc/user/user-name/subscription/period/20200101TO20200215'
+
+    @staticmethod
+    def test_create_subscription_url_path():
+        operation = CreateSubscriptionBuilder("fake-user-name")\
+            .set_subscription_type("fake-subsc-type")\
+            .set_variable_name("fake-var-name")\
+            .set_variable_source_name("fake-var-src-name")\
+            .set_spatial_operation_name("fake-oper-name")\
+            .set_aoi_name("fake-aoi-name")\
+            .build()
+
+        assert operation.url_path == '/subsc/user/fake-user-name'
+
+    @staticmethod
+    def test_delete_subscription_url_path():
+        operation = DeleteSubscriptionBuilder("fake-user-name")\
+            .set_subscription_id("fake-subsc-id")\
+            .build()
+
+        assert operation.url_path == '/subsc/user/fake-user-name/fake-subsc-id'
 
 
 if __name__ == '__main__':
