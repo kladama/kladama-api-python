@@ -39,7 +39,7 @@ class OperationIntegrationTest(unittest.TestCase):
         self._create_test_aoi(self.user, self.aoi_id)
 
         # when
-        creation_response = self._create_test_subscription(self.user, self.aoi_id)
+        creation_response = self._create_test_periodic_subscription(self.user, self.aoi_id)
 
         # then
         self.fail_if_error(creation_response)
@@ -68,28 +68,30 @@ class OperationIntegrationTest(unittest.TestCase):
         create_operation = CreateAreaOfInterestBuilder(user, aoi_id)\
             .set_name("Test AOI")\
             .set_category("Test")\
-            .add_feature("type", "FeatureCollection")\
-            .add_feature("name", "Test AoI")\
-            .add_feature("features", {
-                "type": "Feature",
-                "properties": {
-                    "id": "5b8c9e286e63b329cf764c61",
-                    "name": "field-1",
-                    "geometry": {
-                        "type": "MultiPolygon",
-                        "coordinates": [
-                            [
+            .set_features({
+                "type": "FeatureCollection",
+                "name": "Test AoI",
+                "features": {
+                    "type": "Feature",
+                    "properties": {
+                        "id": "5b8c9e286e63b329cf764c61",
+                        "name": "field-1",
+                        "geometry": {
+                            "type": "MultiPolygon",
+                            "coordinates": [
                                 [
-                                    [-60.675417,-21.854207],
-                                    [-60.675394,-21.855348],
-                                    [-60.669532,-21.858799],
-                                    [-60.656133,-21.85887],
-                                    [-60.656118,-21.854208],
-                                    [-60.675417,-21.854207]
+                                    [
+                                        [-60.675417,-21.854207],
+                                        [-60.675394,-21.855348],
+                                        [-60.669532,-21.858799],
+                                        [-60.656133,-21.85887],
+                                        [-60.656118,-21.854208],
+                                        [-60.675417,-21.854207]
+                                    ]
                                 ]
                             ]
-                        ]
-                    },
+                        },
+                    }
                 }
             })\
             .build()
@@ -98,9 +100,8 @@ class OperationIntegrationTest(unittest.TestCase):
         return ctx.execute(create_operation)
 
     @staticmethod
-    def _create_test_subscription(user, aoi_id):
-        create_operation = CreateSubscriptionBuilder(user)\
-            .set_subscription_type("PERIODIC")\
+    def _create_test_periodic_subscription(user, aoi_id):
+        create_operation = CreatePeriodicSubscriptionBuilder(user)\
             .set_variable_name("ecmwf-era5-2m-ar-max-temp")\
             .set_variable_source_name("ECMWF")\
             .set_spatial_operation_name("mean")\
