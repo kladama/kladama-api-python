@@ -70,12 +70,11 @@ class CreateAreaOfInterestOperation(CreateOperation, PutOperation):
         }
 
 
-class CreateSubscriptionOperation(CreateOperation, PostOperation):
+class CreatePeriodicSubscriptionOperation(CreateOperation, PostOperation):
 
     def __init__(
         self,
         user,
-        subscription_type,
         variable_name,
         variable_source_name,
         spatial_operation_name,
@@ -84,7 +83,6 @@ class CreateSubscriptionOperation(CreateOperation, PostOperation):
         CreateOperation.__init__(self)
         PostOperation.__init__(self)
         self._user = user
-        self._subscription_type = subscription_type
         self._variable_name = variable_name
         self._variable_source_name = variable_source_name
         self._spatial_operation_name = spatial_operation_name
@@ -97,7 +95,7 @@ class CreateSubscriptionOperation(CreateOperation, PostOperation):
     @property
     def post_obj(self):
         return {
-            "type": self._subscription_type,
+            "type": "PERIODIC",
             "variable": {
                 "name": self._variable_name,
                 "source": {
@@ -173,12 +171,12 @@ class CreateAreaOfInterestBuilder(OperationBuilder):
         self._category = category
         return self
 
-    def add_feature(self, key: str, value):
-        self._features[key] = value
+    def set_features(self, features):
+        self._features = features
         return self
 
 
-class CreateSubscriptionBuilder(OperationBuilder):
+class CreatePeriodicSubscriptionBuilder(OperationBuilder):
 
     def __init__(self, user):
         OperationBuilder.__init__(self)
@@ -189,19 +187,14 @@ class CreateSubscriptionBuilder(OperationBuilder):
         self._spatial_operation_name = ""
         self._aoi_name = ""
 
-    def build(self) -> CreateSubscriptionOperation:
-        return CreateSubscriptionOperation(
+    def build(self) -> CreatePeriodicSubscriptionOperation:
+        return CreatePeriodicSubscriptionOperation(
             self._user,
-            self._subscription_type,
             self._variable_name,
             self._variable_source_name,
             self._spatial_operation_name,
             self._aoi_name,
         )
-
-    def set_subscription_type(self, subscription_type: str):
-        self._subscription_type = subscription_type
-        return self
 
     def set_variable_name(self, variable_name: str):
         self._variable_name = variable_name

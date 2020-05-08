@@ -82,8 +82,7 @@ class UnitTest(unittest.TestCase):
 
     @staticmethod
     def test_create_subscription_url_path():
-        operation = CreateSubscriptionBuilder("fake-user-name")\
-            .set_subscription_type("fake-subsc-type")\
+        operation = CreatePeriodicSubscriptionBuilder("fake-user-name")\
             .set_variable_name("fake-var-name")\
             .set_variable_source_name("fake-var-src-name")\
             .set_spatial_operation_name("fake-oper-name")\
