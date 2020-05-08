@@ -13,37 +13,38 @@ def _get_sandbox_session():
 
 class OperationIntegrationTest(unittest.TestCase):
 
-    @staticmethod
-    @unittest.skip
-    def test_create_delete_subscription():
-        # given
-        session = _get_sandbox_session()
-        ctx = Context(session)
-        user = "dev"
-        create_operation = CreateSubscriptionBuilder(user)\
-            .set_subscription_type("PERIODIC")\
-            .set_variable_name("ecmwf-era5-2m-ar-max-temp")\
-            .set_variable_source_name("ECMWF")\
-            .set_spatial_operation_name("mean")\
-            .set_aoi_name("test_aoi")\
-            .build()
-
-        # when
-        creation_response = ctx.execute(create_operation)
-
-        # then
-        assert isinstance(creation_response, Success)
-
-        # and given
-        delete_operation = DeleteSubscriptionBuilder(user)\
-            .set_subscription_id(create_operation.result)\
-            .build()
-
-        # and when
-        deletion_response = ctx.execute(delete_operation)
-
-        # then
-        assert isinstance(deletion_response, Success)
+    # TODO: uncomment after having a test aoi
+    # @staticmethod
+    # def test_create_delete_subscription():
+    #     # given
+    #     session = _get_sandbox_session()
+    #     ctx = Context(session)
+    #     user = "dev"
+    #     create_operation = CreateSubscriptionBuilder(user)\
+    #         .set_subscription_type("PERIODIC")\
+    #         .set_variable_name("ecmwf-era5-2m-ar-max-temp")\
+    #         .set_variable_source_name("ECMWF")\
+    #         .set_spatial_operation_name("mean")\
+    #         .set_aoi_name("test_aoi")\
+    #         .build()
+    #
+    #     # when
+    #     creation_response = ctx.execute(create_operation)
+    #
+    #     # then
+    #     assert isinstance(creation_response, Success)
+    #
+    #     # and given
+    #     delete_operation = DeleteSubscriptionBuilder(user)\
+    #         .set_subscription_id(create_operation.result)\
+    #         .build()
+    #
+    #     # and when
+    #     deletion_response = ctx.execute(delete_operation)
+    #
+    #     # then
+    #     assert isinstance(deletion_response, Success)
+    pass
 
 
 class QueryIntegrationTest(unittest.TestCase):
