@@ -1,23 +1,60 @@
 import unittest
 from kladama import *
 from kladama.entities import *
+from kladama.operations import *
 from kladama.queries import Query
 
 
-class IntegrationTest(unittest.TestCase):
+def _get_sandbox_session():
+    env = Environments().sandbox
+    api_token = 'ANYTHING_WORKS_NOW'
+    return authenticate(env, api_token)
 
-    @staticmethod
-    def _get_sandbox_session():
-        env = Environments().sandbox
-        api_token = 'ANYTHING_WORKS_NOW'
-        return authenticate(env, api_token)
+
+class OperationIntegrationTest(unittest.TestCase):
+
+    # TODO: uncomment after having a test aoi
+    # @staticmethod
+    # def test_create_delete_subscription():
+    #     # given
+    #     session = _get_sandbox_session()
+    #     ctx = Context(session)
+    #     user = "dev"
+    #     create_operation = CreateSubscriptionBuilder(user)\
+    #         .set_subscription_type("PERIODIC")\
+    #         .set_variable_name("ecmwf-era5-2m-ar-max-temp")\
+    #         .set_variable_source_name("ECMWF")\
+    #         .set_spatial_operation_name("mean")\
+    #         .set_aoi_name("test_aoi")\
+    #         .build()
+    #
+    #     # when
+    #     creation_response = ctx.execute(create_operation)
+    #
+    #     # then
+    #     assert isinstance(creation_response, Success)
+    #
+    #     # and given
+    #     delete_operation = DeleteSubscriptionBuilder(user)\
+    #         .set_subscription_id(create_operation.result)\
+    #         .build()
+    #
+    #     # and when
+    #     deletion_response = ctx.execute(delete_operation)
+    #
+    #     # then
+    #     assert isinstance(deletion_response, Success)
+    pass
+
+
+class QueryIntegrationTest(unittest.TestCase):
 
     @staticmethod
     def test_areas_of_interest():
         print('Testing Areas of Interest ========================')
 
         # given
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().aoi
 
         # when
@@ -36,7 +73,7 @@ class IntegrationTest(unittest.TestCase):
         print('Testing Areas of Interest for user dev ========================')
 
         # given
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().aoi.by_user('dev')
 
         # when
@@ -55,7 +92,7 @@ class IntegrationTest(unittest.TestCase):
         print('Testing Variables ========================')
 
         # given
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().var
 
         # when
@@ -74,7 +111,7 @@ class IntegrationTest(unittest.TestCase):
         print('Testing Sources ========================')
 
         # given
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().src
 
         # when
@@ -99,7 +136,7 @@ class IntegrationTest(unittest.TestCase):
             'NOAA-STAR',
             'ESA',
         ]
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         ctx = Context(session)
 
         for source_name in source_names:
@@ -122,7 +159,7 @@ class IntegrationTest(unittest.TestCase):
         print('Testing Phenoms ========================')
 
         # given
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().phenom
 
         # when
@@ -141,7 +178,7 @@ class IntegrationTest(unittest.TestCase):
         print('Testing Phenom by not existing name ========================')
 
         # given
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().phenom.by_name('FAKE NAME')
 
         # when
@@ -165,7 +202,7 @@ class IntegrationTest(unittest.TestCase):
             'solar radiation',
             'evaporation',
         ]
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         ctx = Context(session)
 
         for phenom_name in phenom_names:
@@ -188,7 +225,7 @@ class IntegrationTest(unittest.TestCase):
         print('Testing Phenom from ESA and NOAA-CPC ========================')
 
         # given
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().phenom.by_sources('ESA', 'NOAA-CPC')
 
         # when
@@ -206,7 +243,7 @@ class IntegrationTest(unittest.TestCase):
         print('Testing Organizations ========================')
 
         # given
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().org
 
         # when
@@ -225,7 +262,7 @@ class IntegrationTest(unittest.TestCase):
         print('Testing Users ========================')
 
         # given
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().user
 
         # when
@@ -244,7 +281,7 @@ class IntegrationTest(unittest.TestCase):
         print('Testing Subscriptions ========================')
 
         # given
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().subsc
 
         # when
@@ -263,7 +300,7 @@ class IntegrationTest(unittest.TestCase):
         # given
         user = 'ensoag'
         subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().subsc.by_user(user).filter_by(subscription).around(5, '20200105', '20200115')
 
         # when
@@ -279,7 +316,7 @@ class IntegrationTest(unittest.TestCase):
         # given
         user = 'ensoag'
         subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().subsc.by_user(user).filter_by(subscription).last
 
         # when
@@ -295,7 +332,7 @@ class IntegrationTest(unittest.TestCase):
         # given
         user = 'ensoag'
         subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().subsc.by_user(user).filter_by(subscription).last_n(5)
 
         # when
@@ -311,7 +348,7 @@ class IntegrationTest(unittest.TestCase):
         # given
         user = 'ensoag'
         subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().subsc.by_user(user).filter_by(subscription).last_years(5, '20200105', '20200115')
 
         # when
@@ -327,7 +364,7 @@ class IntegrationTest(unittest.TestCase):
         # given
         user = 'ensoag'
         subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().subsc.by_user(user).filter_by(subscription).dates('20200105', '20200115')
 
         # when
@@ -345,7 +382,7 @@ class IntegrationTest(unittest.TestCase):
         subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
         from_ = '20200101'
         to = '20200301'
-        session = IntegrationTest._get_sandbox_session()
+        session = _get_sandbox_session()
         query = Query().subsc.by_user(user).filter_by(subscription).period(from_, to)
 
         # when
