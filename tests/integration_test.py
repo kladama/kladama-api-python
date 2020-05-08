@@ -13,6 +13,59 @@ def _get_sandbox_session():
 
 class OperationIntegrationTest(unittest.TestCase):
 
+    @staticmethod
+    def test_create_delete_subscription():
+        # given
+        session = _get_sandbox_session()
+        ctx = Context(session)
+        user = "dev"
+        aoi_id = "test_aoi"
+        create_operation = CreateAreaOfInterestBuilder(user, aoi_id)\
+            .set_name("Test AOI")\
+            .set_category("Test")\
+            .add_feature("type", "FeatureCollection")\
+            .add_feature("name", "Test AoI")\
+            .add_feature("features", {
+                "type": "Feature",
+                "properties": {
+                    "id": "5b8c9e286e63b329cf764c61",
+                    "name": "field-1",
+                    "geometry": {
+                        "type": "MultiPolygon",
+                        "coordinates": [
+                            [
+                                [
+                                    [-60.675417,-21.854207],
+                                    [-60.675394,-21.855348],
+                                    [-60.669532,-21.858799],
+                                    [-60.656133,-21.85887],
+                                    [-60.656118,-21.854208],
+                                    [-60.675417,-21.854207]
+                                ]
+                            ]
+                        ]
+                    },
+                }
+            })\
+            .build()
+
+        # when
+        creation_response = ctx.execute(create_operation)
+
+        # then
+        assert isinstance(creation_response, Success)
+
+        # and given
+        delete_operation = DeleteAreaOfInterestBuilder(user)\
+            .set_area_of_interest_id(aoi_id)\
+            .build()
+
+        # and when
+        deletion_response = ctx.execute(delete_operation)
+
+        # then
+        assert isinstance(deletion_response, Success)
+
     # TODO: uncomment after having a test aoi
     # @staticmethod
     # def test_create_delete_subscription():
@@ -44,7 +97,6 @@ class OperationIntegrationTest(unittest.TestCase):
     #
     #     # then
     #     assert isinstance(deletion_response, Success)
-    pass
 
 
 class QueryIntegrationTest(unittest.TestCase):

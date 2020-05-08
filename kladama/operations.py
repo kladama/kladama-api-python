@@ -1,5 +1,6 @@
 import abc
 from abc import ABC
+import json
 
 
 # Operations
@@ -20,6 +21,14 @@ class PostOperation(Operation, ABC):
         pass
 
 
+class PutOperation(Operation, ABC):
+
+    @property
+    @abc.abstractmethod
+    def put_obj(self):
+        pass
+
+
 class CreateOperation(Operation, ABC):
 
     def __init__(self):
@@ -28,6 +37,37 @@ class CreateOperation(Operation, ABC):
 
 class DeleteOperation(Operation, ABC):
     pass
+
+
+class CreateAreaOfInterestOperation(CreateOperation, PutOperation):
+
+    def __init__(
+        self,
+        user,
+        aoi_id,
+        name,
+        category,
+        features
+    ):
+        CreateOperation.__init__(self)
+        PutOperation.__init__(self)
+        self._user = user
+        self._aoi_id = aoi_id
+        self._name = name
+        self._category = category
+        self._features = features
+
+    @property
+    def url_path(self):
+        return "/aoi/user/{0}/{1}".format(self._user, self._aoi_id)
+
+    @property
+    def put_obj(self):
+        return {
+            "name": self._name,
+            "category": self._category,
+            "features": self._features if isinstance(self._features, str) else json.dumps(self._features)
+        }
 
 
 class CreateSubscriptionOperation(CreateOperation, PostOperation):
@@ -42,6 +82,7 @@ class CreateSubscriptionOperation(CreateOperation, PostOperation):
         aoi_name,
     ):
         CreateOperation.__init__(self)
+        PostOperation.__init__(self)
         self._user = user
         self._subscription_type = subscription_type
         self._variable_name = variable_name
@@ -72,6 +113,18 @@ class CreateSubscriptionOperation(CreateOperation, PostOperation):
         }
 
 
+class DeleteAreaOfInterestOperation(DeleteOperation):
+
+    def __init__(self, user, aoi_id):
+        DeleteOperation.__init__(self)
+        self._user = user
+        self._aoi_id = aoi_id
+
+    @property
+    def url_path(self) -> str:
+        return "/aoi/user/{0}/{1}".format(self._user, self._aoi_id)
+
+
 class DeleteSubscriptionOperation(DeleteOperation):
 
     def __init__(self, user, subscription_id):
@@ -91,6 +144,38 @@ class OperationBuilder(ABC):
     @abc.abstractmethod
     def build(self) -> Operation:
         pass
+
+
+class CreateAreaOfInterestBuilder(OperationBuilder):
+
+    def __init__(self, user, aoi_id):
+        OperationBuilder.__init__(self)
+        self._user = user
+        self._aoi_id = aoi_id
+        self._name = ""
+        self._category = ""
+        self._features = {}
+
+    def build(self) -> CreateAreaOfInterestOperation:
+        return CreateAreaOfInterestOperation(
+            self._user,
+            self._aoi_id,
+            self._name,
+            self._category,
+            self._features
+        )
+
+    def set_name(self, name: str):
+        self._name = name
+        return self
+
+    def set_category(self, category: str):
+        self._category = category
+        return self
+
+    def add_feature(self, key: str, value):
+        self._features[key] = value
+        return self
 
 
 class CreateSubscriptionBuilder(OperationBuilder):
@@ -132,6 +217,21 @@ class CreateSubscriptionBuilder(OperationBuilder):
 
     def set_aoi_name(self, aoi_name: str):
         self._aoi_name = aoi_name
+        return self
+
+
+class DeleteAreaOfInterestBuilder(OperationBuilder):
+
+    def __init__(self, user):
+        OperationBuilder.__init__(self)
+        self._user = user
+        self._aoi_id = ""
+
+    def build(self) -> DeleteAreaOfInterestOperation:
+        return DeleteAreaOfInterestOperation(self._user, self._aoi_id)
+
+    def set_area_of_interest_id(self, aoi_id: str):
+        self._aoi_id = aoi_id
         return self
 
 
