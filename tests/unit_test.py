@@ -64,6 +64,23 @@ class UnitTest(unittest.TestCase):
                    .url_path == '/subsc/user/user-name/subscription/period/20200101TO20200215'
 
     @staticmethod
+    def test_create_aoi_url_path():
+        operation = CreateAreaOfInterestBuilder("fake-user-name", 'fake-aoi-id')\
+            .set_name("fake-aoi-name")\
+            .set_category("fake-category-name")\
+            .build()
+
+        assert operation.url_path == '/aoi/user/fake-user-name/fake-aoi-id'
+
+    @staticmethod
+    def test_delete_aoi_url_path():
+        operation = DeleteAreaOfInterestBuilder("fake-user-name")\
+            .set_area_of_interest_id("fake-aoi-id")\
+            .build()
+
+        assert operation.url_path == '/aoi/user/fake-user-name/fake-aoi-id'
+
+    @staticmethod
     def test_create_subscription_url_path():
         operation = CreateSubscriptionBuilder("fake-user-name")\
             .set_subscription_type("fake-subsc-type")\

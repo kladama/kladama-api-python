@@ -1,3 +1,4 @@
+import datetime
 import unittest
 from kladama import *
 from kladama.entities import *
@@ -13,13 +14,57 @@ def _get_sandbox_session():
 
 class OperationIntegrationTest(unittest.TestCase):
 
-    @staticmethod
-    def test_create_delete_subscription():
+    user = 'dev'
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        now_timestamp = datetime.datetime.now().timestamp()
+        cls.aoi_id = 'test_aoi_{0}'.format(now_timestamp)
+
+    def test_create_delete_aoi(self):
+        # when
+        creation_response = self._create_test_aoi(self.user, self.aoi_id)
+
+        # then
+        self.fail_if_error(creation_response)
+
+        # and when
+        deletion_response = self._delete_test_aoi(self.user, self.aoi_id)
+
+        # then
+        self.fail_if_error(deletion_response)
+
+    def test_create_delete_subscription(self):
         # given
+        self._create_test_aoi(self.user, self.aoi_id)
+
+        # when
+        creation_response = self._create_test_subscription(self.user, self.aoi_id)
+
+        # then
+        self.fail_if_error(creation_response)
+
+        code = creation_response.result['code']
+        assert isinstance(code, str)
+
+        # and when
+        deletion_response = self._delete_test_subscription(self.user, code)
+
+        # then
+        self.fail_if_error(deletion_response)
+
+        # cleanup
+        self._delete_test_aoi(self.user, self.aoi_id)
+
+    # private members
+
+    @staticmethod
+    def _get_context():
         session = _get_sandbox_session()
-        ctx = Context(session)
-        user = "dev"
-        aoi_id = "test_aoi"
+        return Context(session)
+
+    @staticmethod
+    def _create_test_aoi(user, aoi_id):
         create_operation = CreateAreaOfInterestBuilder(user, aoi_id)\
             .set_name("Test AOI")\
             .set_category("Test")\
@@ -49,54 +94,42 @@ class OperationIntegrationTest(unittest.TestCase):
             })\
             .build()
 
-        # when
-        creation_response = ctx.execute(create_operation)
+        ctx = OperationIntegrationTest._get_context()
+        return ctx.execute(create_operation)
 
-        # then
-        assert isinstance(creation_response, Success)
+    @staticmethod
+    def _create_test_subscription(user, aoi_id):
+        create_operation = CreateSubscriptionBuilder(user)\
+            .set_subscription_type("PERIODIC")\
+            .set_variable_name("ecmwf-era5-2m-ar-max-temp")\
+            .set_variable_source_name("ECMWF")\
+            .set_spatial_operation_name("mean")\
+            .set_aoi_name(aoi_id)\
+            .build()
 
-        # and given
+        ctx = OperationIntegrationTest._get_context()
+        return ctx.execute(create_operation)
+
+    @staticmethod
+    def _delete_test_aoi(user, aoi_id):
         delete_operation = DeleteAreaOfInterestBuilder(user)\
             .set_area_of_interest_id(aoi_id)\
             .build()
 
-        # and when
-        deletion_response = ctx.execute(delete_operation)
+        ctx = OperationIntegrationTest._get_context()
+        return ctx.execute(delete_operation)
 
-        # then
-        assert isinstance(deletion_response, Success)
+    @staticmethod
+    def _delete_test_subscription(user, subsc_id):
+        delete_operation = DeleteSubscriptionBuilder(user)\
+            .set_subscription_id(subsc_id)\
+            .build()
 
-    # TODO: uncomment after having a test aoi
-    # @staticmethod
-    # def test_create_delete_subscription():
-    #     # given
-    #     session = _get_sandbox_session()
-    #     ctx = Context(session)
-    #     user = "dev"
-    #     create_operation = CreateSubscriptionBuilder(user)\
-    #         .set_subscription_type("PERIODIC")\
-    #         .set_variable_name("ecmwf-era5-2m-ar-max-temp")\
-    #         .set_variable_source_name("ECMWF")\
-    #         .set_spatial_operation_name("mean")\
-    #         .set_aoi_name("test_aoi")\
-    #         .build()
-    #
-    #     # when
-    #     creation_response = ctx.execute(create_operation)
-    #
-    #     # then
-    #     assert isinstance(creation_response, Success)
-    #
-    #     # and given
-    #     delete_operation = DeleteSubscriptionBuilder(user)\
-    #         .set_subscription_id(create_operation.result)\
-    #         .build()
-    #
-    #     # and when
-    #     deletion_response = ctx.execute(delete_operation)
-    #
-    #     # then
-    #     assert isinstance(deletion_response, Success)
+        ctx = OperationIntegrationTest._get_context()
+        return ctx.execute(delete_operation)
+
+    def fail_if_error(self, response):
+        self.failIf(isinstance(response, Error), response.__str__())
 
 
 class QueryIntegrationTest(unittest.TestCase):

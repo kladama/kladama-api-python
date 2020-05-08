@@ -59,6 +59,9 @@ class Error:
     def message(self) -> str:
         return self._message
 
+    def __str__(self):
+        return '{0}: {1}'.format(self.code, self.message)
+
 
 class Success:
 
@@ -146,7 +149,7 @@ class Context:
 
         response = requests.post(url, headers=headers, data=json.dumps(data))
         if self._is_successfully_response(response):
-            return Success(response.content)
+            return Success(json.loads(response.content.decode('utf-8')))
 
         return Error(response.status_code, response.content.decode('utf-8'))
 
@@ -155,7 +158,7 @@ class Context:
 
         response = requests.put(url, headers=headers, data=json.dumps(data))
         if self._is_successfully_response(response):
-            return Success(response.content)
+            return Success(json.loads(response.content.decode('utf-8')))
 
         return Error(response.status_code, response.content.decode('utf-8'))
 
