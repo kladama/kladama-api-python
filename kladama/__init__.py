@@ -6,6 +6,7 @@ from kladama.queries import SimpleResultsQuery
 from kladama.entities import BinaryData
 from kladama.operations import Operation
 from kladama.operations import DeleteOperation
+from kladama.operations import PutOperation
 from kladama.operations import PostOperation
 
 
@@ -101,6 +102,9 @@ class Context:
         if isinstance(operation, PostOperation):
             return self._web_post(url, operation.post_obj)
 
+        if isinstance(operation, PutOperation):
+            return self._web_put(url, operation.put_obj)
+
         if isinstance(operation, DeleteOperation):
             return self._web_delete(url)
 
@@ -141,6 +145,15 @@ class Context:
         headers = self._get_web_headers()
 
         response = requests.post(url, headers=headers, data=json.dumps(data))
+        if self._is_successfully_response(response):
+            return Success(response.content)
+
+        return Error(response.status_code, response.content.decode('utf-8'))
+
+    def _web_put(self, url, data):
+        headers = self._get_web_headers()
+
+        response = requests.put(url, headers=headers, data=json.dumps(data))
         if self._is_successfully_response(response):
             return Success(response.content)
 
