@@ -1,31 +1,29 @@
+import abc
+from abc import ABC
+
 import kladama.entities as kle
 
 
 class QueryBase:
 
     @property
+    @abc.abstractmethod
     def entity_meta(self) -> kle.EntityMetadata:
         pass
 
     @property
+    @abc.abstractmethod
     def url_path(self) -> str:
         pass
 
 
-class MultipleResultsQuery(QueryBase):
+class MultipleResultsQuery(QueryBase, ABC):
 
     def __init__(self):
         QueryBase.__init__(self)
 
-    @property
-    def last(self):
-        return LastQuery(self)
 
-    def last_n(self, amount: int):
-        return LastNQuery(self, amount)
-
-
-class SimpleResultsQuery(QueryBase):
+class SimpleResultsQuery(QueryBase, ABC):
 
     def __init__(self, query_base: MultipleResultsQuery):
         QueryBase.__init__(self)
@@ -39,7 +37,7 @@ class SimpleResultsQuery(QueryBase):
 # binary data queries
 
 
-class BinaryDataQuery(QueryBase):
+class BinaryDataQuery(QueryBase, ABC):
 
     def __init__(self, query_base: SimpleResultsQuery):
         QueryBase.__init__(self)
@@ -118,7 +116,7 @@ class PeriodQuery(BinaryDataQuery):
         return '{0}/period/{1}TO{2}'.format(self._query_base.url_path, self._from, self._to)
 
 
-class BinaryAccessibleQuery(QueryBase):
+class BinaryAccessibleQuery(QueryBase, ABC):
 
     def __init__(self, query_base: SimpleResultsQuery):
         QueryBase.__init__(self)
@@ -199,7 +197,7 @@ class ObservedQuery(SubClassedFilterQuery):
         SubClassedFilterQuery.__init__(self, sub_query, 'observed')
 
 
-class PredictableEntityQuery(MultipleResultsQuery):
+class PredictableEntityQuery(MultipleResultsQuery, ABC):
 
     def __init__(self):
         MultipleResultsQuery.__init__(self)
@@ -209,7 +207,7 @@ class PredictableEntityQuery(MultipleResultsQuery):
         return ForecastQuery(self)
 
 
-class ObservableEntityQuery(MultipleResultsQuery):
+class ObservableEntityQuery(MultipleResultsQuery, ABC):
 
     def __init__(self):
         MultipleResultsQuery.__init__(self)
@@ -219,7 +217,7 @@ class ObservableEntityQuery(MultipleResultsQuery):
         return ObservedQuery(self)
 
 
-class ByNameQueryable(MultipleResultsQuery):
+class ByNameQueryable(MultipleResultsQuery, ABC):
 
     def __init__(self):
         MultipleResultsQuery.__init__(self)
@@ -228,7 +226,7 @@ class ByNameQueryable(MultipleResultsQuery):
         return ByNameQuery(self, name_value)
 
 
-class ByPhenomenaQueryable(MultipleResultsQuery):
+class ByPhenomenaQueryable(MultipleResultsQuery, ABC):
 
     def __init__(self):
         MultipleResultsQuery.__init__(self)
@@ -237,7 +235,7 @@ class ByPhenomenaQueryable(MultipleResultsQuery):
         return ByPhenomenaQuery(self, phenomena)
 
 
-class BySourceQueryable(MultipleResultsQuery):
+class BySourceQueryable(MultipleResultsQuery, ABC):
 
     def __init__(self):
         MultipleResultsQuery.__init__(self)
@@ -246,7 +244,7 @@ class BySourceQueryable(MultipleResultsQuery):
         return BySourceQuery(self, sources)
 
 
-class ByUserQueryable(MultipleResultsQuery):
+class ByUserQueryable(MultipleResultsQuery, ABC):
 
     def __init__(self):
         MultipleResultsQuery.__init__(self)
@@ -258,7 +256,7 @@ class ByUserQueryable(MultipleResultsQuery):
 # filters
 
 
-class FilterQuery(QueryBase):
+class FilterQuery(QueryBase, ABC):
 
     def __init__(self, query_base, filter_value):
         QueryBase.__init__(self)
