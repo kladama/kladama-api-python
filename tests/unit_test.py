@@ -1,6 +1,5 @@
 import unittest
-from kladama.operations import Operations
-from kladama.queries import Query
+from kladama import *
 
 
 class UnitTest(unittest.TestCase):
