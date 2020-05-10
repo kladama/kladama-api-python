@@ -17,7 +17,7 @@ pip install kladama-api
 First, you must to authenticate through a <em>API Token</em> that must be provided to you. This authentication process returns a session object that must be used to create a `Context` object.
 
 ```python
-# retrieve all areas of interest by user
+# retrieve all available variables
 
 import kladama as kld
 
@@ -25,13 +25,14 @@ env = kld.Environments().prod
 api_token = '<your provided token>'
 session = kld.authenticate(env, api_token)
 
-query = kld.Query().aoi.by_user('<your user>')
-aois = kld.Context(session).get(query)
-for aoi in aois:
-    print(aoi.name, '-', aoi.description, 'in', aoi.link)
+query = kld.Query().var
+
+variables = kld.Context(session).get(query)
+for var in variables:
+    print(var.name, '-', var.description, 'in', var.link)
 ```
 
-## How to create an area of interest
+## How to add an area of interest
 
 ```python
 # create a periodic subscription
@@ -43,12 +44,12 @@ api_token = '<your provided token>'
 session = kld.authenticate(env, api_token)
 
 operation = kld.Operations()\
-    .create_aoi\
-    .set_user('<your user>')\
-    .set_aoi_id('<aoi id>')\
-    .set_name("Test AOI")\
-    .set_category("Test")\
-    .set_features({
+    .add_aoi\
+    .for_user('<your user>')\
+    .with_aoi_id('<aoi id>')\
+    .with_name("Test AOI")\
+    .with_category("Test")\
+    .with_features({
         "type": "FeatureCollection",
         "name": "Test AoI",
         "features": {
@@ -80,7 +81,7 @@ if not isinstance(response, kld.Success):
     print(response.__str__())
 ```
 
-## How to create a subscription
+## How to subscribe to a variable
 
 ```python
 # create a periodic subscription
@@ -92,16 +93,41 @@ api_token = '<your provided token>'
 session = kld.authenticate(env, api_token)
 
 operation = kld.Operations()\
-    .create_periodic_subsc\
-    .set_user('<your user>')\
-    .set_variable_name('ecmwf-era5-2m-ar-max-temp')\
-    .set_variable_source_name('ECMWF')\
-    .set_spatial_operation_name('mean')\
-    .set_aoi_name('<aoi name>')
+    .periodic_subsc\
+    .for_user('<your user>')\
+    .with_variable('ecmwf-era5-2m-ar-max-temp')\
+    .with_source('ECMWF')\
+    .with_operation('mean')\
+    .with_aoi('<aoi name>')
 
 response = kld.Context(session).execute(operation)
 if isinstance(response, kld.Success):
     code = response.result['code'] # the code is the id of the subscription
 else:
     print(response.__str__())
+```
+
+## How to get a subscription
+
+```python
+# create get subscription info
+
+import base64 as b64
+import kladama as kld
+
+env = kld.Environments().prod
+api_token = '<your provided token>'
+session = kld.authenticate(env, api_token)
+
+query = kld.Query()\
+    .subsc\
+    .by_user('<your user>')\
+    .filter_by('<subscription code>')\
+    .last
+
+response = kld.Context(session).get(query)
+if isinstance(response, kld.Error):
+    print(response.__str__())
+else:
+    print('Name: ', response.name, ' Binary Content:\n', b64.b64encode(response.content).decode('utf-8'))
 ```

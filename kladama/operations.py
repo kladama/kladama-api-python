@@ -167,23 +167,23 @@ class CreateAreaOfInterestBuilder(OperationBuilder):
             self._features
         )
 
-    def set_user(self, user: str):
+    def for_user(self, user: str):
         self._user = user
         return self
 
-    def set_aoi_id(self, aoi_id: str):
+    def with_aoi_id(self, aoi_id: str):
         self._aoi_id = aoi_id
         return self
 
-    def set_name(self, name: str):
+    def with_name(self, name: str):
         self._name = name
         return self
 
-    def set_category(self, category: str):
+    def with_category(self, category: str):
         self._category = category
         return self
 
-    def set_features(self, features):
+    def with_features(self, features):
         self._features = features
         return self
 
@@ -208,23 +208,23 @@ class CreatePeriodicSubscriptionBuilder(OperationBuilder):
             self._aoi_name,
         )
 
-    def set_user(self, user: str):
+    def for_user(self, user: str):
         self._user = user
         return self
 
-    def set_variable_name(self, variable_name: str):
+    def with_variable(self, variable_name: str):
         self._variable_name = variable_name
         return self
 
-    def set_variable_source_name(self, variable_source_name: str):
+    def with_source(self, variable_source_name: str):
         self._variable_source_name = variable_source_name
         return self
 
-    def set_spatial_operation_name(self, spatial_operation_name: str):
+    def with_operation(self, spatial_operation_name: str):
         self._spatial_operation_name = spatial_operation_name
         return self
 
-    def set_aoi_name(self, aoi_name: str):
+    def with_aoi(self, aoi_name: str):
         self._aoi_name = aoi_name
         return self
 
@@ -239,11 +239,11 @@ class DeleteAreaOfInterestBuilder(OperationBuilder):
     def build(self) -> DeleteAreaOfInterestOperation:
         return DeleteAreaOfInterestOperation(self._user, self._aoi_id)
 
-    def set_user(self, user: str):
+    def from_user(self, user: str):
         self._user = user
         return self
 
-    def set_area_of_interest_id(self, aoi_id: str):
+    def with_aoi(self, aoi_id: str):
         self._aoi_id = aoi_id
         return self
 
@@ -258,10 +258,10 @@ class DeleteSubscriptionBuilder(OperationBuilder):
     def build(self) -> DeleteSubscriptionOperation:
         return DeleteSubscriptionOperation(self._user, self._subscription_id)
 
-    def set_user(self, user: str):
+    def from_user(self, user: str):
         self._user = user
         return self
 
-    def set_subscription_id(self, subscription_id: str):
+    def with_subsc(self, subscription_id: str):
         self._subscription_id = subscription_id
         return self
