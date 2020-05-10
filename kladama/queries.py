@@ -407,7 +407,7 @@ class VariableQuery(
         PredictableEntityQuery.__init__(self)
 
 
-# Query accessor
+# Query accessory
 
 class Query:
 

@@ -2,7 +2,7 @@ import datetime
 import unittest
 from kladama import *
 from kladama.entities import *
-from kladama.operations import *
+from kladama.operations import Operations
 from kladama.queries import Query
 
 
@@ -65,7 +65,10 @@ class OperationIntegrationTest(unittest.TestCase):
 
     @staticmethod
     def _create_test_aoi(user, aoi_id):
-        create_operation = CreateAreaOfInterestBuilder(user, aoi_id)\
+        create_operation = Operations()\
+            .create_aoi\
+            .set_user(user)\
+            .set_aoi_id(aoi_id)\
             .set_name("Test AOI")\
             .set_category("Test")\
             .set_features({
@@ -93,38 +96,40 @@ class OperationIntegrationTest(unittest.TestCase):
                         },
                     }
                 }
-            })\
-            .build()
+            })
 
         ctx = OperationIntegrationTest._get_context()
         return ctx.execute(create_operation)
 
     @staticmethod
     def _create_test_periodic_subscription(user, aoi_id):
-        create_operation = CreatePeriodicSubscriptionBuilder(user)\
+        create_operation = Operations()\
+            .create_periodic_subsc\
+            .set_user(user)\
             .set_variable_name("ecmwf-era5-2m-ar-max-temp")\
             .set_variable_source_name("ECMWF")\
             .set_spatial_operation_name("mean")\
-            .set_aoi_name(aoi_id)\
-            .build()
+            .set_aoi_name(aoi_id)
 
         ctx = OperationIntegrationTest._get_context()
         return ctx.execute(create_operation)
 
     @staticmethod
     def _delete_test_aoi(user, aoi_id):
-        delete_operation = DeleteAreaOfInterestBuilder(user)\
-            .set_area_of_interest_id(aoi_id)\
-            .build()
+        delete_operation = Operations()\
+            .delete_aoi\
+            .set_user(user)\
+            .set_area_of_interest_id(aoi_id)
 
         ctx = OperationIntegrationTest._get_context()
         return ctx.execute(delete_operation)
 
     @staticmethod
     def _delete_test_subscription(user, subsc_id):
-        delete_operation = DeleteSubscriptionBuilder(user)\
-            .set_subscription_id(subsc_id)\
-            .build()
+        delete_operation = Operations()\
+            .delete_subsc\
+            .set_user(user)\
+            .set_subscription_id(subsc_id)
 
         ctx = OperationIntegrationTest._get_context()
         return ctx.execute(delete_operation)
