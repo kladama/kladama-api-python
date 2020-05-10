@@ -63,12 +63,12 @@ class OperationIntegrationTest(unittest.TestCase):
     @staticmethod
     def _create_test_aoi(user, aoi_id):
         create_operation = Operations()\
-            .create_aoi\
-            .set_user(user)\
-            .set_aoi_id(aoi_id)\
-            .set_name("Test AOI")\
-            .set_category("Test")\
-            .set_features({
+            .add_aoi\
+            .for_user(user)\
+            .with_aoi_id(aoi_id)\
+            .with_name("Test AOI")\
+            .with_category("Test")\
+            .with_features({
                 "type": "FeatureCollection",
                 "name": "Test AoI",
                 "features": {
@@ -101,12 +101,12 @@ class OperationIntegrationTest(unittest.TestCase):
     @staticmethod
     def _create_test_periodic_subscription(user, aoi_id):
         create_operation = Operations()\
-            .create_periodic_subsc\
-            .set_user(user)\
-            .set_variable_name("ecmwf-era5-2m-ar-max-temp")\
-            .set_variable_source_name("ECMWF")\
-            .set_spatial_operation_name("mean")\
-            .set_aoi_name(aoi_id)
+            .periodic_subsc\
+            .for_user(user)\
+            .with_variable("ecmwf-era5-2m-ar-max-temp")\
+            .with_source("ECMWF")\
+            .with_operation("mean")\
+            .with_aoi(aoi_id)
 
         ctx = OperationIntegrationTest._get_context()
         return ctx.execute(create_operation)
@@ -115,8 +115,8 @@ class OperationIntegrationTest(unittest.TestCase):
     def _delete_test_aoi(user, aoi_id):
         delete_operation = Operations()\
             .delete_aoi\
-            .set_user(user)\
-            .set_area_of_interest_id(aoi_id)
+            .from_user(user)\
+            .with_aoi(aoi_id)
 
         ctx = OperationIntegrationTest._get_context()
         return ctx.execute(delete_operation)
@@ -124,9 +124,9 @@ class OperationIntegrationTest(unittest.TestCase):
     @staticmethod
     def _delete_test_subscription(user, subsc_id):
         delete_operation = Operations()\
-            .delete_subsc\
-            .set_user(user)\
-            .set_subscription_id(subsc_id)
+            .unsubscribe\
+            .from_user(user)\
+            .with_subsc(subsc_id)
 
         ctx = OperationIntegrationTest._get_context()
         return ctx.execute(delete_operation)

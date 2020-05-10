@@ -248,11 +248,11 @@ class Query:
 class Operations:
 
     @property
-    def create_aoi(self):
+    def add_aoi(self):
         return CreateAreaOfInterestBuilder()
 
     @property
-    def create_periodic_subsc(self):
+    def periodic_subsc(self):
         return CreatePeriodicSubscriptionBuilder()
 
     @property
@@ -260,5 +260,5 @@ class Operations:
         return DeleteAreaOfInterestBuilder()
 
     @property
-    def delete_subsc(self):
+    def unsubscribe(self):
         return DeleteSubscriptionBuilder()
