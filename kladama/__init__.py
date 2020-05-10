@@ -4,7 +4,7 @@ import re
 from kladama.queries import BinaryDataQuery
 from kladama.queries import SimpleResultsQuery
 from kladama.entities import BinaryData
-from kladama.operations import Operation
+from kladama.operations import OperationBuilder
 from kladama.operations import DeleteOperation
 from kladama.operations import PutOperation
 from kladama.operations import PostOperation
@@ -99,7 +99,8 @@ class Context:
 
         return self._get_entities(query)
 
-    def execute(self, operation: Operation):
+    def execute(self, operation_builder: OperationBuilder):
+        operation = operation_builder.build()
         url = self.env.get_url_from(operation.url_path)
 
         if isinstance(operation, PostOperation):

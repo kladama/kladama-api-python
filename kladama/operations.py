@@ -143,13 +143,17 @@ class OperationBuilder(ABC):
     def build(self) -> Operation:
         pass
 
+    @property
+    def url_path(self) -> str:
+        return self.build().url_path
+
 
 class CreateAreaOfInterestBuilder(OperationBuilder):
 
-    def __init__(self, user, aoi_id):
+    def __init__(self):
         OperationBuilder.__init__(self)
-        self._user = user
-        self._aoi_id = aoi_id
+        self._user = ""
+        self._aoi_id = ""
         self._name = ""
         self._category = ""
         self._features = {}
@@ -162,6 +166,14 @@ class CreateAreaOfInterestBuilder(OperationBuilder):
             self._category,
             self._features
         )
+
+    def set_user(self, user: str):
+        self._user = user
+        return self
+
+    def set_aoi_id(self, aoi_id: str):
+        self._aoi_id = aoi_id
+        return self
 
     def set_name(self, name: str):
         self._name = name
@@ -178,9 +190,9 @@ class CreateAreaOfInterestBuilder(OperationBuilder):
 
 class CreatePeriodicSubscriptionBuilder(OperationBuilder):
 
-    def __init__(self, user):
+    def __init__(self):
         OperationBuilder.__init__(self)
-        self._user = user
+        self._user = ""
         self._subscription_type = ""
         self._variable_name = ""
         self._variable_source_name = ""
@@ -195,6 +207,10 @@ class CreatePeriodicSubscriptionBuilder(OperationBuilder):
             self._spatial_operation_name,
             self._aoi_name,
         )
+
+    def set_user(self, user: str):
+        self._user = user
+        return self
 
     def set_variable_name(self, variable_name: str):
         self._variable_name = variable_name
@@ -215,13 +231,17 @@ class CreatePeriodicSubscriptionBuilder(OperationBuilder):
 
 class DeleteAreaOfInterestBuilder(OperationBuilder):
 
-    def __init__(self, user):
+    def __init__(self):
         OperationBuilder.__init__(self)
-        self._user = user
+        self._user = ""
         self._aoi_id = ""
 
     def build(self) -> DeleteAreaOfInterestOperation:
         return DeleteAreaOfInterestOperation(self._user, self._aoi_id)
+
+    def set_user(self, user: str):
+        self._user = user
+        return self
 
     def set_area_of_interest_id(self, aoi_id: str):
         self._aoi_id = aoi_id
@@ -230,14 +250,39 @@ class DeleteAreaOfInterestBuilder(OperationBuilder):
 
 class DeleteSubscriptionBuilder(OperationBuilder):
 
-    def __init__(self, user):
+    def __init__(self):
         OperationBuilder.__init__(self)
-        self._user = user
+        self._user = ""
         self._subscription_id = ""
 
     def build(self) -> DeleteSubscriptionOperation:
         return DeleteSubscriptionOperation(self._user, self._subscription_id)
 
+    def set_user(self, user: str):
+        self._user = user
+        return self
+
     def set_subscription_id(self, subscription_id: str):
         self._subscription_id = subscription_id
         return self
+
+
+# Operation accessory
+
+class Operations:
+
+    @property
+    def create_aoi(self):
+        return CreateAreaOfInterestBuilder()
+
+    @property
+    def create_periodic_subsc(self):
+        return CreatePeriodicSubscriptionBuilder()
+
+    @property
+    def delete_aoi(self):
+        return DeleteAreaOfInterestBuilder()
+
+    @property
+    def delete_subsc(self):
+        return DeleteSubscriptionBuilder()

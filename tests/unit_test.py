@@ -1,5 +1,5 @@
 import unittest
-from kladama.operations import *
+from kladama.operations import Operations
 from kladama.queries import Query
 
 
@@ -65,37 +65,42 @@ class UnitTest(unittest.TestCase):
 
     @staticmethod
     def test_create_aoi_url_path():
-        operation = CreateAreaOfInterestBuilder("fake-user-name", 'fake-aoi-id')\
+        operation = Operations()\
+            .create_aoi\
+            .set_user("fake-user-name")\
+            .set_aoi_id("fake-aoi-id")\
             .set_name("fake-aoi-name")\
-            .set_category("fake-category-name")\
-            .build()
+            .set_category("fake-category-name")
 
         assert operation.url_path == '/aoi/user/fake-user-name/fake-aoi-id'
 
     @staticmethod
     def test_delete_aoi_url_path():
-        operation = DeleteAreaOfInterestBuilder("fake-user-name")\
-            .set_area_of_interest_id("fake-aoi-id")\
-            .build()
+        operation = Operations()\
+            .delete_aoi\
+            .set_user("fake-user-name")\
+            .set_area_of_interest_id("fake-aoi-id")
 
         assert operation.url_path == '/aoi/user/fake-user-name/fake-aoi-id'
 
     @staticmethod
     def test_create_subscription_url_path():
-        operation = CreatePeriodicSubscriptionBuilder("fake-user-name")\
+        operation = Operations()\
+            .create_periodic_subsc\
+            .set_user("fake-user-name")\
             .set_variable_name("fake-var-name")\
             .set_variable_source_name("fake-var-src-name")\
             .set_spatial_operation_name("fake-oper-name")\
-            .set_aoi_name("fake-aoi-name")\
-            .build()
+            .set_aoi_name("fake-aoi-name")
 
         assert operation.url_path == '/subsc/user/fake-user-name'
 
     @staticmethod
     def test_delete_subscription_url_path():
-        operation = DeleteSubscriptionBuilder("fake-user-name")\
-            .set_subscription_id("fake-subsc-id")\
-            .build()
+        operation = Operations()\
+            .delete_subsc\
+            .set_user("fake-user-name")\
+            .set_subscription_id("fake-subsc-id")
 
         assert operation.url_path == '/subsc/user/fake-user-name/fake-subsc-id'
 
