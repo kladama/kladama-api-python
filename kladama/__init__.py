@@ -1,13 +1,9 @@
 import json
 import requests
 import re
-from kladama.queries import BinaryDataQuery
-from kladama.queries import SimpleResultsQuery
-from kladama.entities import BinaryData
-from kladama.operations import OperationBuilder
-from kladama.operations import DeleteOperation
-from kladama.operations import PutOperation
-from kladama.operations import PostOperation
+from kladama.queries import *
+from kladama.entities import *
+from kladama.operations import *
 
 
 class Environment:
@@ -214,3 +210,55 @@ class Context:
             'name': filename_match.group(1),
             'content': response.content
         })
+
+
+# Accessories
+
+class Query:
+
+    @property
+    def aoi(self):
+        return AreaOfInterestQuery()
+
+    @property
+    def phenom(self):
+        return PhenomenaQuery()
+
+    @property
+    def org(self):
+        return OrganizationQuery()
+
+    @property
+    def subsc(self):
+        return SubscriptionQuery()
+
+    @property
+    def src(self):
+        return SourceQuery()
+
+    @property
+    def user(self):
+        return UserQuery()
+
+    @property
+    def var(self):
+        return VariableQuery()
+
+
+class Operations:
+
+    @property
+    def create_aoi(self):
+        return CreateAreaOfInterestBuilder()
+
+    @property
+    def create_periodic_subsc(self):
+        return CreatePeriodicSubscriptionBuilder()
+
+    @property
+    def delete_aoi(self):
+        return DeleteAreaOfInterestBuilder()
+
+    @property
+    def delete_subsc(self):
+        return DeleteSubscriptionBuilder()

@@ -1,9 +1,6 @@
 import datetime
 import unittest
 from kladama import *
-from kladama.entities import *
-from kladama.operations import Operations
-from kladama.queries import Query
 
 
 def _get_sandbox_session():

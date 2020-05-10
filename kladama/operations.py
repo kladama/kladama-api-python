@@ -265,24 +265,3 @@ class DeleteSubscriptionBuilder(OperationBuilder):
     def set_subscription_id(self, subscription_id: str):
         self._subscription_id = subscription_id
         return self
-
-
-# Operation accessory
-
-class Operations:
-
-    @property
-    def create_aoi(self):
-        return CreateAreaOfInterestBuilder()
-
-    @property
-    def create_periodic_subsc(self):
-        return CreatePeriodicSubscriptionBuilder()
-
-    @property
-    def delete_aoi(self):
-        return DeleteAreaOfInterestBuilder()
-
-    @property
-    def delete_subsc(self):
-        return DeleteSubscriptionBuilder()

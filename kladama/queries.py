@@ -405,36 +405,3 @@ class VariableQuery(
         BySourceQueryable.__init__(self)
         ObservableEntityQuery.__init__(self)
         PredictableEntityQuery.__init__(self)
-
-
-# Query accessory
-
-class Query:
-
-    @property
-    def aoi(self):
-        return AreaOfInterestQuery()
-
-    @property
-    def phenom(self):
-        return PhenomenaQuery()
-
-    @property
-    def org(self):
-        return OrganizationQuery()
-
-    @property
-    def subsc(self):
-        return SubscriptionQuery()
-
-    @property
-    def src(self):
-        return SourceQuery()
-
-    @property
-    def user(self):
-        return UserQuery()
-
-    @property
-    def var(self):
-        return VariableQuery()
