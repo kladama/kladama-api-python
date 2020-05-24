@@ -47,7 +47,7 @@ operation = kld.Operations()\
     .add_aoi\
     .for_user('<your user>')\
     .with_aoi_id('<aoi id>')\
-    .with_name("Test AOI")\
+    .with_description("Test AOI")\
     .with_category("Test")\
     .with_features({
         "type": "FeatureCollection",
@@ -80,6 +80,71 @@ response = kld.Context(session).execute(operation)
 if not isinstance(response, kld.Success):
     print(response.__str__())
 ```
+
+## How to check an AoI
+
+```python
+# create get subscription info
+
+import kladama as kld
+
+env = kld.Environments().prod
+api_token = '<your provided token>'
+session = kld.authenticate(env, api_token)
+
+query = kld.Helpers\
+            .check_aoi({
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "id": "5b8c9e286e63b329cf764c61",
+                            "name": "Jerovia - D9"
+                        },
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [
+                                [
+                                    [
+                                        -60.675417,
+                                        -21.854207
+                                    ],
+                                    [
+                                        -60.675394,
+                                        -21.855348
+                                    ],
+                                    [
+                                        -60.669532,
+                                        -21.858799
+                                    ],
+                                    [
+                                        -60.656133,
+                                        -21.85887
+                                    ],
+                                    [
+                                        -60.656118,
+                                        -21.854208
+                                    ],
+                                    [
+                                        -60.675417,
+                                        -21.854207
+                                    ]
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            })
+
+response = kld.Context(session).get(query)
+if isinstance(response, kld.Error):
+    print(response.__str__())
+else:
+    for message in response['messages']:
+        print(message)
+```
+
 
 ## How to subscribe to a variable
 

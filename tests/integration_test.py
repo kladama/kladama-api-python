@@ -10,7 +10,6 @@ def _get_sandbox_session():
 
 
 class OperationIntegrationTest(unittest.TestCase):
-
     user = 'dev'
 
     @classmethod
@@ -62,50 +61,295 @@ class OperationIntegrationTest(unittest.TestCase):
 
     @staticmethod
     def _create_test_aoi(user, aoi_id):
-        create_operation = Operations()\
-            .add_aoi\
-            .for_user(user)\
-            .with_aoi_id(aoi_id)\
-            .with_name("Test AOI")\
-            .with_category("Test")\
+        create_operation = Operations() \
+            .add_aoi \
+            .for_user(user) \
+            .with_aoi_id(aoi_id) \
+            .with_description("Test AOI") \
+            .with_category("Test") \
             .with_features({
                 "type": "FeatureCollection",
-                "name": "Test AoI",
-                "features": {
-                    "type": "Feature",
-                    "properties": {
-                        "id": "5b8c9e286e63b329cf764c61",
-                        "name": "field-1",
+                "name": "SAM_Municipalities",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "id": "0",
+                            "name": "n.a2",
+                            "Country": "Uruguay",
+                            "State": "Artigas"
+                        },
                         "geometry": {
-                            "type": "MultiPolygon",
+                            "type": "Polygon",
                             "coordinates": [
                                 [
                                     [
-                                        [-60.675417,-21.854207],
-                                        [-60.675394,-21.855348],
-                                        [-60.669532,-21.858799],
-                                        [-60.656133,-21.85887],
-                                        [-60.656118,-21.854208],
-                                        [-60.675417,-21.854207]
+                                        -56.97458267255223,
+                                        -30.350532532150567
+                                    ],
+                                    [
+                                        -56.933055878126254,
+                                        -30.33943557709017
+                                    ],
+                                    [
+                                        -56.891361236931516,
+                                        -30.34736061070356
+                                    ],
+                                    [
+                                        -56.879180908172316,
+                                        -30.363948821680708
+                                    ],
+                                    [
+                                        -56.760517120568636,
+                                        -30.33959579490994
+                                    ],
+                                    [
+                                        -56.688446045348655,
+                                        -30.39470672563482
+                                    ],
+                                    [
+                                        -56.65667343183338,
+                                        -30.395431518949408
+                                    ],
+                                    [
+                                        -56.64161300623522,
+                                        -30.31474876424403
+                                    ],
+                                    [
+                                        -56.61774826007411,
+                                        -30.297622680442316
+                                    ],
+                                    [
+                                        -56.6072273252808,
+                                        -30.26715278617212
+                                    ],
+                                    [
+                                        -56.63636779763573,
+                                        -30.26306152377026
+                                    ],
+                                    [
+                                        -56.62702178932409,
+                                        -30.23999786401015
+                                    ],
+                                    [
+                                        -56.66174697874004,
+                                        -30.219617843288802
+                                    ],
+                                    [
+                                        -56.643627166560464,
+                                        -30.202171325646134
+                                    ],
+                                    [
+                                        -56.69649505590206,
+                                        -30.20267677341434
+                                    ],
+                                    [
+                                        -56.70510864284955,
+                                        -30.174560547031604
+                                    ],
+                                    [
+                                        -56.77487564059828,
+                                        -30.163682937517535
+                                    ],
+                                    [
+                                        -56.78038024874945,
+                                        -30.12800979611518
+                                    ],
+                                    [
+                                        -56.802124023005206,
+                                        -30.119579315632848
+                                    ],
+                                    [
+                                        -56.80290222166013,
+                                        -30.10393142679385
+                                    ],
+                                    [
+                                        -56.87690353427064,
+                                        -30.085393905604235
+                                    ],
+                                    [
+                                        -56.901260375965535,
+                                        -30.106927871623952
+                                    ],
+                                    [
+                                        -56.91654586769761,
+                                        -30.09138870272642
+                                    ],
+                                    [
+                                        -56.978954314789746,
+                                        -30.093467712265067
+                                    ],
+                                    [
+                                        -56.99183273329396,
+                                        -30.079689025628
+                                    ],
+                                    [
+                                        -57.04071426435178,
+                                        -30.0986270904678
+                                    ],
+                                    [
+                                        -57.06833648683937,
+                                        -30.08774375946689
+                                    ],
+                                    [
+                                        -57.08846282949594,
+                                        -30.119001388802985
+                                    ],
+                                    [
+                                        -57.10939407347769,
+                                        -30.111831665199134
+                                    ],
+                                    [
+                                        -57.109123230053,
+                                        -30.139402389808424
+                                    ],
+                                    [
+                                        -57.127094269185136,
+                                        -30.143037795757607
+                                    ],
+                                    [
+                                        -57.165214538719965,
+                                        -30.1998348240179
+                                    ],
+                                    [
+                                        -57.157833099417985,
+                                        -30.23190689109009
+                                    ],
+                                    [
+                                        -57.202816009151434,
+                                        -30.277204513177708
+                                    ],
+                                    [
+                                        -57.098823547368795,
+                                        -30.27325248741232
+                                    ],
+                                    [
+                                        -57.07741165172632,
+                                        -30.32739829989157
+                                    ],
+                                    [
+                                        -56.995590209620445,
+                                        -30.32661056482567
+                                    ],
+                                    [
+                                        -56.97458267255223,
+                                        -30.350532532150567
                                     ]
                                 ]
                             ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "id": "1",
+                            "name": "n.a3",
+                            "Country": "Uruguay",
+                            "State": "Artigas"
                         },
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [
+                                [
+                                    [
+                                        -57.41722488362143,
+                                        -30.29360008217799
+                                    ],
+                                    [
+                                        -57.424922942739556,
+                                        -30.272167206251538
+                                    ],
+                                    [
+                                        -57.46327209513106,
+                                        -30.26243782054894
+                                    ],
+                                    [
+                                        -57.4992294312932,
+                                        -30.279132843106197
+                                    ],
+                                    [
+                                        -57.537673950492376,
+                                        -30.27181625391694
+                                    ],
+                                    [
+                                        -57.55657196042762,
+                                        -30.254777907974017
+                                    ],
+                                    [
+                                        -57.56108093273883,
+                                        -30.20615386990511
+                                    ],
+                                    [
+                                        -57.63419342019017,
+                                        -30.1765785213816
+                                    ],
+                                    [
+                                        -57.64294815033685,
+                                        -30.202402115065524
+                                    ],
+                                    [
+                                        -57.60689926139173,
+                                        -30.24848175073214
+                                    ],
+                                    [
+                                        -57.63539123531723,
+                                        -30.338024139702213
+                                    ],
+                                    [
+                                        -57.78306579594971,
+                                        -30.43265151945201
+                                    ],
+                                    [
+                                        -57.77141189614207,
+                                        -30.429557800352143
+                                    ],
+                                    [
+                                        -57.76450347865256,
+                                        -30.45383262657441
+                                    ],
+                                    [
+                                        -57.67060089131803,
+                                        -30.450849533079463
+                                    ],
+                                    [
+                                        -57.63094711311874,
+                                        -30.501667023014647
+                                    ],
+                                    [
+                                        -57.562702179262146,
+                                        -30.5161724086297
+                                    ],
+                                    [
+                                        -57.558231353494136,
+                                        -30.455635071201527
+                                    ],
+                                    [
+                                        -57.51711273166717,
+                                        -30.374963760369212
+                                    ],
+                                    [
+                                        -57.41722488362143,
+                                        -30.29360008217799
+                                    ]
+                                ]
+                            ]
+                        }
                     }
-                }
-            })
+                ]
+            }
+        )
 
         ctx = OperationIntegrationTest._get_context()
         return ctx.execute(create_operation)
 
     @staticmethod
     def _create_test_periodic_subscription(user, aoi_id):
-        create_operation = Operations()\
-            .periodic_subsc\
-            .for_user(user)\
-            .with_variable("ecmwf-era5-2m-ar-max-temp")\
-            .with_source("ECMWF")\
-            .with_operation("mean")\
+        create_operation = Operations() \
+            .periodic_subsc \
+            .for_user(user) \
+            .with_variable("D1_2M_MAX_TEMP") \
+            .with_source("ECMWF") \
+            .with_operation("MEAN") \
             .with_aoi(aoi_id)
 
         ctx = OperationIntegrationTest._get_context()
@@ -113,9 +357,9 @@ class OperationIntegrationTest(unittest.TestCase):
 
     @staticmethod
     def _delete_test_aoi(user, aoi_id):
-        delete_operation = Operations()\
-            .delete_aoi\
-            .from_user(user)\
+        delete_operation = Operations() \
+            .delete_aoi \
+            .from_user(user) \
             .with_aoi(aoi_id)
 
         ctx = OperationIntegrationTest._get_context()
@@ -123,9 +367,9 @@ class OperationIntegrationTest(unittest.TestCase):
 
     @staticmethod
     def _delete_test_subscription(user, subsc_id):
-        delete_operation = Operations()\
-            .unsubscribe\
-            .from_user(user)\
+        delete_operation = Operations() \
+            .unsubscribe \
+            .from_user(user) \
             .with_subsc(subsc_id)
 
         ctx = OperationIntegrationTest._get_context()
@@ -481,6 +725,177 @@ class QueryIntegrationTest(unittest.TestCase):
         assert subscription in entity.name
         assert '{0}_TO_{1}'.format(from_, to) in entity.name
         assert len(entity.content) > 0
+
+
+class HelperTest(unittest.TestCase):
+
+    @staticmethod
+    def test_check_aoi():
+        # given
+        session = _get_sandbox_session()
+        helper = Helpers\
+            .check_aoi({
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "id": "5b8c9e286e63b329cf764c61",
+                            "name": "Jerovia - D9"
+                        },
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [
+                                [
+                                    [
+                                        -60.675417,
+                                        -21.854207
+                                    ],
+                                    [
+                                        -60.675394,
+                                        -21.855348
+                                    ],
+                                    [
+                                        -60.669532,
+                                        -21.858799
+                                    ],
+                                    [
+                                        -60.656133,
+                                        -21.85887
+                                    ],
+                                    [
+                                        -60.656118,
+                                        -21.854208
+                                    ],
+                                    [
+                                        -60.675417,
+                                        -21.854207
+                                    ]
+                                ]
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "id": "5b8c9d296e63b329cf764c5f",
+                            "name": "Jerovia - D7"
+                        },
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [
+                                [
+                                    [
+                                        -60.663761,
+                                        -21.859673
+                                    ],
+                                    [
+                                        -60.663722,
+                                        -21.864248
+                                    ],
+                                    [
+                                        -60.65605,
+                                        -21.864169
+                                    ],
+                                    [
+                                        -60.656126,
+                                        -21.859664
+                                    ],
+                                    [
+                                        -60.663761,
+                                        -21.859673
+                                    ]
+                                ]
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "id": "5b8c9c106e63b329cf764c5b",
+                            "name": "Jerovia - A12"
+                        },
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [
+                                [
+                                    [
+                                        -60.749415,
+                                        -21.903979
+                                    ],
+                                    [
+                                        -60.749403,
+                                        -21.90626
+                                    ],
+                                    [
+                                        -60.749406,
+                                        -21.908444
+                                    ],
+                                    [
+                                        -60.730063,
+                                        -21.908529
+                                    ],
+                                    [
+                                        -60.730055,
+                                        -21.90626
+                                    ],
+                                    [
+                                        -60.730035,
+                                        -21.903993
+                                    ],
+                                    [
+                                        -60.749415,
+                                        -21.903979
+                                    ]
+                                ]
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "id": "5b8c9c7f6e63b329cf764c5d",
+                            "name": "Jerovia - C9"
+                        },
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [
+                                [
+                                    [
+                                        -60.749333,
+                                        -21.87043
+                                    ],
+                                    [
+                                        -60.729954,
+                                        -21.87053
+                                    ],
+                                    [
+                                        -60.73004,
+                                        -21.875076
+                                    ],
+                                    [
+                                        -60.746133,
+                                        -21.87494
+                                    ],
+                                    [
+                                        -60.749343,
+                                        -21.872319
+                                    ],
+                                    [
+                                        -60.749333,
+                                        -21.87043
+                                    ]
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            })
+
+        # when
+        check_aoi = Context(session).get(helper)
+
+        assert not isinstance(check_aoi, Error)
 
 
 if __name__ == '__main__':
