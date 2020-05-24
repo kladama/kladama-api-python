@@ -44,7 +44,7 @@ class CreateAreaOfInterestOperation(CreateOperation, PutOperation):
     def __init__(
         self,
         user,
-        aoi_id,
+        name,
         description,
         category,
         features
@@ -52,14 +52,14 @@ class CreateAreaOfInterestOperation(CreateOperation, PutOperation):
         CreateOperation.__init__(self)
         PutOperation.__init__(self)
         self._user = user
-        self._aoi_id = aoi_id
+        self._name = name
         self._description = description
         self._category = category
         self._features = features
 
     @property
     def url_path(self):
-        return "/aoi/user/{0}/{1}".format(self._user, self._aoi_id)
+        return "/aoi/user/{0}/{1}".format(self._user, self._name)
 
     @property
     def put_obj(self):
@@ -153,7 +153,7 @@ class CreateAreaOfInterestBuilder(OperationBuilder):
     def __init__(self):
         OperationBuilder.__init__(self)
         self._user = ""
-        self._aoi_id = ""
+        self._name = ""
         self._description = ""
         self._category = ""
         self._features = {}
@@ -161,7 +161,7 @@ class CreateAreaOfInterestBuilder(OperationBuilder):
     def build(self) -> CreateAreaOfInterestOperation:
         return CreateAreaOfInterestOperation(
             self._user,
-            self._aoi_id,
+            self._name,
             self._description,
             self._category,
             self._features
@@ -171,8 +171,8 @@ class CreateAreaOfInterestBuilder(OperationBuilder):
         self._user = user
         return self
 
-    def with_aoi_id(self, aoi_id: str):
-        self._aoi_id = aoi_id
+    def with_name(self, name: str):
+        self._name = name
         return self
 
     def with_description(self, description: str):

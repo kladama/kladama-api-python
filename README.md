@@ -46,7 +46,7 @@ session = kld.authenticate(env, api_token)
 operation = kld.Operations()\
     .add_aoi\
     .for_user('<your user>')\
-    .with_aoi_id('<aoi id>')\
+    .with_name('<aoi name>')\
     .with_description("Test AOI")\
     .with_category("Test")\
     .with_features({
