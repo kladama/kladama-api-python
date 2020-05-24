@@ -15,27 +15,27 @@ class OperationIntegrationTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         now_timestamp = datetime.datetime.now().timestamp()
-        cls.aoi_id = 'test_aoi_{0}'.format(now_timestamp)
+        cls.aoi_name = 'test_aoi_{0}'.format(now_timestamp)
 
     def test_create_delete_aoi(self):
         # when
-        creation_response = self._create_test_aoi(self.user, self.aoi_id)
+        creation_response = self._create_test_aoi(self.user, self.aoi_name)
 
         # then
         self.fail_if_error(creation_response)
 
         # and when
-        deletion_response = self._delete_test_aoi(self.user, self.aoi_id)
+        deletion_response = self._delete_test_aoi(self.user, self.aoi_name)
 
         # then
         self.fail_if_error(deletion_response)
 
     def test_create_delete_subscription(self):
         # given
-        self._create_test_aoi(self.user, self.aoi_id)
+        self._create_test_aoi(self.user, self.aoi_name)
 
         # when
-        creation_response = self._create_test_periodic_subscription(self.user, self.aoi_id)
+        creation_response = self._create_test_periodic_subscription(self.user, self.aoi_name)
 
         # then
         self.fail_if_error(creation_response)
@@ -50,7 +50,7 @@ class OperationIntegrationTest(unittest.TestCase):
         self.fail_if_error(deletion_response)
 
         # cleanup
-        self._delete_test_aoi(self.user, self.aoi_id)
+        self._delete_test_aoi(self.user, self.aoi_name)
 
     # private members
 
@@ -60,11 +60,11 @@ class OperationIntegrationTest(unittest.TestCase):
         return Context(session)
 
     @staticmethod
-    def _create_test_aoi(user, aoi_id):
+    def _create_test_aoi(user, aoi_name):
         create_operation = Operations() \
             .add_aoi \
             .for_user(user) \
-            .with_aoi_id(aoi_id) \
+            .with_name(aoi_name) \
             .with_description("Test AOI") \
             .with_category("Test") \
             .with_features({
