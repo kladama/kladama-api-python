@@ -896,6 +896,7 @@ class HelperTest(unittest.TestCase):
         check_aoi = Context(session).get(helper)
 
         assert not isinstance(check_aoi, Error)
+        assert check_aoi['valid']
 
 
 if __name__ == '__main__':

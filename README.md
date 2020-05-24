@@ -141,6 +141,7 @@ response = kld.Context(session).get(query)
 if isinstance(response, kld.Error):
     print(response.__str__())
 else:
+    print('Valid: ', response['valid'])
     for message in response['messages']:
         print(message)
 ```
