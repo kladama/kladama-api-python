@@ -1,6 +1,6 @@
-import json
 import requests
 import re
+from kladama.helpers import *
 from kladama.queries import *
 from kladama.entities import *
 from kladama.operations import *
@@ -16,6 +16,10 @@ class Environment:
 
 
 class Environments:
+
+    @property
+    def dev(self):
+        return Environment('http://localhost')
 
     @property
     def prod(self):
@@ -87,6 +91,9 @@ class Context:
         return self._session
 
     def get(self, query):
+        if isinstance(query, HelperBase):
+            return self._get_helper_response(query)
+
         if isinstance(query, BinaryDataQuery):
             return self._get_binary_data(query)
 
@@ -132,6 +139,15 @@ class Context:
 
         return Error(response.status_code, response.content.decode('utf-8'))
 
+    def _web_get_with_content(self, url, content):
+        headers = self._get_web_headers()
+
+        response = requests.get(url, headers, data=json.dumps(content))
+        if self._is_successfully_response(response):
+            return response
+
+        return Error(response.status_code, response.content.decode('utf-8'))
+
     def _web_delete(self, url):
         headers = self._get_web_headers()
 
@@ -166,6 +182,13 @@ class Context:
 
         return json.loads(response.content.decode('utf-8'))
 
+    def _web_get_json_with_content(self, api_url, content):
+        response = self._web_get_with_content(api_url, content)
+        if isinstance(response, Error):
+            return response
+
+        return json.loads(response.content.decode('utf-8'))
+
     def _get_root_obj(self, query):
         url = self.env.get_url_from(query.url_path)
         json_obj = query.entity_meta.json_obj
@@ -176,6 +199,16 @@ class Context:
 
         root = response['_embedded']
         return root[json_obj]
+
+    def _get_helper_response(self, helper: HelperBase):
+        url = self.env.get_url_from(helper.url_path)
+        json_obj = helper.obj
+
+        response = self._web_get_json_with_content(url, json_obj)
+        if isinstance(response, Error):
+            return response
+
+        return response
 
     def _get_entities(self, query):
         root_obj = self._get_root_obj(query)
@@ -262,3 +295,11 @@ class Operations:
     @property
     def unsubscribe(self):
         return DeleteSubscriptionBuilder()
+
+
+class Helpers:
+
+    @staticmethod
+    def check_aoi(aoi_obj):
+        return CheckAoiHelper(aoi_obj)
+

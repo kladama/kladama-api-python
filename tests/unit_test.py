@@ -68,7 +68,7 @@ class UnitTest(unittest.TestCase):
             .add_aoi\
             .for_user("fake-user-name")\
             .with_aoi_id("fake-aoi-id")\
-            .with_name("fake-aoi-name")\
+            .with_description("fake-aoi-name")\
             .with_category("fake-category-name")
 
         assert operation.url_path == '/aoi/user/fake-user-name/fake-aoi-id'

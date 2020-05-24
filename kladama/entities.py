@@ -130,10 +130,10 @@ class Organization(Entity, Identifiable, Linkable):
         Identifiable.__init__(self, obj)
         Linkable.__init__(self, obj)
         self._acronym = obj['acronym']
-        self._juridic_id = obj['juridicId']
+        self._juridic_id = obj['juridic_id']
         self._address = obj['address']
-        self._actual_credits = obj['actualCredits']
-        self._migrated_credits = obj['migratedCredits']
+        self._actual_credits = obj['actual_credits']
+        self._migrated_credits = obj['migrated_credits']
 
     @property
     def acronym(self):
@@ -172,8 +172,8 @@ class Subscription(Entity, Linkable):
         self._code = obj['code']
         self._owner = obj['owner']
         self._type = obj['type']
-        self._created_timestamp = obj['createdTimestamp']
-        self._spatial_operation = obj['spatialOperation']
+        self._created_timestamp = obj['created_timestamp']
+        self._spatial_operation = obj['spatial_operation']
         self._status = obj['status']
         self._schedule = obj['schedule']
         self._aoi = obj['aoi']
@@ -241,15 +241,15 @@ class Variable(Entity, Describable, Linkable):
         Describable.__init__(self, obj)
         Linkable.__init__(self, obj)
         self._type = obj['type']
-        self._format = obj['format']
-        self._spatial_resolution = obj['spatialResolution']
-        self._temporal_resolution = obj['temporalResolution']
+        self._friendly_name = obj['friendlyname']
+        self._spatial_resolution = obj['spatial_resolution']
+        self._temporal_resolution = obj['temporal_resolution']
         self._phenomena = Phenomena(obj['phenomenon'])
         self._source = Source(obj['source'])
 
     @property
-    def format(self):
-        return self._format
+    def friendly_name(self):
+        return self._friendly_name
 
     @property
     def phenomena(self):
