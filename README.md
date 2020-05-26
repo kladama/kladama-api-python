@@ -12,7 +12,7 @@ You can install the API through PIP
 pip install kladama-api
 ```
 
-## How to start using it
+## How to start using it. "List available Variables" example.
 
 First, you must to authenticate through a <em>API Token</em> that must be provided to you. This authentication process returns a session object that must be used to create a `Context` object.
 
