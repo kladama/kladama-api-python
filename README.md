@@ -173,7 +173,7 @@ else:
     print(response.__str__())
 ```
 
-## How to get a subscription
+## How to get data from a periodic subscription
 
 ```python
 # create get subscription info
