@@ -147,7 +147,7 @@ else:
 ```
 
 
-## How to subscribe to a variable
+## How to create a Periodic Subscription to a variable
 
 ```python
 # create a periodic subscription
@@ -173,7 +173,7 @@ else:
     print(response.__str__())
 ```
 
-## How to get data from a periodic subscription
+## How to get last data from a periodic subscription
 
 ```python
 # create get subscription info
