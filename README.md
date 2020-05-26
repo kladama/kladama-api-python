@@ -35,7 +35,6 @@ for var in variables:
 ## How to add an area of interest (AoI)
 
 ```python
-# create a periodic subscription
 
 import kladama as kld
 
@@ -84,7 +83,6 @@ if not isinstance(response, kld.Success):
 ## How to check if a GeoJson data can be used as a valid AoI in Kladama
 
 ```python
-# create get subscription info
 
 import kladama as kld
 
@@ -100,36 +98,18 @@ query = kld.Helpers\
                         "type": "Feature",
                         "properties": {
                             "id": "5b8c9e286e63b329cf764c61",
-                            "name": "Jerovia - D9"
+                            "name": "Farm 455"
                         },
                         "geometry": {
                             "type": "Polygon",
                             "coordinates": [
                                 [
-                                    [
-                                        -60.675417,
-                                        -21.854207
-                                    ],
-                                    [
-                                        -60.675394,
-                                        -21.855348
-                                    ],
-                                    [
-                                        -60.669532,
-                                        -21.858799
-                                    ],
-                                    [
-                                        -60.656133,
-                                        -21.85887
-                                    ],
-                                    [
-                                        -60.656118,
-                                        -21.854208
-                                    ],
-                                    [
-                                        -60.675417,
-                                        -21.854207
-                                    ]
+                                    [-60.675417, -21.854207],
+                                    [-60.675394, -21.855348],
+                                    [-60.669532, -21.858799],
+                                    [-60.656133, -21.85887],
+                                    [-60.656118, -21.854208],
+                                    [-60.675417, -21.854207]
                                 ]
                             ]
                         }
@@ -150,7 +130,7 @@ else:
 ## How to create a Periodic Subscription to a variable
 
 ```python
-# create a periodic subscription
+# create periodic subscription
 
 import kladama as kld
 
@@ -161,9 +141,9 @@ session = kld.authenticate(env, api_token)
 operation = kld.Operations()\
     .periodic_subsc\
     .for_user('<your user>')\
-    .with_variable('ecmwf-era5-2m-ar-max-temp')\
+    .with_variable('<var name>')\
     .with_source('ECMWF')\
-    .with_operation('mean')\
+    .with_operation('MEAN')\
     .with_aoi('<aoi name>')
 
 response = kld.Context(session).execute(operation)
@@ -176,7 +156,6 @@ else:
 ## How to get last data from a periodic subscription
 
 ```python
-# create get subscription info
 
 import base64 as b64
 import kladama as kld
