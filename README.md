@@ -32,7 +32,7 @@ for var in variables:
     print(var.name, '-', var.description, 'in', var.link)
 ```
 
-## How to add an area of interest
+## How to add an area of interest (AoI)
 
 ```python
 # create a periodic subscription
@@ -81,7 +81,7 @@ if not isinstance(response, kld.Success):
     print(response.__str__())
 ```
 
-## How to check an AoI
+## How to check if a GeoJson data can be used as a valid AoI in Kladama
 
 ```python
 # create get subscription info
