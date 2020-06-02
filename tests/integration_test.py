@@ -342,17 +342,22 @@ class OperationIntegrationTest(unittest.TestCase):
         ctx = OperationIntegrationTest._get_context()
         return ctx.execute(create_operation)
 
-    @staticmethod
-    def _create_test_periodic_subscription(user, aoi_id):
+    def _create_test_periodic_subscription(self, user, aoi_id):
+        ctx = OperationIntegrationTest._get_context()
+        var_query = Query().var
+        variables = ctx.get(var_query)
+        self.failIf(len(variables) == 0, "Cannot find variables to be used in subscriptions")
+
+        first_var: Variable = variables[0]
+
         create_operation = Operations() \
             .periodic_subsc \
             .for_user(user) \
-            .with_variable("D1_2M_MAX_TEMP") \
+            .with_variable(first_var.name) \
             .with_source("ECMWF") \
             .with_operation("MEAN") \
             .with_aoi(aoi_id)
 
-        ctx = OperationIntegrationTest._get_context()
         return ctx.execute(create_operation)
 
     @staticmethod
