@@ -187,6 +187,13 @@ class CreateAreaOfInterestBuilder(OperationBuilder):
         self._features = features
         return self
 
+    def from_file(self, file_path: str):
+        with open(file_path, 'r') as file:
+            data = file.read()
+            features = json.loads(data)
+            self.with_features(features)
+            return self
+
 
 class CreatePeriodicSubscriptionBuilder(OperationBuilder):
 
