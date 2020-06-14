@@ -5,12 +5,14 @@ from kladama import *
 class UnitTest(unittest.TestCase):
 
     @staticmethod
-    def test_query_url_paths():
+    def test_aoi_urls():
         assert Query().aoi.url_path == '/aoi'
         assert Query().aoi.by_name('aoi-name').url_path == '/aoi/aoi-name'
         assert Query().aoi.by_user('user-name').url_path == '/aoi/user/user-name'
         assert Query().aoi.by_user('user-name').filter_by('aoi-name').url_path == '/aoi/user/user-name/aoi-name'
 
+    @staticmethod
+    def test_phenom_urls():
         assert Query().phenom.url_path == '/phenom'
         assert Query().phenom.forecast.url_path == '/phenom/forecast'
         assert Query().phenom.observed.url_path == '/phenom/observed'
@@ -20,9 +22,13 @@ class UnitTest(unittest.TestCase):
         assert Query().phenom.by_sources('source-1').observed.url_path == '/phenom/src/source-1/observed'
         assert Query().phenom.by_sources('source-1').forecast.url_path == '/phenom/src/source-1/forecast'
 
+    @staticmethod
+    def test_organization_urls():
         assert Query().org.url_path == '/org'
         assert Query().org.by_name('organization-name').url_path == '/org/organization-name'
 
+    @staticmethod
+    def test_source_urls():
         assert Query().src.url_path == '/src'
         assert Query().src.forecast.url_path == '/src/forecast'
         assert Query().src.observed.url_path == '/src/observed'
@@ -31,12 +37,23 @@ class UnitTest(unittest.TestCase):
         assert Query().src.by_phenomena('phenomena-name').observed.url_path == '/src/phenom/phenomena-name/observed'
         assert Query().src.by_phenomena('phenomena-name').forecast.url_path == '/src/phenom/phenomena-name/forecast'
 
+    @staticmethod
+    def test_schedule_urls():
+        assert Query().schedules.url_path == '/schedule'
+        assert Query().schedules.by_user('u1').url_path == '/schedule/user/u1'
+        assert Query().schedules.by_user('u1').by_subsc('s1').url_path == '/schedule/user/u1/subsc/s1'
+        assert Query().schedules.by_user('u1').by_subsc('s1', 's2').url_path == '/schedule/user/u1/subsc/s1,s2'
+
+    @staticmethod
+    def test_subscription_urls():
         assert Query().subsc.url_path == '/subsc'
         assert Query().subsc.by_name('subscription-name').url_path == '/subsc/subscription-name'
         assert Query().subsc.by_user('user-name').url_path == '/subsc/user/user-name'
         assert Query().subsc.by_user('user-name').filter_by('subscription-name') \
                    .url_path == '/subsc/user/user-name/subscription-name'
 
+    @staticmethod
+    def test_variables_urls():
         assert Query().var.url_path == '/var'
         assert Query().var.forecast.url_path == '/var/forecast'
         assert Query().var.observed.url_path == '/var/observed'
@@ -49,6 +66,8 @@ class UnitTest(unittest.TestCase):
         assert Query().var.by_sources('source-1').observed.url_path == '/var/src/source-1/observed'
         assert Query().var.by_sources('source-1').forecast.url_path == '/var/src/source-1/forecast'
 
+    @staticmethod
+    def test_binary_urls():
         assert Query().subsc.by_user('user-name').filter_by('subscription').last\
                    .url_path == '/subsc/user/user-name/subscription/last'
         assert Query().subsc.by_user('user-name').filter_by('subscription').last_n(5)\

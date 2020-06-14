@@ -34,6 +34,10 @@ def get_src_meta():
     return EntityMetadata(Source, 'sources', 'src')
 
 
+def get_schedule_meta():
+    return EntityMetadata(Schedule, 'triggers', 'schedule')
+
+
 def get_subsc_meta():
     return EntityMetadata(Subscription, 'subscriptions', 'subsc')
 
@@ -162,6 +166,48 @@ class Source(Entity, Describable, Linkable):
         Entity.__init__(self)
         Describable.__init__(self, obj)
         Linkable.__init__(self, obj)
+
+
+class Schedule(Entity, Linkable):
+
+    def __init__(self, obj):
+        Entity.__init__(self)
+        Linkable.__init__(self, obj)
+        self._job_id = obj['job_id']
+        self._user = obj['user']
+        self._organization = obj['organization']
+        self._subscription = obj['subscription']
+        self._data_source = obj['data_source']
+        self._variable = obj['variable']
+        self._cron_exp = obj['cron_exp']
+
+    @property
+    def job_id(self):
+        return self._job_id
+
+    @property
+    def user(self):
+        return self._user
+
+    @property
+    def organization(self):
+        return self._organization
+
+    @property
+    def subscription(self):
+        return self._subscription
+
+    @property
+    def data_source(self):
+        return self._data_source
+
+    @property
+    def variable(self):
+        return self._variable
+
+    @property
+    def cron_exp(self):
+        return self._cron_exp
 
 
 class Subscription(Entity, Linkable):

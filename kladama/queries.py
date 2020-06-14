@@ -244,6 +244,15 @@ class BySourceQueryable(MultipleResultsQuery, ABC):
         return BySourceQuery(self, sources)
 
 
+class BySubscriptionQueryable(MultipleResultsQuery, ABC):
+
+    def __init__(self):
+        MultipleResultsQuery.__init__(self)
+
+    def by_subsc(self, *subscriptions):
+        return BySubscriptionQuery(self, *subscriptions)
+
+
 class ByUserQueryable(MultipleResultsQuery, ABC):
 
     def __init__(self):
@@ -252,6 +261,23 @@ class ByUserQueryable(MultipleResultsQuery, ABC):
     def by_user(self, user):
         return ByUserQuery(self, user)
 
+
+class ByNameAndUserQueryable(MultipleResultsQuery, ABC):
+
+    def __init__(self):
+        MultipleResultsQuery.__init__(self)
+
+    def by_user(self, user):
+        return ByNameAndUserQuery(self, user)
+
+
+class ByUserAndSubscriptionQueryable(MultipleResultsQuery, ABC):
+
+    def __init__(self):
+        MultipleResultsQuery.__init__(self)
+
+    def by_user(self, user):
+        return ByUserAndSubscriptionQuery(self, user)
 
 # filters
 
@@ -313,29 +339,54 @@ class BySourceQuery(FilterQuery, ObservableEntityQuery, PredictableEntityQuery):
         return '{0}/src/{1}'.format(self.entity_query.url_path, ','.join(*self.filter_value))
 
 
-class ByUserQuery(FilterQuery, ByNameQueryable):
+class BySubscriptionQuery(FilterQuery, MultipleResultsQuery):
+
+    def __init__(self, query_base, *subscriptions):
+        FilterQuery.__init__(self, query_base, subscriptions)
+        MultipleResultsQuery.__init__(self)
+
+    @property
+    def url_path(self) -> str:
+        return '{0}/subsc/{1}'.format(self.entity_query.url_path, ','.join(self.filter_value))
+
+
+class ByUserQuery(FilterQuery, MultipleResultsQuery):
+
+    def __init__(self, query_base, user):
+        FilterQuery.__init__(self, query_base, user)
+        MultipleResultsQuery.__init__(self)
+
+    @property
+    def url_path(self) -> str:
+        return '{0}/user/{1}'.format(self.entity_query.url_path, self.filter_value)
+
+
+class ByNameAndUserQuery(ByUserQuery, ByNameQueryable):
 
     def __init__(self, query_base, user):
         assert isinstance(query_base, ByNameQueryable)
-        FilterQuery.__init__(self, query_base, user)
+        ByUserQuery.__init__(self, query_base, user)
         ByNameQueryable.__init__(self)
 
     def filter_by(self, name):
         return BinaryAccessibleQuery(ByNameQuery(self, name))
 
-    @property
-    def url_path(self):
-        return '{0}/user/{1}'.format(self.entity_query.url_path, self.filter_value)
+
+class ByUserAndSubscriptionQuery(ByUserQuery, BySubscriptionQueryable):
+
+    def __init__(self, query_base, user):
+        ByUserQuery.__init__(self, query_base, user)
+        BySubscriptionQueryable.__init__(self)
 
 
 # entity queries
 
-class AreaOfInterestQuery(EntityQuery, ByNameQueryable, ByUserQueryable):
+class AreaOfInterestQuery(EntityQuery, ByNameQueryable, ByNameAndUserQueryable):
 
     def __init__(self):
         EntityQuery.__init__(self, kle.get_aoi_meta())
         ByNameQueryable.__init__(self)
-        ByUserQueryable.__init__(self)
+        ByNameAndUserQueryable.__init__(self)
 
 
 class PhenomenaQuery(
@@ -375,12 +426,19 @@ class SourceQuery(
         PredictableEntityQuery.__init__(self)
 
 
-class SubscriptionQuery(EntityQuery, ByNameQueryable, ByUserQueryable):
+class ScheduleQuery(EntityQuery, ByUserAndSubscriptionQueryable):
+
+    def __init__(self):
+        EntityQuery.__init__(self, kle.get_schedule_meta())
+        ByUserAndSubscriptionQueryable.__init__(self)
+
+
+class SubscriptionQuery(EntityQuery, ByNameQueryable, ByNameAndUserQueryable):
 
     def __init__(self):
         EntityQuery.__init__(self, kle.get_subsc_meta())
         ByNameQueryable.__init__(self)
-        ByUserQueryable.__init__(self)
+        ByNameAndUserQueryable.__init__(self)
 
 
 class UserQuery(EntityQuery, ByNameQueryable):

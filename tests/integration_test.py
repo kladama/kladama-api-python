@@ -614,6 +614,61 @@ class QueryIntegrationTest(unittest.TestCase):
         print('\n')
 
     @staticmethod
+    def test_schedules():
+        print('Testing Schedules ========================')
+
+        # given
+        session = _get_sandbox_session()
+        query = Query().schedules
+
+        # when
+        schedules = Context(session).get(query)
+
+        # then
+        assert len(schedules) > 0
+        for schedule in schedules:
+            assert isinstance(schedule, Schedule)
+            print(schedule.user, 'has job:', schedule.job_id, 'that is executed', schedule.cron_exp)
+
+        print('\n')
+
+    @staticmethod
+    def test_schedules_by_users():
+        print('Testing Schedules ========================')
+
+        # given
+        session = _get_sandbox_session()
+        query = Query().schedules.by_user('dev')
+
+        # when
+        schedules = Context(session).get(query)
+
+        # then
+        for schedule in schedules:
+            assert isinstance(schedule, Schedule)
+            print(schedule.user, 'has job:', schedule.job_id, 'that is executed', schedule.cron_exp)
+
+        print('\n')
+
+    @staticmethod
+    def test_schedules_by_users_and_subsc():
+        print('Testing Schedules ========================')
+
+        # given
+        session = _get_sandbox_session()
+        query = Query().schedules.by_user('dev').by_subsc('FRPGZ5DW6VKEUAXCYOAB8RS7OEOQ5M')
+
+        # when
+        schedules = Context(session).get(query)
+
+        # then
+        for schedule in schedules:
+            assert isinstance(schedule, Schedule)
+            print(schedule.user, 'has job:', schedule.job_id, 'that is executed', schedule.cron_exp)
+
+        print('\n')
+
+    @staticmethod
     def test_subscriptions():
         print('Testing Subscriptions ========================')
 

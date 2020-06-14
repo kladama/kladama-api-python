@@ -262,6 +262,10 @@ class Query:
         return OrganizationQuery()
 
     @property
+    def schedules(self):
+        return ScheduleQuery()
+
+    @property
     def subsc(self):
         return SubscriptionQuery()
 
