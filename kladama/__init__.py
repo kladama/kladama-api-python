@@ -289,12 +289,24 @@ class Operations:
         return CreateAreaOfInterestBuilder()
 
     @property
-    def periodic_subsc(self):
-        return CreatePeriodicSubscriptionBuilder()
+    def check_schedule(self):
+        return CheckScheduleBuilder()
+
+    @property
+    def clear_schedule(self):
+        return ClearScheduleBuilder()
 
     @property
     def delete_aoi(self):
         return DeleteAreaOfInterestBuilder()
+
+    @property
+    def periodic_subsc(self):
+        return CreatePeriodicSubscriptionBuilder()
+
+    @property
+    def re_schedule(self):
+        return ReScheduleBuilder()
 
     @property
     def unsubscribe(self):

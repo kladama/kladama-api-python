@@ -135,6 +135,62 @@ class DeleteSubscriptionOperation(DeleteOperation):
         return "/subsc/user/{0}/{1}".format(self._user, self._subscription_id)
 
 
+class CheckScheduleOperation(PutOperation):
+
+    def __init__(self, user, *subscriptions):
+        PutOperation.__init__(self)
+        self._user = user
+        self._subscriptions = subscriptions
+
+    @property
+    def url_path(self) -> str:
+        subscriptions_path = ''
+        if len(self._subscriptions) > 0:
+            subscriptions_path = '/subsc/{0}'.format(','.join(self._subscriptions))
+
+        return '/schedule/user/{0}{1}'.format(self._user, subscriptions_path)
+
+    @property
+    def put_obj(self):
+        return {}
+
+
+class ClearScheduleOperation(DeleteOperation):
+
+    def __init__(self, user, *subscriptions):
+        DeleteOperation.__init__(self)
+        self._user = user
+        self._subscriptions = subscriptions
+
+    @property
+    def url_path(self) -> str:
+        subscriptions_path = ''
+        if len(self._subscriptions) > 0:
+            subscriptions_path = '/subsc/{0}'.format(','.join(self._subscriptions))
+
+        return '/schedule/user/{0}{1}'.format(self._user, subscriptions_path)
+
+
+class ReScheduleOperation(PostOperation):
+
+    def __init__(self, user, *subscriptions):
+        PostOperation.__init__(self)
+        self._user = user
+        self._subscriptions = subscriptions
+
+    @property
+    def url_path(self) -> str:
+        subscriptions_path = ''
+        if len(self._subscriptions) > 0:
+            subscriptions_path = '/subsc/{0}'.format(','.join(self._subscriptions))
+
+        return '/schedule/user/{0}{1}'.format(self._user, subscriptions_path)
+
+    @property
+    def post_obj(self):
+        return {}
+
+
 # Builders
 
 class OperationBuilder(ABC):
@@ -271,4 +327,61 @@ class DeleteSubscriptionBuilder(OperationBuilder):
 
     def with_subsc(self, subscription_id: str):
         self._subscription_id = subscription_id
+        return self
+
+
+class CheckScheduleBuilder(OperationBuilder):
+
+    def build(self) -> Operation:
+        return CheckScheduleOperation(self._user, *self._subscriptions)
+
+    def __init__(self):
+        OperationBuilder.__init__(self)
+        self._user = ''
+        self._subscriptions = []
+
+    def for_user(self, user):
+        self._user = user
+        return self
+
+    def for_subsc(self, *subscriptions):
+        self._subscriptions = subscriptions
+        return self
+
+
+class ClearScheduleBuilder(OperationBuilder):
+
+    def build(self) -> Operation:
+        return ClearScheduleOperation(self._user, *self._subscriptions)
+
+    def __init__(self):
+        OperationBuilder.__init__(self)
+        self._user = ''
+        self._subscriptions = []
+
+    def for_user(self, user):
+        self._user = user
+        return self
+
+    def for_subsc(self, *subscriptions):
+        self._subscriptions = subscriptions
+        return self
+
+
+class ReScheduleBuilder(OperationBuilder):
+
+    def build(self) -> Operation:
+        return ReScheduleOperation(self._user, *self._subscriptions)
+
+    def __init__(self):
+        OperationBuilder.__init__(self)
+        self._user = ''
+        self._subscriptions = []
+
+    def for_user(self, user):
+        self._user = user
+        return self
+
+    def for_subsc(self, *subscriptions):
+        self._subscriptions = subscriptions
         return self

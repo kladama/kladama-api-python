@@ -52,6 +52,25 @@ class OperationIntegrationTest(unittest.TestCase):
         # cleanup
         self._delete_test_aoi(self.user, self.aoi_name)
 
+    def test_check_reschedule_clear_schedule_by_user(self):
+        # when
+        response = self._check_schedule('dev')
+
+        # then
+        self.fail_if_error(response)
+
+        # and when
+        reschedule_response = self._clear_schedule('dev')
+
+        # then
+        self.fail_if_error(reschedule_response)
+
+        # and when
+        clear_response = self._clear_schedule('dev')
+
+        # then
+        self.fail_if_error(clear_response)
+
     # private members
 
     @staticmethod
@@ -379,6 +398,36 @@ class OperationIntegrationTest(unittest.TestCase):
 
         ctx = OperationIntegrationTest._get_context()
         return ctx.execute(delete_operation)
+
+    @staticmethod
+    def _check_schedule(user, *subscriptions):
+        operation = Operations()\
+            .check_schedule\
+            .for_user(user)\
+            .for_subsc(*subscriptions)
+
+        ctx = OperationIntegrationTest._get_context()
+        return ctx.execute(operation)
+
+    @staticmethod
+    def _clear_schedule(user, *subscriptions):
+        operation = Operations()\
+            .clear_schedule\
+            .for_user(user)\
+            .for_subsc(*subscriptions)
+
+        ctx = OperationIntegrationTest._get_context()
+        return ctx.execute(operation)
+
+    @staticmethod
+    def _re_schedule(user, *subscriptions):
+        operation = Operations()\
+            .re_schedule\
+            .for_user(user)\
+            .for_subsc(*subscriptions)
+
+        ctx = OperationIntegrationTest._get_context()
+        return ctx.execute(operation)
 
     def fail_if_error(self, response):
         self.failIf(isinstance(response, Error), response.__str__())
