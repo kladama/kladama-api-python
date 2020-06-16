@@ -262,7 +262,7 @@ class Query:
         return OrganizationQuery()
 
     @property
-    def schedules(self):
+    def schedule(self):
         return ScheduleQuery()
 
     @property

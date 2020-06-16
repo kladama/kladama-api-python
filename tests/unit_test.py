@@ -39,10 +39,10 @@ class UnitTest(unittest.TestCase):
 
     @staticmethod
     def test_schedule_urls():
-        assert Query().schedules.url_path == '/schedule'
-        assert Query().schedules.by_user('u1').url_path == '/schedule/user/u1'
-        assert Query().schedules.by_user('u1').by_subsc('s1').url_path == '/schedule/user/u1/subsc/s1'
-        assert Query().schedules.by_user('u1').by_subsc('s1', 's2').url_path == '/schedule/user/u1/subsc/s1,s2'
+        assert Query().schedule.url_path == '/schedule'
+        assert Query().schedule.by_user('u1').url_path == '/schedule/user/u1'
+        assert Query().schedule.by_user('u1').by_subsc('s1').url_path == '/schedule/user/u1/subsc/s1'
+        assert Query().schedule.by_user('u1').by_subsc('s1', 's2').url_path == '/schedule/user/u1/subsc/s1,s2'
 
     @staticmethod
     def test_subscription_urls():

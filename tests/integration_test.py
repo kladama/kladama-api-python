@@ -668,7 +668,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_sandbox_session()
-        query = Query().schedules
+        query = Query().schedule
 
         # when
         schedules = Context(session).get(query)
@@ -687,7 +687,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_sandbox_session()
-        query = Query().schedules.by_user('dev')
+        query = Query().schedule.by_user('dev')
 
         # when
         schedules = Context(session).get(query)
@@ -705,7 +705,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_sandbox_session()
-        query = Query().schedules.by_user('dev').by_subsc('FRPGZ5DW6VKEUAXCYOAB8RS7OEOQ5M')
+        query = Query().schedule.by_user('dev').by_subsc('FRPGZ5DW6VKEUAXCYOAB8RS7OEOQ5M')
 
         # when
         schedules = Context(session).get(query)
