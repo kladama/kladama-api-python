@@ -19,7 +19,7 @@ class EntityMetadata:
 
 
 def get_aoi_meta():
-    return EntityMetadata(AreaOfInterest, 'Areas of Interest', 'aoi')
+    return EntityMetadata(AreaOfInterest, 'areas_of_interest', 'aoi')
 
 
 def get_phenom_meta():
@@ -222,7 +222,7 @@ class Subscription(Entity, Linkable):
         self._spatial_operation = obj['spatial_operation']
         self._status = obj['status']
         self._schedule = obj['schedule']
-        self._aoi = obj['aoi']
+        self._aoi = obj['area_of_interest']
         self._variable = Variable(obj['variable'])
 
     @property
@@ -287,7 +287,7 @@ class Variable(Entity, Describable, Linkable):
         Describable.__init__(self, obj)
         Linkable.__init__(self, obj)
         self._type = obj['type']
-        self._friendly_name = obj['friendlyname']
+        self._friendly_name = obj['friendly_name']
         self._spatial_resolution = obj['spatial_resolution']
         self._temporal_resolution = obj['temporal_resolution']
         self._phenomena = Phenomena(obj['phenomenon'])

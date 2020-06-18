@@ -674,7 +674,6 @@ class QueryIntegrationTest(unittest.TestCase):
         schedules = Context(session).get(query)
 
         # then
-        assert len(schedules) > 0
         for schedule in schedules:
             assert isinstance(schedule, Schedule)
             print(schedule.user, 'has job:', schedule.job_id, 'that is executed', schedule.cron_exp)
