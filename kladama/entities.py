@@ -19,7 +19,7 @@ class EntityMetadata:
 
 
 def get_aoi_meta():
-    return EntityMetadata(AreaOfInterest, 'Areas of Interest', 'aoi')
+    return EntityMetadata(AreaOfInterest, 'areas_of_interest', 'aoi')
 
 
 def get_phenom_meta():
@@ -32,6 +32,10 @@ def get_org_meta():
 
 def get_src_meta():
     return EntityMetadata(Source, 'sources', 'src')
+
+
+def get_schedule_meta():
+    return EntityMetadata(Schedule, 'triggers', 'schedule')
 
 
 def get_subsc_meta():
@@ -164,6 +168,48 @@ class Source(Entity, Describable, Linkable):
         Linkable.__init__(self, obj)
 
 
+class Schedule(Entity, Linkable):
+
+    def __init__(self, obj):
+        Entity.__init__(self)
+        Linkable.__init__(self, obj)
+        self._job_id = obj['job_id']
+        self._user = obj['user']
+        self._organization = obj['organization']
+        self._subscription = obj['subscription']
+        self._data_source = obj['data_source']
+        self._variable = obj['variable']
+        self._cron_exp = obj['cron_exp']
+
+    @property
+    def job_id(self):
+        return self._job_id
+
+    @property
+    def user(self):
+        return self._user
+
+    @property
+    def organization(self):
+        return self._organization
+
+    @property
+    def subscription(self):
+        return self._subscription
+
+    @property
+    def data_source(self):
+        return self._data_source
+
+    @property
+    def variable(self):
+        return self._variable
+
+    @property
+    def cron_exp(self):
+        return self._cron_exp
+
+
 class Subscription(Entity, Linkable):
 
     def __init__(self, obj):
@@ -176,7 +222,7 @@ class Subscription(Entity, Linkable):
         self._spatial_operation = obj['spatial_operation']
         self._status = obj['status']
         self._schedule = obj['schedule']
-        self._aoi = obj['aoi']
+        self._aoi = obj['area_of_interest']
         self._variable = Variable(obj['variable'])
 
     @property
@@ -241,7 +287,7 @@ class Variable(Entity, Describable, Linkable):
         Describable.__init__(self, obj)
         Linkable.__init__(self, obj)
         self._type = obj['type']
-        self._friendly_name = obj['friendlyname']
+        self._friendly_name = obj['friendly_name']
         self._spatial_resolution = obj['spatial_resolution']
         self._temporal_resolution = obj['temporal_resolution']
         self._phenomena = Phenomena(obj['phenomenon'])

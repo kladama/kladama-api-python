@@ -197,8 +197,11 @@ class Context:
         if isinstance(response, Error):
             return response
 
-        root = response['_embedded']
-        return root[json_obj]
+        embedded_key = '_embedded'
+        if embedded_key in response and json_obj in response[embedded_key]:
+            return response[embedded_key][json_obj]
+
+        return []
 
     def _get_helper_response(self, helper: HelperBase):
         url = self.env.get_url_from(helper.url_path)
@@ -262,6 +265,10 @@ class Query:
         return OrganizationQuery()
 
     @property
+    def schedule(self):
+        return ScheduleQuery()
+
+    @property
     def subsc(self):
         return SubscriptionQuery()
 
@@ -285,12 +292,24 @@ class Operations:
         return CreateAreaOfInterestBuilder()
 
     @property
-    def periodic_subsc(self):
-        return CreatePeriodicSubscriptionBuilder()
+    def check_schedule(self):
+        return CheckScheduleBuilder()
+
+    @property
+    def clear_schedule(self):
+        return ClearScheduleBuilder()
 
     @property
     def delete_aoi(self):
         return DeleteAreaOfInterestBuilder()
+
+    @property
+    def periodic_subsc(self):
+        return CreatePeriodicSubscriptionBuilder()
+
+    @property
+    def re_schedule(self):
+        return ReScheduleBuilder()
 
     @property
     def unsubscribe(self):
