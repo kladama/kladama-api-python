@@ -15,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(include=['kladama', 'kladama.*']),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Development Status :: 5 - Stable",
+        "Development Status :: 5 - Production/Stable",
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Libraries :: Python Modules',
         "License :: OSI Approved :: MIT License",
