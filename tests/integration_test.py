@@ -12,7 +12,7 @@ def _get_dev_session():
     return authenticate(env, api_token)
 
 
-class OperationIntegrationTest(unittest.TestCase):
+class TransactionsIntegrationTest(unittest.TestCase):
     user = 'dev'
 
     @classmethod
@@ -83,7 +83,7 @@ class OperationIntegrationTest(unittest.TestCase):
 
     @staticmethod
     def _create_test_aoi(user, aoi_name):
-        create_operation = Operations() \
+        create_transaction = Transactions() \
             .add_aoi \
             .for_user(user) \
             .with_name(aoi_name) \
@@ -361,81 +361,81 @@ class OperationIntegrationTest(unittest.TestCase):
             }
         )
 
-        ctx = OperationIntegrationTest._get_context()
-        return ctx.execute(create_operation)
+        ctx = TransactionsIntegrationTest._get_context()
+        return ctx.execute(create_transaction)
 
     def _create_test_periodic_subscription(self, user, aoi_id):
-        ctx = OperationIntegrationTest._get_context()
-        var_query = Query().var
+        ctx = TransactionsIntegrationTest._get_context()
+        var_query = Queries().var
         variables = ctx.get(var_query)
         self.failIf(len(variables.result) == 0, "Cannot find variables to be used in subscriptions")
 
         first_var: Variable = variables.result[0]
 
-        create_operation = Operations() \
+        create_transaction = Transactions() \
             .periodic_subsc \
             .for_user(user) \
             .with_variable(first_var.name) \
             .with_operation("MEAN") \
             .with_aoi(aoi_id)
 
-        return ctx.execute(create_operation)
+        return ctx.execute(create_transaction)
 
     @staticmethod
     def _delete_test_aoi(user, aoi_id):
-        delete_operation = Operations() \
+        delete_transaction = Transactions() \
             .delete_aoi \
             .from_user(user) \
             .with_aoi(aoi_id)
 
-        ctx = OperationIntegrationTest._get_context()
-        return ctx.execute(delete_operation)
+        ctx = TransactionsIntegrationTest._get_context()
+        return ctx.execute(delete_transaction)
 
     @staticmethod
     def _delete_test_subscription(user, subsc_id):
-        delete_operation = Operations() \
+        delete_transaction = Transactions() \
             .unsubscribe \
             .from_user(user) \
             .with_subsc(subsc_id)
 
-        ctx = OperationIntegrationTest._get_context()
-        return ctx.execute(delete_operation)
+        ctx = TransactionsIntegrationTest._get_context()
+        return ctx.execute(delete_transaction)
 
     @staticmethod
     def _check_schedule(user, *subscriptions):
-        operation = Operations()\
+        transaction = Transactions()\
             .check_schedule\
             .for_user(user)\
             .for_subsc(*subscriptions)
 
-        ctx = OperationIntegrationTest._get_context()
-        return ctx.execute(operation)
+        ctx = TransactionsIntegrationTest._get_context()
+        return ctx.execute(transaction)
 
     @staticmethod
     def _clear_schedule(user, *subscriptions):
-        operation = Operations()\
+        transaction = Transactions()\
             .clear_schedule\
             .for_user(user)\
             .for_subsc(*subscriptions)
 
-        ctx = OperationIntegrationTest._get_context()
-        return ctx.execute(operation)
+        ctx = TransactionsIntegrationTest._get_context()
+        return ctx.execute(transaction)
 
     @staticmethod
     def _re_schedule(user, *subscriptions):
-        operation = Operations()\
+        transaction = Transactions()\
             .re_schedule\
             .for_user(user)\
             .for_subsc(*subscriptions)
 
-        ctx = OperationIntegrationTest._get_context()
-        return ctx.execute(operation)
+        ctx = TransactionsIntegrationTest._get_context()
+        return ctx.execute(transaction)
 
     def fail_if_error(self, response):
         self.failIf(isinstance(response, Error), response.__str__())
 
 
-class QueryIntegrationTest(unittest.TestCase):
+class QueriesIntegrationTest(unittest.TestCase):
 
     _user = 'dev_it'
     _empty_subscription = 'FA66FH1EUG2KSKUZPFIHNLY7F536SM'
@@ -446,7 +446,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().aoi
+        query = Queries().aoi
 
         # when
         res = Context(session).get(query)
@@ -465,7 +465,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().aoi.by_user(self._user)
+        query = Queries().aoi.by_user(self._user)
 
         # when
         res = Context(session).get(query)
@@ -484,7 +484,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().var
+        query = Queries().var
 
         # when
         res = Context(session).get(query)
@@ -503,7 +503,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().src
+        query = Queries().src
 
         # when
         res = Context(session).get(query)
@@ -534,7 +534,7 @@ class QueryIntegrationTest(unittest.TestCase):
             print('Testing Source by name: ', source_name, ' ========================')
 
             # given
-            query = Query().src.by_key(source_name)
+            query = Queries().src.by_key(source_name)
 
             # when
             res = ctx.get(query)
@@ -551,7 +551,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().phenom
+        query = Queries().phenom
 
         # when
         res = Context(session).get(query)
@@ -570,7 +570,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().phenom.by_key('FAKE NAME')
+        query = Queries().phenom.by_key('FAKE NAME')
 
         # when
         res = Context(session).get(query)
@@ -599,7 +599,7 @@ class QueryIntegrationTest(unittest.TestCase):
             print('Testing Phenom by name: ', phenom_name, ' ========================')
 
             # given
-            query = Query().phenom.by_key(phenom_name)
+            query = Queries().phenom.by_key(phenom_name)
 
             # when
             res = ctx.get(query)
@@ -616,7 +616,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().phenom.by_sources('ESA', 'NOAA-CPC')
+        query = Queries().phenom.by_sources('ESA', 'NOAA-CPC')
 
         # when
         res = Context(session).get(query)
@@ -634,7 +634,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().org
+        query = Queries().org
 
         # when
         res = Context(session).get(query)
@@ -653,7 +653,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().user
+        query = Queries().user
 
         # when
         res = Context(session).get(query)
@@ -672,7 +672,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().schedule
+        query = Queries().schedule
 
         # when
         res = Context(session).get(query)
@@ -690,7 +690,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().schedule.by_user(self._user)
+        query = Queries().schedule.by_user(self._user)
 
         # when
         res = Context(session).get(query)
@@ -708,7 +708,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().subsc
+        query = Queries().subsc
 
         # when
         res = Context(session).get(query)
@@ -727,7 +727,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_status(1)
+        query = Queries().subsc.by_status(1)
 
         # when
         res = Context(session).get(query)
@@ -747,7 +747,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_status(1)
+        query = Queries().subsc.by_user(self._user).by_status(1)
 
         # when
         res = Context(session).get(query)
@@ -766,7 +766,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._subscription).dates
+        query = Queries().subsc.by_user(self._user).by_key(self._subscription).dates
 
         # when
         res = Context(session).get(query)
@@ -781,7 +781,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._subscription).dates_in('20200519', '20200622')
+        query = Queries().subsc.by_user(self._user).by_key(self._subscription).dates_in('20200519', '20200622')
 
         # when
         res = Context(session).get(query)
@@ -794,7 +794,7 @@ class QueryIntegrationTest(unittest.TestCase):
     def test_around(self):
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._subscription).results.around(5, '20200519', '20200622')
+        query = Queries().subsc.by_user(self._user).by_key(self._subscription).results.around(5, '20200519', '20200622')
 
         # when
         res = Context(session).get(query)
@@ -808,7 +808,7 @@ class QueryIntegrationTest(unittest.TestCase):
     def test_around_empty(self):
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._empty_subscription).results.around(5, '20200105', '20200115')
+        query = Queries().subsc.by_user(self._user).by_key(self._empty_subscription).results.around(5, '20200105', '20200115')
 
         # when
         res = Context(session).get(query)
@@ -820,7 +820,7 @@ class QueryIntegrationTest(unittest.TestCase):
     def test_last(self):
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._subscription).results.last
+        query = Queries().subsc.by_user(self._user).by_key(self._subscription).results.last
 
         # when
         res = Context(session).get(query)
@@ -834,7 +834,7 @@ class QueryIntegrationTest(unittest.TestCase):
     def test_last_empty(self):
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._empty_subscription).results.last
+        query = Queries().subsc.by_user(self._user).by_key(self._empty_subscription).results.last
 
         # when
         res = Context(session).get(query)
@@ -846,7 +846,7 @@ class QueryIntegrationTest(unittest.TestCase):
     def test_last_n(self):
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._subscription).results.last_n(5)
+        query = Queries().subsc.by_user(self._user).by_key(self._subscription).results.last_n(5)
 
         # when
         res = Context(session).get(query)
@@ -860,7 +860,7 @@ class QueryIntegrationTest(unittest.TestCase):
     def test_last_n_empty(self):
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._empty_subscription).results.last_n(5)
+        query = Queries().subsc.by_user(self._user).by_key(self._empty_subscription).results.last_n(5)
 
         # when
         res = Context(session).get(query)
@@ -872,7 +872,7 @@ class QueryIntegrationTest(unittest.TestCase):
     def test_last_years(self):
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._subscription).results.last_n_years(5, '20200519', '20200622')
+        query = Queries().subsc.by_user(self._user).by_key(self._subscription).results.last_n_years(5, '20200519', '20200622')
 
         # when
         res = Context(session).get(query)
@@ -886,7 +886,7 @@ class QueryIntegrationTest(unittest.TestCase):
     def test_last_years_empty(self):
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._empty_subscription).results.last_n_years(5, '20200105', '20200115')
+        query = Queries().subsc.by_user(self._user).by_key(self._empty_subscription).results.last_n_years(5, '20200105', '20200115')
 
         # when
         res = Context(session).get(query)
@@ -898,7 +898,7 @@ class QueryIntegrationTest(unittest.TestCase):
     def test_subscriptions_result_dates(self):
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._subscription).results.dates('20200519', '20200622')
+        query = Queries().subsc.by_user(self._user).by_key(self._subscription).results.dates('20200519', '20200622')
 
         # when
         res = Context(session).get(query)
@@ -912,7 +912,7 @@ class QueryIntegrationTest(unittest.TestCase):
     def test_subscriptions_result_dates_empty(self):
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._empty_subscription).results.last_n_years(5, '20200105', '20200115')
+        query = Queries().subsc.by_user(self._user).by_key(self._empty_subscription).results.last_n_years(5, '20200105', '20200115')
 
         # when
         res = Context(session).get(query)
@@ -926,7 +926,7 @@ class QueryIntegrationTest(unittest.TestCase):
         from_ = '20200101'
         to = '20200701'
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._subscription).results.period(from_, to)
+        query = Queries().subsc.by_user(self._user).by_key(self._subscription).results.period(from_, to)
 
         # when
         res = Context(session).get(query)
@@ -943,7 +943,7 @@ class QueryIntegrationTest(unittest.TestCase):
         from_ = '20200101'
         to = '20200301'
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._empty_subscription).results.period(from_, to)
+        query = Queries().subsc.by_user(self._user).by_key(self._empty_subscription).results.period(from_, to)
 
         # when
         res = Context(session).get(query)
@@ -953,13 +953,13 @@ class QueryIntegrationTest(unittest.TestCase):
         self.assertIsNone(res.result)
 
 
-class SystemInfoTest(unittest.TestCase):
+class ServicesTest(unittest.TestCase):
 
-    def test_check_aoi(self):
+    def test_validate_aoi(self):
         # given
         session = _get_dev_session()
-        helper = SystemInfo\
-            .check_aoi({
+        helper = Services\
+            .validate_aoi({
                 "type": "FeatureCollection",
                 "features": [
                     {

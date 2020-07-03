@@ -437,7 +437,7 @@ class VariableQuery(EndpointQuery, ByKeyQueryable, ByPhenomenaQueryable, BySourc
 
 # Query
 
-class Query:
+class Queries:
 
     @property
     def aoi(self):
