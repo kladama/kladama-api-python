@@ -66,9 +66,9 @@ class UnitTest(unittest.TestCase):
 
     @staticmethod
     def test_subscription_by_key_dates_urls():
-        assert Query().subsc.by_key('subscription-key').get_dates().url_path == '/subsc/subscription-key/dates'
-        assert Query().subsc.by_key('subscription-key').with_dates('20200115').url_path == '/subsc/subscription-key/dates/20200115TONOW'
-        assert Query().subsc.by_key('subscription-key').with_dates('20200115', '20200120').url_path == '/subsc/subscription-key/dates/20200115TO20200120'
+        assert Query().subsc.by_key('subscription-key').dates.url_path == '/subsc/subscription-key/dates'
+        assert Query().subsc.by_key('subscription-key').dates_since('20200115').url_path == '/subsc/subscription-key/dates/20200115TONOW'
+        assert Query().subsc.by_key('subscription-key').dates_in('20200115', '20200120').url_path == '/subsc/subscription-key/dates/20200115TO20200120'
 
     @staticmethod
     def test_subscription_by_status_urls():
@@ -124,7 +124,6 @@ class UnitTest(unittest.TestCase):
             .periodic_subsc\
             .for_user("fake-user-name")\
             .with_variable("fake-var-name")\
-            .with_source("fake-var-src-name")\
             .with_operation("fake-oper-name")\
             .with_aoi("fake-aoi-name")
 

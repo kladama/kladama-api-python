@@ -76,7 +76,6 @@ class CreatePeriodicSubscriptionOperation(CreateOperation, PostOperation):
         self,
         user,
         variable_name,
-        variable_source_name,
         spatial_operation_name,
         aoi_name,
     ):
@@ -84,7 +83,6 @@ class CreatePeriodicSubscriptionOperation(CreateOperation, PostOperation):
         PostOperation.__init__(self)
         self._user = user
         self._variable_name = variable_name
-        self._variable_source_name = variable_source_name
         self._spatial_operation_name = spatial_operation_name
         self._aoi_name = aoi_name
 
@@ -97,10 +95,7 @@ class CreatePeriodicSubscriptionOperation(CreateOperation, PostOperation):
         return {
             "type": "PERIODIC",
             "variable": {
-                "name": self._variable_name,
-                "source": {
-                    "name": self._variable_source_name
-                }
+                "name": self._variable_name
             },
             "spatial_operation": {
                 "name": self._spatial_operation_name
@@ -266,7 +261,6 @@ class CreatePeriodicSubscriptionBuilder(OperationBuilder):
         return CreatePeriodicSubscriptionOperation(
             self._user,
             self._variable_name,
-            self._variable_source_name,
             self._spatial_operation_name,
             self._aoi_name,
         )
@@ -277,10 +271,6 @@ class CreatePeriodicSubscriptionBuilder(OperationBuilder):
 
     def with_variable(self, variable_name: str):
         self._variable_name = variable_name
-        return self
-
-    def with_source(self, variable_source_name: str):
-        self._variable_source_name = variable_source_name
         return self
 
     def with_operation(self, spatial_operation_name: str):

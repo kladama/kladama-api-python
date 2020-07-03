@@ -376,7 +376,6 @@ class OperationIntegrationTest(unittest.TestCase):
             .periodic_subsc \
             .for_user(user) \
             .with_variable(first_var.name) \
-            .with_source("ECMWF") \
             .with_operation("MEAN") \
             .with_aoi(aoi_id)
 
@@ -767,7 +766,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._subscription).get_dates()
+        query = Query().subsc.by_user(self._user).by_key(self._subscription).dates
 
         # when
         res = Context(session).get(query)
@@ -782,7 +781,7 @@ class QueryIntegrationTest(unittest.TestCase):
 
         # given
         session = _get_dev_session()
-        query = Query().subsc.by_user(self._user).by_key(self._subscription).with_dates('20200519', '20200622')
+        query = Query().subsc.by_user(self._user).by_key(self._subscription).dates_in('20200519', '20200622')
 
         # when
         res = Context(session).get(query)

@@ -295,10 +295,14 @@ class GetSubscriptionQuery(ByKeyQuery):
     def results(self):
         return ResultsQuery(self)
 
-    def get_dates(self):
+    @property
+    def dates(self):
         return ByDatesQuery(self)
 
-    def with_dates(self, from_, to='NOW'):
+    def dates_since(self, from_):
+        return ByDatePeriodQuery(self, from_, 'NOW')
+
+    def dates_in(self, from_, to):
         return ByDatePeriodQuery(self, from_, to)
 
 

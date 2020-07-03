@@ -140,7 +140,6 @@ operation = kld.Operations()\
     .periodic_subsc\
     .for_user('<your user>')\
     .with_variable('<var name>')\
-    .with_source('ECMWF')\
     .with_operation('MEAN')\
     .with_aoi('<aoi name>')
 
