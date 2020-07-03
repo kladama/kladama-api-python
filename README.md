@@ -25,7 +25,7 @@ env = kld.Environments().prod
 api_token = '<your provided token>'
 session = kld.authenticate(env, api_token)
 
-query = kld.Query().var
+query = kld.Queries().var
 
 response = kld.Context(session).get(query)
 for var in response.result:
@@ -42,7 +42,7 @@ env = kld.Environments().prod
 api_token = '<your provided token>'
 session = kld.authenticate(env, api_token)
 
-query = kld.SystemInfo.check_aoi({
+query = kld.Services.validate_aoi({
             "type": "FeatureCollection",
             "features": [
                 {
@@ -87,7 +87,7 @@ env = kld.Environments().prod
 api_token = '<your provided token>'
 session = kld.authenticate(env, api_token)
 
-operation = kld.Operations()\
+transaction = kld.Transactions()\
     .add_aoi\
     .for_user('<your user>')\
     .with_name('<aoi name>')\
@@ -120,7 +120,7 @@ operation = kld.Operations()\
         }
     })
 
-response = kld.Context(session).execute(operation)
+response = kld.Context(session).execute(transaction)
 if not isinstance(response, kld.Success):
     print(response.__str__())
 ```
@@ -136,14 +136,14 @@ env = kld.Environments().prod
 api_token = '<your provided token>'
 session = kld.authenticate(env, api_token)
 
-operation = kld.Operations()\
+transaction = kld.Transactions()\
     .periodic_subsc\
     .for_user('<your user>')\
     .with_variable('<var name>')\
     .with_operation('MEAN')\
     .with_aoi('<aoi name>')
 
-response = kld.Context(session).execute(operation)
+response = kld.Context(session).execute(transaction)
 if isinstance(response, kld.Success):
     code = response.result['code'] # the code is the id of the subscription
 else:
@@ -161,7 +161,7 @@ env = kld.Environments().prod
 api_token = '<your provided token>'
 session = kld.authenticate(env, api_token)
 
-query = kld.Query()\
+query = kld.Queries()\
     .subsc\
     .by_user('<your user>')\
     .by_key('<subscription code>')\

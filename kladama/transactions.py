@@ -5,7 +5,7 @@ import json
 
 # Operations
 
-class Operation(ABC):
+class Transaction(ABC):
 
     @property
     @abc.abstractmethod
@@ -13,7 +13,7 @@ class Operation(ABC):
         pass
 
 
-class PostOperation(Operation, ABC):
+class PostTransaction(Transaction, ABC):
 
     @property
     @abc.abstractmethod
@@ -21,7 +21,7 @@ class PostOperation(Operation, ABC):
         pass
 
 
-class PutOperation(Operation, ABC):
+class PutTransaction(Transaction, ABC):
 
     @property
     @abc.abstractmethod
@@ -29,17 +29,17 @@ class PutOperation(Operation, ABC):
         pass
 
 
-class CreateOperation(Operation, ABC):
+class CreateTransaction(Transaction, ABC):
 
     def __init__(self):
-        Operation.__init__(self)
+        Transaction.__init__(self)
 
 
-class DeleteOperation(Operation, ABC):
+class DeleteTransaction(Transaction, ABC):
     pass
 
 
-class CreateAreaOfInterestOperation(CreateOperation, PutOperation):
+class CreateAreaOfInterestTransaction(CreateTransaction, PutTransaction):
 
     def __init__(
         self,
@@ -49,8 +49,8 @@ class CreateAreaOfInterestOperation(CreateOperation, PutOperation):
         category,
         features
     ):
-        CreateOperation.__init__(self)
-        PutOperation.__init__(self)
+        CreateTransaction.__init__(self)
+        PutTransaction.__init__(self)
         self._user = user
         self._name = name
         self._description = description
@@ -70,7 +70,7 @@ class CreateAreaOfInterestOperation(CreateOperation, PutOperation):
         }
 
 
-class CreatePeriodicSubscriptionOperation(CreateOperation, PostOperation):
+class CreatePeriodicSubscriptionTransaction(CreateTransaction, PostTransaction):
 
     def __init__(
         self,
@@ -79,8 +79,8 @@ class CreatePeriodicSubscriptionOperation(CreateOperation, PostOperation):
         spatial_operation_name,
         aoi_name,
     ):
-        CreateOperation.__init__(self)
-        PostOperation.__init__(self)
+        CreateTransaction.__init__(self)
+        PostTransaction.__init__(self)
         self._user = user
         self._variable_name = variable_name
         self._spatial_operation_name = spatial_operation_name
@@ -106,10 +106,10 @@ class CreatePeriodicSubscriptionOperation(CreateOperation, PostOperation):
         }
 
 
-class DeleteAreaOfInterestOperation(DeleteOperation):
+class DeleteAreaOfInterestTransaction(DeleteTransaction):
 
     def __init__(self, user, aoi_id):
-        DeleteOperation.__init__(self)
+        DeleteTransaction.__init__(self)
         self._user = user
         self._aoi_id = aoi_id
 
@@ -118,10 +118,10 @@ class DeleteAreaOfInterestOperation(DeleteOperation):
         return "/aoi/user/{0}/{1}".format(self._user, self._aoi_id)
 
 
-class DeleteSubscriptionOperation(DeleteOperation):
+class DeleteSubscriptionTransaction(DeleteTransaction):
 
     def __init__(self, user, subscription_id):
-        DeleteOperation.__init__(self)
+        DeleteTransaction.__init__(self)
         self._user = user
         self._subscription_id = subscription_id
 
@@ -130,10 +130,10 @@ class DeleteSubscriptionOperation(DeleteOperation):
         return "/subsc/user/{0}/{1}".format(self._user, self._subscription_id)
 
 
-class CheckScheduleOperation(PutOperation):
+class CheckScheduleTransaction(PutTransaction):
 
     def __init__(self, user, *subscriptions):
-        PutOperation.__init__(self)
+        PutTransaction.__init__(self)
         self._user = user
         self._subscriptions = subscriptions
 
@@ -150,10 +150,10 @@ class CheckScheduleOperation(PutOperation):
         return {}
 
 
-class ClearScheduleOperation(DeleteOperation):
+class ClearScheduleTransaction(DeleteTransaction):
 
     def __init__(self, user, *subscriptions):
-        DeleteOperation.__init__(self)
+        DeleteTransaction.__init__(self)
         self._user = user
         self._subscriptions = subscriptions
 
@@ -166,10 +166,10 @@ class ClearScheduleOperation(DeleteOperation):
         return '/schedule/user/{0}{1}'.format(self._user, subscriptions_path)
 
 
-class ReScheduleOperation(PostOperation):
+class ReScheduleTransaction(PostTransaction):
 
     def __init__(self, user, *subscriptions):
-        PostOperation.__init__(self)
+        PostTransaction.__init__(self)
         self._user = user
         self._subscriptions = subscriptions
 
@@ -188,10 +188,10 @@ class ReScheduleOperation(PostOperation):
 
 # Builders
 
-class OperationBuilder(ABC):
+class TransactionBuilder(ABC):
 
     @abc.abstractmethod
-    def build(self) -> Operation:
+    def build(self) -> Transaction:
         pass
 
     @property
@@ -199,18 +199,18 @@ class OperationBuilder(ABC):
         return self.build().url_path
 
 
-class CreateAreaOfInterestBuilder(OperationBuilder):
+class CreateAreaOfInterestBuilder(TransactionBuilder):
 
     def __init__(self):
-        OperationBuilder.__init__(self)
+        TransactionBuilder.__init__(self)
         self._user = ""
         self._name = ""
         self._description = ""
         self._category = ""
         self._features = {}
 
-    def build(self) -> CreateAreaOfInterestOperation:
-        return CreateAreaOfInterestOperation(
+    def build(self) -> CreateAreaOfInterestTransaction:
+        return CreateAreaOfInterestTransaction(
             self._user,
             self._name,
             self._description,
@@ -246,10 +246,10 @@ class CreateAreaOfInterestBuilder(OperationBuilder):
             return self
 
 
-class CreatePeriodicSubscriptionBuilder(OperationBuilder):
+class CreatePeriodicSubscriptionBuilder(TransactionBuilder):
 
     def __init__(self):
-        OperationBuilder.__init__(self)
+        TransactionBuilder.__init__(self)
         self._user = ""
         self._subscription_type = ""
         self._variable_name = ""
@@ -257,8 +257,8 @@ class CreatePeriodicSubscriptionBuilder(OperationBuilder):
         self._spatial_operation_name = ""
         self._aoi_name = ""
 
-    def build(self) -> CreatePeriodicSubscriptionOperation:
-        return CreatePeriodicSubscriptionOperation(
+    def build(self) -> CreatePeriodicSubscriptionTransaction:
+        return CreatePeriodicSubscriptionTransaction(
             self._user,
             self._variable_name,
             self._spatial_operation_name,
@@ -282,15 +282,15 @@ class CreatePeriodicSubscriptionBuilder(OperationBuilder):
         return self
 
 
-class DeleteAreaOfInterestBuilder(OperationBuilder):
+class DeleteAreaOfInterestBuilder(TransactionBuilder):
 
     def __init__(self):
-        OperationBuilder.__init__(self)
+        TransactionBuilder.__init__(self)
         self._user = ""
         self._aoi_id = ""
 
-    def build(self) -> DeleteAreaOfInterestOperation:
-        return DeleteAreaOfInterestOperation(self._user, self._aoi_id)
+    def build(self) -> DeleteAreaOfInterestTransaction:
+        return DeleteAreaOfInterestTransaction(self._user, self._aoi_id)
 
     def from_user(self, user: str):
         self._user = user
@@ -301,15 +301,15 @@ class DeleteAreaOfInterestBuilder(OperationBuilder):
         return self
 
 
-class DeleteSubscriptionBuilder(OperationBuilder):
+class DeleteSubscriptionBuilder(TransactionBuilder):
 
     def __init__(self):
-        OperationBuilder.__init__(self)
+        TransactionBuilder.__init__(self)
         self._user = ""
         self._subscription_id = ""
 
-    def build(self) -> DeleteSubscriptionOperation:
-        return DeleteSubscriptionOperation(self._user, self._subscription_id)
+    def build(self) -> DeleteSubscriptionTransaction:
+        return DeleteSubscriptionTransaction(self._user, self._subscription_id)
 
     def from_user(self, user: str):
         self._user = user
@@ -320,13 +320,13 @@ class DeleteSubscriptionBuilder(OperationBuilder):
         return self
 
 
-class CheckScheduleBuilder(OperationBuilder):
+class CheckScheduleBuilder(TransactionBuilder):
 
-    def build(self) -> Operation:
-        return CheckScheduleOperation(self._user, *self._subscriptions)
+    def build(self) -> Transaction:
+        return CheckScheduleTransaction(self._user, *self._subscriptions)
 
     def __init__(self):
-        OperationBuilder.__init__(self)
+        TransactionBuilder.__init__(self)
         self._user = ''
         self._subscriptions = []
 
@@ -339,13 +339,13 @@ class CheckScheduleBuilder(OperationBuilder):
         return self
 
 
-class ClearScheduleBuilder(OperationBuilder):
+class ClearScheduleBuilder(TransactionBuilder):
 
-    def build(self) -> Operation:
-        return ClearScheduleOperation(self._user, *self._subscriptions)
+    def build(self) -> Transaction:
+        return ClearScheduleTransaction(self._user, *self._subscriptions)
 
     def __init__(self):
-        OperationBuilder.__init__(self)
+        TransactionBuilder.__init__(self)
         self._user = ''
         self._subscriptions = []
 
@@ -358,13 +358,13 @@ class ClearScheduleBuilder(OperationBuilder):
         return self
 
 
-class ReScheduleBuilder(OperationBuilder):
+class ReScheduleBuilder(TransactionBuilder):
 
-    def build(self) -> Operation:
-        return ReScheduleOperation(self._user, *self._subscriptions)
+    def build(self) -> Transaction:
+        return ReScheduleTransaction(self._user, *self._subscriptions)
 
     def __init__(self):
-        OperationBuilder.__init__(self)
+        TransactionBuilder.__init__(self)
         self._user = ''
         self._subscriptions = []
 
@@ -377,7 +377,7 @@ class ReScheduleBuilder(OperationBuilder):
         return self
 
 
-class Operations:
+class Transactions:
 
     @property
     def add_aoi(self):

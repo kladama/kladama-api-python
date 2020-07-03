@@ -5,7 +5,11 @@ from .queries import EndpointQuery
 from .queries import SingleResultQuery
 
 
-class InfoBase(EndpointQuery, ABC):
+class ServiceRequestBase(EndpointQuery, ABC):
+
+    @property
+    def url_path(self) -> str:
+        return '/services{0}'.format(self.sub_url)
 
     @property
     @abc.abstractmethod
@@ -18,15 +22,15 @@ class InfoBase(EndpointQuery, ABC):
         pass
 
 
-class AoiValidation(InfoBase, SingleResultQuery):
+class AoiValidationServiceRequest(ServiceRequestBase, SingleResultQuery):
 
     def __init__(self, aoi_obj):
-        InfoBase.__init__(self)
+        ServiceRequestBase.__init__(self)
         self._aoi_obj = aoi_obj
 
     @property
     def sub_url(self):
-        return '/do/aoivalidation'
+        return '/validate/aoi'
 
     @property
     def method(self) -> str:
@@ -41,8 +45,8 @@ class AoiValidation(InfoBase, SingleResultQuery):
         return self.aoi_obj
 
 
-class SystemInfo:
+class Services:
 
     @staticmethod
-    def check_aoi(aoi_obj):
-        return AoiValidation(aoi_obj)
+    def validate_aoi(aoi_obj):
+        return AoiValidationServiceRequest(aoi_obj)

@@ -1,7 +1,7 @@
-from .info import *
 from .loader import *
-from .operations import *
 from .queries import *
+from .services import *
+from .transactions import *
 from .web import *
 
 
@@ -11,7 +11,7 @@ class Context:
         self._web = WebRequester(session)
 
     def get(self, query: QueryBase):
-        if isinstance(query, InfoBase):
+        if isinstance(query, ServiceRequestBase):
             res = self._get_info_response(query)
         else:
             res = self._get_query_response(query)
@@ -23,19 +23,19 @@ class Context:
 
         return res
 
-    def execute(self, operation_builder: OperationBuilder):
+    def execute(self, operation_builder: TransactionBuilder):
         operation = operation_builder.build()
         path = operation.url_path
 
-        if isinstance(operation, PostOperation):
+        if isinstance(operation, PostTransaction):
             response = self._web.post(path, operation.post_obj)
             return ResponseLoader.load_operation_response(response)
 
-        if isinstance(operation, PutOperation):
+        if isinstance(operation, PutTransaction):
             response = self._web.put(path, operation.put_obj)
             return ResponseLoader.load_operation_response(response)
 
-        if isinstance(operation, DeleteOperation):
+        if isinstance(operation, DeleteTransaction):
             response = self._web.delete(path)
             return ResponseLoader.load_operation_response(response)
 
@@ -43,7 +43,7 @@ class Context:
 
     # private members
 
-    def _get_info_response(self, info_query: InfoBase):
+    def _get_info_response(self, info_query: ServiceRequestBase):
         path = info_query.url_path
         obj = info_query.obj
 
