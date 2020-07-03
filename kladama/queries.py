@@ -54,7 +54,19 @@ class ByDatesQuery(FilterQuery):
         return dates_path
 
 
-class ByNameQuery(FilterQuery, SingleResultQuery):
+class ByDatePeriodQuery(QueryBase):
+
+    def __init__(self, parent, from_, to):
+        QueryBase.__init__(self, parent)
+        self._from = from_
+        self._to = to
+
+    @property
+    def sub_url(self):
+        return '/dates/{0}TO{1}'.format(self._from, self._to)
+
+
+class ByKeyQuery(FilterQuery, SingleResultQuery):
 
     @property
     def sub_url(self):
@@ -218,10 +230,10 @@ class ResultsQuery(QueryBase):
 
 # Queryable types
 
-class ByNameQueryable(QueryBase, ABC):
+class ByKeyQueryable(QueryBase, ABC):
 
-    def by_name(self, name):
-        return ByNameQuery(self, name)
+    def by_key(self, name):
+        return ByKeyQuery(self, name)
 
 
 class ByDatesQueryable(QueryBase, ABC):
@@ -277,7 +289,7 @@ class ObservedQueryable(QueryBase, ABC):
 # Specific queries
 
 
-class GetSubscriptionQuery(ByNameQuery):
+class GetSubscriptionQuery(ByKeyQuery):
 
     @property
     def results(self):
@@ -286,8 +298,8 @@ class GetSubscriptionQuery(ByNameQuery):
     def get_dates(self):
         return ByDatesQuery(self)
 
-    def with_dates(self, *dates):
-        return ByDatesQuery(self, *dates)
+    def with_dates(self, from_, to='NOW'):
+        return ByDatePeriodQuery(self, from_, to)
 
 
 class GetSubscriptionQueryable(QueryBase, ABC):
@@ -296,10 +308,8 @@ class GetSubscriptionQueryable(QueryBase, ABC):
         return GetSubscriptionQuery(self, subscription)
 
 
-class AfterUserByNameQueryable(ByUserQuery, ABC):
-
-    def filter_by(self, name):
-        return ByNameQuery(self, name)
+class AfterUserByKeyQueryable(ByUserQuery, ByKeyQueryable, ABC):
+    pass
 
 
 class AfterUserBySubscriptionsQueryable(ByUserQuery):
@@ -322,10 +332,10 @@ class AfterSourcesGetForecastObservedQueryable(BySourcesQuery, ForecastQueryable
     pass
 
 
-class AfterUserByNameStatusQueryable(AfterUserByNameQueryable, ByStatusQueryable, ABC):
+class AfterUserByKeyStatusQueryable(AfterUserByKeyQueryable, ByStatusQueryable, ABC):
 
-    def filter_by(self, name):
-        return GetSubscriptionQuery(self, name)
+    def by_key(self, key):
+        return GetSubscriptionQuery(self, key)
 
 
 # Endpoint Query types
@@ -340,24 +350,24 @@ class EndpointQuery(QueryBase, ABC):
         return self.sub_url
 
 
-class AreaOfInterestQuery(EndpointQuery, ByNameQueryable, ByUserQueryable):
+class AreaOfInterestQuery(EndpointQuery, ByKeyQueryable, ByUserQueryable):
 
     @property
     def sub_url(self):
         return '/aoi'
 
     def by_user(self, user):
-        return AfterUserByNameQueryable(self, user)
+        return AfterUserByKeyQueryable(self, user)
 
 
-class OrganizationQuery(EndpointQuery, ByNameQueryable):
+class OrganizationQuery(EndpointQuery, ByKeyQueryable):
 
     @property
     def sub_url(self):
         return '/org'
 
 
-class PhenomenaQuery(EndpointQuery, ByNameQueryable, BySourcesQueryable, ForecastQueryable, ObservedQueryable):
+class PhenomenaQuery(EndpointQuery, ByKeyQueryable, BySourcesQueryable, ForecastQueryable, ObservedQueryable):
 
     @property
     def sub_url(self):
@@ -377,7 +387,7 @@ class ScheduleQuery(EndpointQuery, ByUserQueryable):
         return AfterUserBySubscriptionsQueryable(self, user)
 
 
-class SourceQuery(EndpointQuery, ByNameQueryable, ByPhenomenaQueryable, ForecastQueryable, ObservedQueryable):
+class SourceQuery(EndpointQuery, ByKeyQueryable, ByPhenomenaQueryable, ForecastQueryable, ObservedQueryable):
 
     @property
     def sub_url(self):
@@ -387,27 +397,27 @@ class SourceQuery(EndpointQuery, ByNameQueryable, ByPhenomenaQueryable, Forecast
         return AfterPhenomenaGetForecastObservedQueryable(self, phenomena)
 
 
-class SubscriptionQuery(EndpointQuery, ByNameQueryable, ByUserQueryable, ByStatusQueryable):
+class SubscriptionQuery(EndpointQuery, ByKeyQueryable, ByUserQueryable, ByStatusQueryable):
 
     @property
     def sub_url(self):
         return '/subsc'
 
-    def by_name(self, name):
+    def by_key(self, name):
         return GetSubscriptionQuery(self, name)
 
     def by_user(self, user):
-        return AfterUserByNameStatusQueryable(self, user)
+        return AfterUserByKeyStatusQueryable(self, user)
 
 
-class UserQuery(EndpointQuery, ByNameQueryable):
+class UserQuery(EndpointQuery, ByKeyQueryable):
 
     @property
     def sub_url(self):
         return '/user'
 
 
-class VariableQuery(EndpointQuery, ByNameQueryable, ByPhenomenaQueryable, BySourcesQueryable, ForecastQueryable,
+class VariableQuery(EndpointQuery, ByKeyQueryable, ByPhenomenaQueryable, BySourcesQueryable, ForecastQueryable,
                     ObservedQueryable):
 
     @property

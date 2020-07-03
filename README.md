@@ -32,54 +32,6 @@ for var in response.result:
     print(var.name, '-', var.description, 'in', var.link)
 ```
 
-## How to add an area of interest (AoI)
-
-```python
-
-import kladama as kld
-
-env = kld.Environments().prod
-api_token = '<your provided token>'
-session = kld.authenticate(env, api_token)
-
-operation = kld.Operations()\
-    .add_aoi\
-    .for_user('<your user>')\
-    .with_name('<aoi name>')\
-    .with_description("Test AOI")\
-    .with_category("Test")\
-    .with_features({
-        "type": "FeatureCollection",
-        "name": "Test AoI",
-        "features": {
-            "type": "Feature",
-            "properties": {
-                "id": "5b8c9e286e63b329cf764c61",
-                "name": "field-1",
-                "geometry": {
-                    "type": "MultiPolygon",
-                    "coordinates": [
-                        [
-                            [
-                                [-60.675417,-21.854207],
-                                [-60.675394,-21.855348],
-                                [-60.669532,-21.858799],
-                                [-60.656133,-21.85887],
-                                [-60.656118,-21.854208],
-                                [-60.675417,-21.854207]
-                            ]
-                        ]
-                    ]
-                },
-            }
-        }
-    })
-
-response = kld.Context(session).execute(operation)
-if not isinstance(response, kld.Success):
-    print(response.__str__())
-```
-
 ## How to check if a GeoJson data can be used as a valid AoI in Kladama
 
 ```python
@@ -125,6 +77,53 @@ else:
         print(message)
 ```
 
+## How to add an area of interest (AoI)
+
+```python
+
+import kladama as kld
+
+env = kld.Environments().prod
+api_token = '<your provided token>'
+session = kld.authenticate(env, api_token)
+
+operation = kld.Operations()\
+    .add_aoi\
+    .for_user('<your user>')\
+    .with_name('<aoi name>')\
+    .with_description("Test AOI")\
+    .with_category("Test")\
+    .with_features({
+        "type": "FeatureCollection",
+        "name": "Test AoI",
+        "features": {
+            "type": "Feature",
+            "properties": {
+                "id": "5b8c9e286e63b329cf764c61",
+                "name": "field-1",
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [
+                                [-60.675417,-21.854207],
+                                [-60.675394,-21.855348],
+                                [-60.669532,-21.858799],
+                                [-60.656133,-21.85887],
+                                [-60.656118,-21.854208],
+                                [-60.675417,-21.854207]
+                            ]
+                        ]
+                    ]
+                },
+            }
+        }
+    })
+
+response = kld.Context(session).execute(operation)
+if not isinstance(response, kld.Success):
+    print(response.__str__())
+```
 
 ## How to create a Periodic Subscription to a variable
 
@@ -166,7 +165,7 @@ session = kld.authenticate(env, api_token)
 query = kld.Query()\
     .subsc\
     .by_user('<your user>')\
-    .filter_by('<subscription code>')\
+    .by_key('<subscription code>')\
     .results\
     .last
 

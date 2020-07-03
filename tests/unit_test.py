@@ -9,9 +9,9 @@ class UnitTest(unittest.TestCase):
     @staticmethod
     def test_aoi_urls():
         assert Query().aoi.url_path == '/aoi'
-        assert Query().aoi.by_name('aoi-name').url_path == '/aoi/aoi-name'
+        assert Query().aoi.by_key('aoi-name').url_path == '/aoi/aoi-name'
         assert Query().aoi.by_user('user-name').url_path == '/aoi/user/user-name'
-        assert Query().aoi.by_user('user-name').filter_by('aoi-name').url_path == '/aoi/user/user-name/aoi-name'
+        assert Query().aoi.by_user('user-name').by_key('aoi-name').url_path == '/aoi/user/user-name/aoi-name'
 
     @staticmethod
     def test_aoi_validation_urls():
@@ -23,7 +23,7 @@ class UnitTest(unittest.TestCase):
         assert Query().phenom.url_path == '/phenom'
         assert Query().phenom.forecast.url_path == '/phenom/forecast'
         assert Query().phenom.observed.url_path == '/phenom/observed'
-        assert Query().phenom.by_name('phenomena-name').url_path == '/phenom/phenomena-name'
+        assert Query().phenom.by_key('phenomena-name').url_path == '/phenom/phenomena-name'
         assert Query().phenom.by_sources('source-1').url_path == '/phenom/src/source-1'
         assert Query().phenom.by_sources('source-1', 'source-2').url_path == '/phenom/src/source-1,source-2'
         assert Query().phenom.by_sources('source-1').observed.url_path == '/phenom/src/source-1/observed'
@@ -32,14 +32,14 @@ class UnitTest(unittest.TestCase):
     @staticmethod
     def test_organization_urls():
         assert Query().org.url_path == '/org'
-        assert Query().org.by_name('organization-name').url_path == '/org/organization-name'
+        assert Query().org.by_key('organization-name').url_path == '/org/organization-name'
 
     @staticmethod
     def test_source_urls():
         assert Query().src.url_path == '/src'
         assert Query().src.forecast.url_path == '/src/forecast'
         assert Query().src.observed.url_path == '/src/observed'
-        assert Query().src.by_name('source-name').url_path == '/src/source-name'
+        assert Query().src.by_key('source-name').url_path == '/src/source-name'
         assert Query().src.by_phenomena('phenomena-name').url_path == '/src/phenom/phenomena-name'
         assert Query().src.by_phenomena('phenomena-name').observed.url_path == '/src/phenom/phenomena-name/observed'
         assert Query().src.by_phenomena('phenomena-name').forecast.url_path == '/src/phenom/phenomena-name/forecast'
@@ -60,15 +60,15 @@ class UnitTest(unittest.TestCase):
         assert Query().subsc.by_user('user-name').url_path == '/subsc/user/user-name'
 
     @staticmethod
-    def test_subscription_by_name_urls():
-        assert Query().subsc.by_name('subscription-name').url_path == '/subsc/subscription-name'
-        assert Query().subsc.by_user('user-name').filter_by('subscription-name').url_path == '/subsc/user/user-name/subscription-name'
+    def test_subscription_by_key_urls():
+        assert Query().subsc.by_key('subscription-key').url_path == '/subsc/subscription-key'
+        assert Query().subsc.by_user('user-name').by_key('subscription-key').url_path == '/subsc/user/user-name/subscription-key'
 
     @staticmethod
-    def test_subscription_by_name_dates_urls():
-        assert Query().subsc.by_name('subscription-name').get_dates().url_path == '/subsc/subscription-name/dates'
-        assert Query().subsc.by_name('subscription-name').with_dates('20200115').url_path == '/subsc/subscription-name/dates/20200115'
-        assert Query().subsc.by_name('subscription-name').with_dates('20200115', '20200120').url_path == '/subsc/subscription-name/dates/20200115,20200120'
+    def test_subscription_by_key_dates_urls():
+        assert Query().subsc.by_key('subscription-key').get_dates().url_path == '/subsc/subscription-key/dates'
+        assert Query().subsc.by_key('subscription-key').with_dates('20200115').url_path == '/subsc/subscription-key/dates/20200115TONOW'
+        assert Query().subsc.by_key('subscription-key').with_dates('20200115', '20200120').url_path == '/subsc/subscription-key/dates/20200115TO20200120'
 
     @staticmethod
     def test_subscription_by_status_urls():
@@ -77,19 +77,19 @@ class UnitTest(unittest.TestCase):
 
     @staticmethod
     def test_subscription_results_urls():
-        assert Query().subsc.by_user('user-name').filter_by('subscription').results.last.url_path == '/subsc/user/user-name/subscription/results/last'
-        assert Query().subsc.by_user('user-name').filter_by('subscription').results.last_n(5).url_path == '/subsc/user/user-name/subscription/results/last5'
-        assert Query().subsc.by_user('user-name').filter_by('subscription').results.last_n_years(5, '20200101', '20200215').url_path == '/subsc/user/user-name/subscription/results/5years/20200101,20200215'
-        assert Query().subsc.by_user('user-name').filter_by('subscription').results.around(5, '20200101', '20200215').url_path == '/subsc/user/user-name/subscription/results/5around/20200101,20200215'
-        assert Query().subsc.by_user('user-name').filter_by('subscription').results.dates('20200101', '20200215').url_path == '/subsc/user/user-name/subscription/results/dates/20200101,20200215'
-        assert Query().subsc.by_user('user-name').filter_by('subscription').results.period('20200101', '20200215').url_path == '/subsc/user/user-name/subscription/results/period/20200101TO20200215'
+        assert Query().subsc.by_user('user-name').by_key('subscription').results.last.url_path == '/subsc/user/user-name/subscription/results/last'
+        assert Query().subsc.by_user('user-name').by_key('subscription').results.last_n(5).url_path == '/subsc/user/user-name/subscription/results/last5'
+        assert Query().subsc.by_user('user-name').by_key('subscription').results.last_n_years(5, '20200101', '20200215').url_path == '/subsc/user/user-name/subscription/results/5years/20200101,20200215'
+        assert Query().subsc.by_user('user-name').by_key('subscription').results.around(5, '20200101', '20200215').url_path == '/subsc/user/user-name/subscription/results/5around/20200101,20200215'
+        assert Query().subsc.by_user('user-name').by_key('subscription').results.dates('20200101', '20200215').url_path == '/subsc/user/user-name/subscription/results/dates/20200101,20200215'
+        assert Query().subsc.by_user('user-name').by_key('subscription').results.period('20200101', '20200215').url_path == '/subsc/user/user-name/subscription/results/period/20200101TO20200215'
 
     @staticmethod
     def test_variables_urls():
         assert Query().var.url_path == '/var'
         assert Query().var.forecast.url_path == '/var/forecast'
         assert Query().var.observed.url_path == '/var/observed'
-        assert Query().var.by_name('var-name').url_path == '/var/var-name'
+        assert Query().var.by_key('var-name').url_path == '/var/var-name'
         assert Query().var.by_phenomena('phenomena-name').url_path == '/var/phenom/phenomena-name'
         assert Query().var.by_phenomena('phenomena-name').observed.url_path == '/var/phenom/phenomena-name/observed'
         assert Query().var.by_phenomena('phenomena-name').forecast.url_path == '/var/phenom/phenomena-name/forecast'
