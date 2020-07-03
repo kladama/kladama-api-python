@@ -27,9 +27,54 @@ session = kld.authenticate(env, api_token)
 
 query = kld.Query().var
 
-variables = kld.Context(session).get(query)
-for var in variables:
+response = kld.Context(session).get(query)
+for var in response.result:
     print(var.name, '-', var.description, 'in', var.link)
+```
+
+## How to check if a GeoJson data can be used as a valid AoI in Kladama
+
+```python
+
+import kladama as kld
+
+env = kld.Environments().prod
+api_token = '<your provided token>'
+session = kld.authenticate(env, api_token)
+
+query = kld.SystemInfo.check_aoi({
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "id": "5b8c9e286e63b329cf764c61",
+                        "name": "Farm 455"
+                    },
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [
+                                [-60.675417, -21.854207],
+                                [-60.675394, -21.855348],
+                                [-60.669532, -21.858799],
+                                [-60.656133, -21.85887],
+                                [-60.656118, -21.854208],
+                                [-60.675417, -21.854207]
+                            ]
+                        ]
+                    }
+                }
+            ]
+        })
+
+response = kld.Context(session).get(query)
+if isinstance(response, kld.Error):
+    print(response.__str__())
+else:
+    print('Valid: ', response.result['valid'])
+    for message in response.result['messages']:
+        print(message)
 ```
 
 ## How to add an area of interest (AoI)
@@ -57,7 +102,7 @@ operation = kld.Operations()\
                 "id": "5b8c9e286e63b329cf764c61",
                 "name": "field-1",
                 "geometry": {
-                    "type": "MultiPolygon",
+                    "type": "Polygon",
                     "coordinates": [
                         [
                             [
@@ -80,53 +125,6 @@ if not isinstance(response, kld.Success):
     print(response.__str__())
 ```
 
-## How to check if a GeoJson data can be used as a valid AoI in Kladama
-
-```python
-
-import kladama as kld
-
-env = kld.Environments().prod
-api_token = '<your provided token>'
-session = kld.authenticate(env, api_token)
-
-query = kld.Helpers\
-            .check_aoi({
-                "type": "FeatureCollection",
-                "features": [
-                    {
-                        "type": "Feature",
-                        "properties": {
-                            "id": "5b8c9e286e63b329cf764c61",
-                            "name": "Farm 455"
-                        },
-                        "geometry": {
-                            "type": "Polygon",
-                            "coordinates": [
-                                [
-                                    [-60.675417, -21.854207],
-                                    [-60.675394, -21.855348],
-                                    [-60.669532, -21.858799],
-                                    [-60.656133, -21.85887],
-                                    [-60.656118, -21.854208],
-                                    [-60.675417, -21.854207]
-                                ]
-                            ]
-                        }
-                    }
-                ]
-            })
-
-response = kld.Context(session).get(query)
-if isinstance(response, kld.Error):
-    print(response.__str__())
-else:
-    print('Valid: ', response['valid'])
-    for message in response['messages']:
-        print(message)
-```
-
-
 ## How to create a Periodic Subscription to a variable
 
 ```python
@@ -142,7 +140,6 @@ operation = kld.Operations()\
     .periodic_subsc\
     .for_user('<your user>')\
     .with_variable('<var name>')\
-    .with_source('ECMWF')\
     .with_operation('MEAN')\
     .with_aoi('<aoi name>')
 
@@ -167,12 +164,16 @@ session = kld.authenticate(env, api_token)
 query = kld.Query()\
     .subsc\
     .by_user('<your user>')\
-    .filter_by('<subscription code>')\
+    .by_key('<subscription code>')\
+    .results\
     .last
 
 response = kld.Context(session).get(query)
 if isinstance(response, kld.Error):
     print(response.__str__())
+elif response.result is None:
+    print('response is successful but empty')
 else:
+    assert isinstance(response.result, kld.BinaryResult)
     print('Name: ', response.name, ' Binary Content:\n', b64.b64encode(response.content).decode('utf-8'))
 ```
