@@ -1,5 +1,7 @@
 import unittest
-from kladama import *
+from kladama.info import *
+from kladama.operations import *
+from kladama.queries import *
 
 
 class UnitTest(unittest.TestCase):
@@ -10,6 +12,11 @@ class UnitTest(unittest.TestCase):
         assert Query().aoi.by_name('aoi-name').url_path == '/aoi/aoi-name'
         assert Query().aoi.by_user('user-name').url_path == '/aoi/user/user-name'
         assert Query().aoi.by_user('user-name').filter_by('aoi-name').url_path == '/aoi/user/user-name/aoi-name'
+
+    @staticmethod
+    def test_aoi_validation_urls():
+        assert SystemInfo.check_aoi({}).url_path == '/do/aoivalidation'
+        assert SystemInfo.check_aoi({}).method == 'post'
 
     @staticmethod
     def test_phenom_urls():
@@ -45,12 +52,37 @@ class UnitTest(unittest.TestCase):
         assert Query().schedule.by_user('u1').by_subsc('s1', 's2').url_path == '/schedule/user/u1/subsc/s1,s2'
 
     @staticmethod
-    def test_subscription_urls():
+    def test_subscription_url():
         assert Query().subsc.url_path == '/subsc'
-        assert Query().subsc.by_name('subscription-name').url_path == '/subsc/subscription-name'
+
+    @staticmethod
+    def test_subscription_by_users_url():
         assert Query().subsc.by_user('user-name').url_path == '/subsc/user/user-name'
-        assert Query().subsc.by_user('user-name').filter_by('subscription-name') \
-                   .url_path == '/subsc/user/user-name/subscription-name'
+
+    @staticmethod
+    def test_subscription_by_name_urls():
+        assert Query().subsc.by_name('subscription-name').url_path == '/subsc/subscription-name'
+        assert Query().subsc.by_user('user-name').filter_by('subscription-name').url_path == '/subsc/user/user-name/subscription-name'
+
+    @staticmethod
+    def test_subscription_by_name_dates_urls():
+        assert Query().subsc.by_name('subscription-name').get_dates().url_path == '/subsc/subscription-name/dates'
+        assert Query().subsc.by_name('subscription-name').with_dates('20200115').url_path == '/subsc/subscription-name/dates/20200115'
+        assert Query().subsc.by_name('subscription-name').with_dates('20200115', '20200120').url_path == '/subsc/subscription-name/dates/20200115,20200120'
+
+    @staticmethod
+    def test_subscription_by_status_urls():
+        assert Query().subsc.by_status(1).url_path == '/subsc/status/1'
+        assert Query().subsc.by_user('user-name').by_status(1).url_path == '/subsc/user/user-name/status/1'
+
+    @staticmethod
+    def test_subscription_results_urls():
+        assert Query().subsc.by_user('user-name').filter_by('subscription').results.last.url_path == '/subsc/user/user-name/subscription/results/last'
+        assert Query().subsc.by_user('user-name').filter_by('subscription').results.last_n(5).url_path == '/subsc/user/user-name/subscription/results/last5'
+        assert Query().subsc.by_user('user-name').filter_by('subscription').results.last_n_years(5, '20200101', '20200215').url_path == '/subsc/user/user-name/subscription/results/5years/20200101,20200215'
+        assert Query().subsc.by_user('user-name').filter_by('subscription').results.around(5, '20200101', '20200215').url_path == '/subsc/user/user-name/subscription/results/5around/20200101,20200215'
+        assert Query().subsc.by_user('user-name').filter_by('subscription').results.dates('20200101', '20200215').url_path == '/subsc/user/user-name/subscription/results/dates/20200101,20200215'
+        assert Query().subsc.by_user('user-name').filter_by('subscription').results.period('20200101', '20200215').url_path == '/subsc/user/user-name/subscription/results/period/20200101TO20200215'
 
     @staticmethod
     def test_variables_urls():
@@ -65,21 +97,6 @@ class UnitTest(unittest.TestCase):
         assert Query().var.by_sources('source-1', 'source-2').url_path == '/var/src/source-1,source-2'
         assert Query().var.by_sources('source-1').observed.url_path == '/var/src/source-1/observed'
         assert Query().var.by_sources('source-1').forecast.url_path == '/var/src/source-1/forecast'
-
-    @staticmethod
-    def test_binary_urls():
-        assert Query().subsc.by_user('user-name').filter_by('subscription').last\
-                   .url_path == '/subsc/user/user-name/subscription/last'
-        assert Query().subsc.by_user('user-name').filter_by('subscription').last_n(5)\
-                   .url_path == '/subsc/user/user-name/subscription/last5'
-        assert Query().subsc.by_user('user-name').filter_by('subscription').last_years(5, '20200101', '20200215')\
-                   .url_path == '/subsc/user/user-name/subscription/5years/20200101,20200215'
-        assert Query().subsc.by_user('user-name').filter_by('subscription').around(5, '20200101', '20200215')\
-                   .url_path == '/subsc/user/user-name/subscription/5around/20200101,20200215'
-        assert Query().subsc.by_user('user-name').filter_by('subscription').dates('20200101', '20200215')\
-                   .url_path == '/subsc/user/user-name/subscription/dates/20200101,20200215'
-        assert Query().subsc.by_user('user-name').filter_by('subscription').period('20200101', '20200215')\
-                   .url_path == '/subsc/user/user-name/subscription/period/20200101TO20200215'
 
     @staticmethod
     def test_create_aoi_url_path():

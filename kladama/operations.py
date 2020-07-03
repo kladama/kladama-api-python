@@ -385,3 +385,34 @@ class ReScheduleBuilder(OperationBuilder):
     def for_subsc(self, *subscriptions):
         self._subscriptions = subscriptions
         return self
+
+
+class Operations:
+
+    @property
+    def add_aoi(self):
+        return CreateAreaOfInterestBuilder()
+
+    @property
+    def check_schedule(self):
+        return CheckScheduleBuilder()
+
+    @property
+    def clear_schedule(self):
+        return ClearScheduleBuilder()
+
+    @property
+    def delete_aoi(self):
+        return DeleteAreaOfInterestBuilder()
+
+    @property
+    def periodic_subsc(self):
+        return CreatePeriodicSubscriptionBuilder()
+
+    @property
+    def re_schedule(self):
+        return ReScheduleBuilder()
+
+    @property
+    def unsubscribe(self):
+        return DeleteSubscriptionBuilder()

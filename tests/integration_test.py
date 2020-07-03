@@ -1,10 +1,13 @@
 import datetime
 import unittest
-from kladama import *
+from kladama import authenticate
+from kladama import Environments
+from kladama.context import *
+from kladama.entities import *
 
 
-def _get_sandbox_session():
-    env = Environments().sandbox
+def _get_dev_session():
+    env = Environments().dev
     api_token = 'ANYTHING_WORKS_NOW'
     return authenticate(env, api_token)
 
@@ -75,7 +78,7 @@ class OperationIntegrationTest(unittest.TestCase):
 
     @staticmethod
     def _get_context():
-        session = _get_sandbox_session()
+        session = _get_dev_session()
         return Context(session)
 
     @staticmethod
@@ -365,9 +368,9 @@ class OperationIntegrationTest(unittest.TestCase):
         ctx = OperationIntegrationTest._get_context()
         var_query = Query().var
         variables = ctx.get(var_query)
-        self.failIf(len(variables) == 0, "Cannot find variables to be used in subscriptions")
+        self.failIf(len(variables.result) == 0, "Cannot find variables to be used in subscriptions")
 
-        first_var: Variable = variables[0]
+        first_var: Variable = variables.result[0]
 
         create_operation = Operations() \
             .periodic_subsc \
@@ -435,84 +438,87 @@ class OperationIntegrationTest(unittest.TestCase):
 
 class QueryIntegrationTest(unittest.TestCase):
 
-    @staticmethod
-    def test_areas_of_interest():
+    _user = 'dev_it'
+    _empty_subscription = 'FA66FH1EUG2KSKUZPFIHNLY7F536SM'
+    _subscription = '35XY51E5M2Z1QI6VRDB766LHPO038K'
+
+    def test_areas_of_interest(self):
         print('Testing Areas of Interest ========================')
 
         # given
-        session = _get_sandbox_session()
+        session = _get_dev_session()
         query = Query().aoi
 
         # when
-        aois = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert len(aois) > 0
-        for aoi in aois:
-            assert isinstance(aoi, AreaOfInterest)
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertTrue(len(res.result) > 0)
+        for aoi in res.result:
+            self.assertIsInstance(aoi, AreaOfInterest)
             print(aoi.name, '-', aoi.description, 'in', aoi.link)
 
         print('\n')
 
-    @staticmethod
-    def test_get_areas_of_interest_by_user_dev():
+    def test_get_areas_of_interest_by_user_dev(self):
         print('Testing Areas of Interest for user dev ========================')
 
         # given
-        session = _get_sandbox_session()
-        query = Query().aoi.by_user('dev')
+        session = _get_dev_session()
+        query = Query().aoi.by_user(self._user)
 
         # when
-        aois = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert len(aois) > 0
-        for aoi in aois:
-            assert isinstance(aoi, AreaOfInterest)
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertTrue(len(res.result) > 0)
+        for aoi in res.result:
+            self.assertIsInstance(aoi, AreaOfInterest)
             print(aoi.name, '-', aoi.description, 'in', aoi.link)
 
         print('\n')
 
-    @staticmethod
-    def test_variables():
+    def test_variables(self):
         print('Testing Variables ========================')
 
         # given
-        session = _get_sandbox_session()
+        session = _get_dev_session()
         query = Query().var
 
         # when
-        variables = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert len(variables) > 0
-        for var in variables:
-            assert isinstance(var, Variable)
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertTrue(len(res.result) > 0)
+        for var in res.result:
+            self.assertIsInstance(var, Variable)
             print(var.name, 'from', var.source.name, 'in', var.link)
 
         print('\n')
 
-    @staticmethod
-    def test_sources():
+    def test_sources(self):
         print('Testing Sources ========================')
 
         # given
-        session = _get_sandbox_session()
+        session = _get_dev_session()
         query = Query().src
 
         # when
-        sources = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert len(sources) > 0
-        for source in sources:
-            assert isinstance(source, Source)
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertTrue(len(res.result) > 0)
+        for source in res.result:
+            self.assertIsInstance(source, Source)
             print(source.name, ':', source.description, 'in', source.link)
 
         print('\n')
 
-    @staticmethod
-    def test_get_source_by_name():
+    def test_get_source_by_name(self):
 
         # given
         source_names = [
@@ -522,7 +528,7 @@ class QueryIntegrationTest(unittest.TestCase):
             'NOAA-STAR',
             'ESA',
         ]
-        session = _get_sandbox_session()
+        session = _get_dev_session()
         ctx = Context(session)
 
         for source_name in source_names:
@@ -532,51 +538,50 @@ class QueryIntegrationTest(unittest.TestCase):
             query = Query().src.by_name(source_name)
 
             # when
-            source = ctx.get(query)
+            res = ctx.get(query)
 
             # then
-            assert isinstance(source, Source)
-            assert source.name == source_name
-            print(source_name, ':', source.description, 'in', source.link)
+            self.assertIsInstance(res, Success, res.__str__())
+            self.assertIsInstance(res.result, Source)
+            self.assertEqual(res.result.name, source_name)
+            print(source_name, ':', res.result.description, 'in', res.result.link)
             print('\n')
 
-    @staticmethod
-    def test_phenomenas():
+    def test_phenomenas(self):
         print('Testing Phenoms ========================')
 
         # given
-        session = _get_sandbox_session()
+        session = _get_dev_session()
         query = Query().phenom
 
         # when
-        phenoms = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert len(phenoms) > 0
-        for phenom in phenoms:
-            assert isinstance(phenom, Phenomena)
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertTrue(len(res.result) > 0)
+        for phenom in res.result:
+            self.assertIsInstance(phenom, Phenomena)
             print(phenom.name, ':', phenom.description, 'in', phenom.link)
 
         print('\n')
 
-    @staticmethod
-    def test_phenoms_by_not_existing_name():
+    def test_phenoms_by_not_existing_name(self):
         print('Testing Phenom by not existing name ========================')
 
         # given
-        session = _get_sandbox_session()
+        session = _get_dev_session()
         query = Query().phenom.by_name('FAKE NAME')
 
         # when
-        phenom = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert isinstance(phenom, Error)
-        assert phenom.code == 404
-        print('Expected error message: {0}'.format(phenom.message))
+        self.assertIsInstance(res, Error, res.__str__())
+        self.assertEqual(404, res.code)
+        print('Expected error message: {0}'.format(res.message))
 
-    @staticmethod
-    def test_get_phenomena_by_name():
+    def test_get_phenomena_by_name(self):
 
         # given
         phenom_names = [
@@ -588,7 +593,7 @@ class QueryIntegrationTest(unittest.TestCase):
             'solar radiation',
             'evaporation',
         ]
-        session = _get_sandbox_session()
+        session = _get_dev_session()
         ctx = Context(session)
 
         for phenom_name in phenom_names:
@@ -598,232 +603,347 @@ class QueryIntegrationTest(unittest.TestCase):
             query = Query().phenom.by_name(phenom_name)
 
             # when
-            phenom = ctx.get(query)
+            res = ctx.get(query)
 
             # then
-            assert isinstance(phenom, Phenomena)
-            assert phenom.name == phenom_name
-            print(phenom_name, ':', phenom.description, 'in', phenom.link)
+            self.assertIsInstance(res, Success, res.__str__())
+            self.assertIsInstance(res.result, Phenomena)
+            self.assertEqual(res.result.name, phenom_name)
+            print(phenom_name, ':', res.result.description, 'in', res.result.link)
             print('\n')
 
-    @staticmethod
-    def test_get_phenomena_from_esa_and_cpc():
+    def test_get_phenomena_from_esa_and_cpc(self):
         print('Testing Phenom from ESA and NOAA-CPC ========================')
 
         # given
-        session = _get_sandbox_session()
+        session = _get_dev_session()
         query = Query().phenom.by_sources('ESA', 'NOAA-CPC')
 
         # when
-        phenomenas = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert len(phenomenas) > 0
-        for phenomena in phenomenas:
-            assert isinstance(phenomena, Phenomena)
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertTrue(len(res.result) > 0)
+        for phenomena in res.result:
+            self.assertIsInstance(phenomena, Phenomena)
             print(phenomena.name, ':', phenomena.description, 'in', phenomena.link)
             print('\n')
 
-    @staticmethod
-    def test_organizations():
+    def test_organizations(self):
         print('Testing Organizations ========================')
 
         # given
-        session = _get_sandbox_session()
+        session = _get_dev_session()
         query = Query().org
 
         # when
-        organizations = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert len(organizations) > 0
-        for organization in organizations:
-            assert isinstance(organization, Organization)
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertTrue(len(res.result) > 0)
+        for organization in res.result:
+            self.assertIsInstance(organization, Organization)
             print(organization.name, ':', organization.acronym, 'in', organization.link)
 
         print('\n')
 
-    @staticmethod
-    def test_users():
+    def test_users(self):
         print('Testing Users ========================')
 
         # given
-        session = _get_sandbox_session()
+        session = _get_dev_session()
         query = Query().user
 
         # when
-        users = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert len(users) > 0
-        for user in users:
-            assert isinstance(user, User)
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertTrue(len(res.result) > 0)
+        for user in res.result:
+            self.assertIsInstance(user, User)
             print(user.username, 'from', user.organization.name, 'in', user.link)
 
         print('\n')
 
-    @staticmethod
-    def test_schedules():
+    def test_schedules(self):
         print('Testing Schedules ========================')
 
         # given
-        session = _get_sandbox_session()
+        session = _get_dev_session()
         query = Query().schedule
 
         # when
-        schedules = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        for schedule in schedules:
-            assert isinstance(schedule, Schedule)
+        self.assertIsInstance(res, Success, res.__str__())
+        for schedule in res.result:
+            self.assertIsInstance(schedule, Schedule)
             print(schedule.user, 'has job:', schedule.job_id, 'that is executed', schedule.cron_exp)
 
         print('\n')
 
-    @staticmethod
-    def test_schedules_by_users():
+    def test_schedules_by_users(self):
         print('Testing Schedules ========================')
 
         # given
-        session = _get_sandbox_session()
-        query = Query().schedule.by_user('dev')
+        session = _get_dev_session()
+        query = Query().schedule.by_user(self._user)
 
         # when
-        schedules = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        for schedule in schedules:
-            assert isinstance(schedule, Schedule)
+        self.assertIsInstance(res, Success, res.__str__())
+        for schedule in res.result:
+            self.assertIsInstance(schedule, Schedule)
             print(schedule.user, 'has job:', schedule.job_id, 'that is executed', schedule.cron_exp)
 
         print('\n')
 
-    @staticmethod
-    def test_subscriptions():
+    def test_subscriptions(self):
         print('Testing Subscriptions ========================')
 
         # given
-        session = _get_sandbox_session()
+        session = _get_dev_session()
         query = Query().subsc
 
         # when
-        subscriptions = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert len(subscriptions) > 0
-        for subscription in subscriptions:
-            assert isinstance(subscription, Subscription)
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertTrue(len(res.result) > 0)
+        for subscription in res.result:
+            self.assertIsInstance(subscription, Subscription)
             print(subscription.code, 'from', subscription.owner, 'in', subscription.link)
 
         print('\n')
 
-    @staticmethod
-    def test_around():
+    def test_subscriptions_by_active_status(self):
+        print('Testing Subscriptions ========================')
+
         # given
-        user = 'ensoag'
-        subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
-        session = _get_sandbox_session()
-        query = Query().subsc.by_user(user).filter_by(subscription).around(5, '20200105', '20200115')
+        session = _get_dev_session()
+        query = Query().subsc.by_status(1)
 
         # when
-        entity = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert isinstance(entity, BinaryData)
-        assert subscription in entity.name
-        assert len(entity.content) > 0
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertTrue(len(res.result) > 0)
+        for subscription in res.result:
+            self.assertIsInstance(subscription, Subscription)
+            self.assertEqual(1, subscription.status)
+            print(subscription.code, 'from', subscription.owner, 'in', subscription.link)
 
-    @staticmethod
-    def test_last():
+        print('\n')
+
+    def test_subscriptions_by_user_with_active_status(self):
+        print('Testing Subscriptions ========================')
+
         # given
-        user = 'ensoag'
-        subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
-        session = _get_sandbox_session()
-        query = Query().subsc.by_user(user).filter_by(subscription).last
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).by_status(1)
 
         # when
-        entity = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert isinstance(entity, BinaryData)
-        assert subscription in entity.name
-        assert len(entity.content) > 0
+        self.assertIsInstance(res, Success, res.__str__())
+        for subscription in res.result:
+            self.assertIsInstance(subscription, Subscription)
+            self.assertEqual(1, subscription.status)
+            print(subscription.code, 'from', subscription.owner, 'in', subscription.link)
 
-    @staticmethod
-    def test_last_n():
+        print('\n')
+
+    def test_around(self):
         # given
-        user = 'ensoag'
-        subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
-        session = _get_sandbox_session()
-        query = Query().subsc.by_user(user).filter_by(subscription).last_n(5)
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).filter_by(self._subscription).results.around(5, '20200519', '20200622')
 
         # when
-        entity = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert isinstance(entity, BinaryData)
-        assert subscription in entity.name
-        assert len(entity.content) > 0
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertIsInstance(res.result, BinaryResult)
+        self.assertIn(self._subscription, res.result.name)
+        self.assertTrue(len(res.result.content) > 0)
 
-    @staticmethod
-    def test_last_years():
+    def test_around_empty(self):
         # given
-        user = 'ensoag'
-        subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
-        session = _get_sandbox_session()
-        query = Query().subsc.by_user(user).filter_by(subscription).last_years(5, '20200105', '20200115')
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).filter_by(self._empty_subscription).results.around(5, '20200105', '20200115')
 
         # when
-        entity = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert isinstance(entity, BinaryData)
-        assert subscription in entity.name
-        assert len(entity.content) > 0
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertIsNone(res.result)
 
-    @staticmethod
-    def test_dates():
+    def test_last(self):
         # given
-        user = 'ensoag'
-        subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
-        session = _get_sandbox_session()
-        query = Query().subsc.by_user(user).filter_by(subscription).dates('20200105', '20200115')
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).filter_by(self._subscription).results.last
 
         # when
-        entity = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert isinstance(entity, BinaryData)
-        assert subscription in entity.name
-        assert len(entity.content) > 0
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertIsInstance(res.result, BinaryResult)
+        self.assertIn(self._subscription, res.result.name)
+        self.assertTrue(len(res.result.content) > 0)
 
-    @staticmethod
-    def test_period():
+    def test_last_empty(self):
         # given
-        user = 'ensoag'
-        subscription = '3JSM4MN89SJFLE7VR6KPCM0BVPXTWT'
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).filter_by(self._empty_subscription).results.last
+
+        # when
+        res = Context(session).get(query)
+
+        # then
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertIsNone(res.result)
+
+    def test_last_n(self):
+        # given
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).filter_by(self._subscription).results.last_n(5)
+
+        # when
+        res = Context(session).get(query)
+
+        # then
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertIsInstance(res.result, BinaryResult)
+        self.assertIn(self._subscription, res.result.name)
+        self.assertTrue(len(res.result.content) > 0)
+
+    def test_last_n_empty(self):
+        # given
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).filter_by(self._empty_subscription).results.last_n(5)
+
+        # when
+        res = Context(session).get(query)
+
+        # then
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertIsNone(res.result)
+
+    def test_last_years(self):
+        # given
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).filter_by(self._subscription).results.last_n_years(5, '20200519', '20200622')
+
+        # when
+        res = Context(session).get(query)
+
+        # then
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertIsInstance(res.result, BinaryResult)
+        self.assertIn(self._subscription, res.result.name)
+        self.assertTrue(len(res.result.content) > 0)
+
+    def test_last_years_empty(self):
+        # given
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).filter_by(self._empty_subscription).results.last_n_years(5, '20200105', '20200115')
+
+        # when
+        res = Context(session).get(query)
+
+        # then
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertIsNone(res.result)
+
+    def test_dates(self):
+        # given
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).filter_by(self._subscription).results.dates('20200519', '20200622')
+
+        # when
+        res = Context(session).get(query)
+
+        # then
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertIsInstance(res.result, BinaryResult)
+        self.assertIn(self._subscription, res.result.name)
+        self.assertTrue(len(res.result.content) > 0)
+
+    def test_dates_empty(self):
+        # given
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).filter_by(self._empty_subscription).results.last_n_years(5, '20200105', '20200115')
+
+        # when
+        res = Context(session).get(query)
+
+        # then
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertIsNone(res.result)
+
+    def test_subscriptions_dates(self):
+        # given
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).filter_by(self._subscription).results.dates('20200519', '20200622')
+
+        # when
+        res = Context(session).get(query)
+
+        # then
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertIsInstance(res.result, BinaryResult)
+        self.assertIn(self._subscription, res.result.name)
+        self.assertTrue(len(res.result.content) > 0)
+
+    def test_period(self):
+        # given
+        from_ = '20200101'
+        to = '20200701'
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).filter_by(self._subscription).results.period(from_, to)
+
+        # when
+        res = Context(session).get(query)
+
+        # then
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertIsInstance(res.result, BinaryResult)
+        self.assertIn(self._subscription, res.result.name)
+        self.assertIn('{0}_TO_{1}'.format(from_, to), res.result.name)
+        self.assertTrue(len(res.result.content) > 0)
+
+    def test_period_empty(self):
+        # given
         from_ = '20200101'
         to = '20200301'
-        session = _get_sandbox_session()
-        query = Query().subsc.by_user(user).filter_by(subscription).period(from_, to)
+        session = _get_dev_session()
+        query = Query().subsc.by_user(self._user).filter_by(self._empty_subscription).results.period(from_, to)
 
         # when
-        entity = Context(session).get(query)
+        res = Context(session).get(query)
 
         # then
-        assert isinstance(entity, BinaryData)
-        assert subscription in entity.name
-        assert '{0}_TO_{1}'.format(from_, to) in entity.name
-        assert len(entity.content) > 0
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertIsNone(res.result)
 
 
-class HelperTest(unittest.TestCase):
+class SystemInfoTest(unittest.TestCase):
 
-    @staticmethod
-    def test_check_aoi():
+    def test_check_aoi(self):
         # given
-        session = _get_sandbox_session()
-        helper = Helpers\
+        session = _get_dev_session()
+        helper = SystemInfo\
             .check_aoi({
                 "type": "FeatureCollection",
                 "features": [
@@ -983,10 +1103,11 @@ class HelperTest(unittest.TestCase):
             })
 
         # when
-        check_aoi = Context(session).get(helper)
+        res = Context(session).get(helper)
 
-        assert not isinstance(check_aoi, Error)
-        assert check_aoi['valid']
+        # then
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertTrue(res.result['valid'])
 
 
 if __name__ == '__main__':

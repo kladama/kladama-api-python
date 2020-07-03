@@ -27,8 +27,8 @@ session = kld.authenticate(env, api_token)
 
 query = kld.Query().var
 
-variables = kld.Context(session).get(query)
-for var in variables:
+response = kld.Context(session).get(query)
+for var in response.result:
     print(var.name, '-', var.description, 'in', var.link)
 ```
 
@@ -90,39 +90,38 @@ env = kld.Environments().prod
 api_token = '<your provided token>'
 session = kld.authenticate(env, api_token)
 
-query = kld.Helpers\
-            .check_aoi({
-                "type": "FeatureCollection",
-                "features": [
-                    {
-                        "type": "Feature",
-                        "properties": {
-                            "id": "5b8c9e286e63b329cf764c61",
-                            "name": "Farm 455"
-                        },
-                        "geometry": {
-                            "type": "Polygon",
-                            "coordinates": [
-                                [
-                                    [-60.675417, -21.854207],
-                                    [-60.675394, -21.855348],
-                                    [-60.669532, -21.858799],
-                                    [-60.656133, -21.85887],
-                                    [-60.656118, -21.854208],
-                                    [-60.675417, -21.854207]
-                                ]
+query = kld.SystemInfo.check_aoi({
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "id": "5b8c9e286e63b329cf764c61",
+                        "name": "Farm 455"
+                    },
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [
+                                [-60.675417, -21.854207],
+                                [-60.675394, -21.855348],
+                                [-60.669532, -21.858799],
+                                [-60.656133, -21.85887],
+                                [-60.656118, -21.854208],
+                                [-60.675417, -21.854207]
                             ]
-                        }
+                        ]
                     }
-                ]
-            })
+                }
+            ]
+        })
 
 response = kld.Context(session).get(query)
 if isinstance(response, kld.Error):
     print(response.__str__())
 else:
-    print('Valid: ', response['valid'])
-    for message in response['messages']:
+    print('Valid: ', response.result['valid'])
+    for message in response.result['messages']:
         print(message)
 ```
 
@@ -168,11 +167,15 @@ query = kld.Query()\
     .subsc\
     .by_user('<your user>')\
     .filter_by('<subscription code>')\
+    .results\
     .last
 
 response = kld.Context(session).get(query)
 if isinstance(response, kld.Error):
     print(response.__str__())
+elif response.result is None:
+    print('response is successful but empty')
 else:
+    assert isinstance(response.result, kld.BinaryResult)
     print('Name: ', response.name, ' Binary Content:\n', b64.b64encode(response.content).decode('utf-8'))
 ```

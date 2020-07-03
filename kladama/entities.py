@@ -1,59 +1,4 @@
-class EntityMetadata:
-
-    def __init__(self, entity_class, json_obj, url_base_path):
-        self._entity_class = entity_class
-        self._json_obj = json_obj
-        self._url_base_path = url_base_path
-
-    @property
-    def entity_class(self):
-        return self._entity_class
-
-    @property
-    def json_obj(self):
-        return self._json_obj
-
-    @property
-    def url_base_path(self):
-        return self._url_base_path
-
-
-def get_aoi_meta():
-    return EntityMetadata(AreaOfInterest, 'areas_of_interest', 'aoi')
-
-
-def get_phenom_meta():
-    return EntityMetadata(Phenomena, 'phenomena', 'phenom')
-
-
-def get_org_meta():
-    return EntityMetadata(Organization, 'organizations', 'org')
-
-
-def get_src_meta():
-    return EntityMetadata(Source, 'sources', 'src')
-
-
-def get_schedule_meta():
-    return EntityMetadata(Schedule, 'triggers', 'schedule')
-
-
-def get_subsc_meta():
-    return EntityMetadata(Subscription, 'subscriptions', 'subsc')
-
-
-def get_user_meta():
-    return EntityMetadata(User, 'users', 'user')
-
-
-def get_var_meta():
-    return EntityMetadata(Variable, 'variables', 'var')
-
-
-# entity classes
-
-class Entity:
-    pass
+from abc import ABC
 
 
 class Identifiable:
@@ -99,18 +44,22 @@ class Linkable:
         return self._all_links
 
 
-class AreaOfInterest(Entity, Describable, Linkable):
+# Entity DTO types
+
+class EntityDTO(ABC):
+    pass
+
+
+class AreaOfInterest(EntityDTO, Describable, Linkable):
 
     def __init__(self, obj):
-        Entity.__init__(self)
         Describable.__init__(self, obj)
         Linkable.__init__(self, obj)
 
 
-class BinaryData(Entity, Identifiable):
+class BinaryResult(EntityDTO, Identifiable):
 
     def __init__(self, obj):
-        Entity.__init__(self)
         Identifiable.__init__(self, obj)
         self._content = obj['content']
 
@@ -119,18 +68,9 @@ class BinaryData(Entity, Identifiable):
         return self._content
 
 
-class Phenomena(Entity, Describable, Linkable):
+class Organization(EntityDTO, Identifiable, Linkable):
 
     def __init__(self, obj):
-        Entity.__init__(self)
-        Describable.__init__(self, obj)
-        Linkable.__init__(self, obj)
-
-
-class Organization(Entity, Identifiable, Linkable):
-
-    def __init__(self, obj):
-        Entity.__init__(self)
         Identifiable.__init__(self, obj)
         Linkable.__init__(self, obj)
         self._acronym = obj['acronym']
@@ -160,18 +100,16 @@ class Organization(Entity, Identifiable, Linkable):
         return self._migrated_credits
 
 
-class Source(Entity, Describable, Linkable):
+class Phenomena(EntityDTO, Describable, Linkable):
 
     def __init__(self, obj):
-        Entity.__init__(self)
         Describable.__init__(self, obj)
         Linkable.__init__(self, obj)
 
 
-class Schedule(Entity, Linkable):
+class Schedule(EntityDTO, Linkable):
 
     def __init__(self, obj):
-        Entity.__init__(self)
         Linkable.__init__(self, obj)
         self._job_id = obj['job_id']
         self._user = obj['user']
@@ -210,10 +148,16 @@ class Schedule(Entity, Linkable):
         return self._cron_exp
 
 
-class Subscription(Entity, Linkable):
+class Source(EntityDTO, Describable, Linkable):
 
     def __init__(self, obj):
-        Entity.__init__(self)
+        Describable.__init__(self, obj)
+        Linkable.__init__(self, obj)
+
+
+class Subscription(EntityDTO, Linkable):
+
+    def __init__(self, obj):
         Linkable.__init__(self, obj)
         self._code = obj['code']
         self._owner = obj['owner']
@@ -262,10 +206,9 @@ class Subscription(Entity, Linkable):
         return self._variable
 
 
-class User(Entity, Identifiable, Linkable):
+class User(EntityDTO, Identifiable, Linkable):
 
     def __init__(self, obj):
-        Entity.__init__(self)
         Identifiable.__init__(self, obj)
         Linkable.__init__(self, obj)
         self._username = obj['login']
@@ -280,10 +223,9 @@ class User(Entity, Identifiable, Linkable):
         return self._organization
 
 
-class Variable(Entity, Describable, Linkable):
+class Variable(EntityDTO, Describable, Linkable):
 
     def __init__(self, obj):
-        Entity.__init__(self)
         Describable.__init__(self, obj)
         Linkable.__init__(self, obj)
         self._type = obj['type']
