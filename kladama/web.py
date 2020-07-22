@@ -78,5 +78,5 @@ class WebRequester:
         api_token = self.session.api_token
         return {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer {0}'.format(api_token)
+            'x-api-key': api_token
         }

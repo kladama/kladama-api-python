@@ -19,7 +19,7 @@ class Context:
         if isinstance(res, Success) and isinstance(res.result, list):
             arr = res.result
             if len(arr) > 0 and isinstance(query, SingleResultQuery):
-                return Success(arr[0])
+                return Success(arr[0], res.type)
 
         return res
 
