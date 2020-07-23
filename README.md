@@ -147,11 +147,17 @@ transaction = kld.Transactions()\
     .with_aoi('<aoi name>')
 
 response = kld.Context(session).execute(transaction)
+
 if isinstance(response, kld.Success):
-    code = response.result['code'] # the code is the id of the subscription
+
+    if response.type == 'ok':
+        code = response.result['code'] # the code is the id of the subscription
+        print("New subscription code: ", code)
+    else:
+        print("Redirect to: ", response.result['href'])
 else:
     print(response.__str__())
-```
+ ```
 
 ## How to get last data from a periodic subscription
 
