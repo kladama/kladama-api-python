@@ -8,7 +8,7 @@ from kladama.entities import *
 
 def _get_dev_session():
     env = Environments().dev
-    api_token = 'ANYTHING_WORKS_NOW'
+    api_token = '1111-2222-3333-4444'
     return authenticate(env, api_token)
 
 

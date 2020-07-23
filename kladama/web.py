@@ -43,7 +43,7 @@ class WebRequester:
         url = self._get_url_from(sub_path)
         headers = self._get_web_headers()
 
-        return requests.get(url, headers)
+        return requests.get(url, headers=headers)
 
     def get_with_content(self, sub_path, obj):
         url = self._get_url_from(sub_path)
