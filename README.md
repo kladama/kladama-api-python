@@ -45,7 +45,7 @@ env = kld.Environments().prod
 api_token = '<your provided token>'
 session = kld.authenticate(env, api_token)
 
-query = kld.Services.validate_aoi({
+query = kld.Services().validate_aoi({
             "type": "FeatureCollection",
             "features": [
                 {
