@@ -143,7 +143,7 @@ transaction = kld.Transactions()\
     .periodic_subsc\
     .for_user('<your user>')\
     .with_variable('<var name>')\
-    .with_operation('MEAN')\
+    .with_operation('MEAN')\ # could be any other Spatial Operation (MIN, MAX, STD, etc)
     .with_aoi('<aoi name>')
 
 response = kld.Context(session).execute(transaction)
