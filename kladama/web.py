@@ -43,31 +43,31 @@ class WebRequester:
         url = self._get_url_from(sub_path)
         headers = self._get_web_headers()
 
-        return requests.get(url, headers=headers)
+        return requests.get(url, headers=headers, allow_redirects=False)
 
     def get_with_content(self, sub_path, obj):
         url = self._get_url_from(sub_path)
         headers = self._get_web_headers()
 
-        return requests.get(url, headers=headers, data=json.dumps(obj))
+        return requests.get(url, headers=headers, data=json.dumps(obj), allow_redirects=False)
 
     def delete(self, sub_path):
         url = self._get_url_from(sub_path)
         headers = self._get_web_headers()
 
-        return requests.delete(url, headers=headers)
+        return requests.delete(url, headers=headers, allow_redirects=False)
 
     def post(self, sub_path, obj):
         url = self._get_url_from(sub_path)
         headers = self._get_web_headers()
 
-        return requests.post(url, headers=headers, data=json.dumps(obj))
+        return requests.post(url, headers=headers, data=json.dumps(obj), allow_redirects=False)
 
     def put(self, sub_path, obj):
         url = self._get_url_from(sub_path)
         headers = self._get_web_headers()
 
-        return requests.put(url, headers=headers, data=json.dumps(obj))
+        return requests.put(url, headers=headers, data=json.dumps(obj), allow_redirects=False)
 
     # private members
 
