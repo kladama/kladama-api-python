@@ -151,10 +151,10 @@ response = kld.Context(session).execute(transaction)
 if isinstance(response, kld.Success):
 
     if response.type == 'ok':
-        code = response.result['code'] # the code is the id of the subscription
+        code = response.result['code'] # property 'code' contains ID of new created subscription
         print("New subscription code: ", code)
     else:
-        print("Redirect to: ", response.result['href'])
+        print("Redirect to: ", response.result['href']) # property 'href' contains URI of identical subscription resource
 else:
     print(response.__str__())
  ```
