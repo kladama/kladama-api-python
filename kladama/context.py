@@ -19,7 +19,7 @@ class Context:
         if isinstance(res, Success) and isinstance(res.result, list):
             arr = res.result
             if len(arr) > 0 and isinstance(query, SingleResultQuery):
-                return Success(arr[0], res.type)
+                return Success(res.code, arr[0])
 
         return res
 
@@ -27,19 +27,23 @@ class Context:
         operation = operation_builder.build()
         path = operation.url_path
 
-        if isinstance(operation, PostTransaction):
-            response = self._web.post(path, operation.post_obj)
-            return ResponseLoader.load_operation_response(response)
+        try:
+            if isinstance(operation, PostTransaction):
+                response = self._web.post(path, operation.post_obj)
+                return ResponseLoader.load_operation_response(response)
 
-        if isinstance(operation, PutTransaction):
-            response = self._web.put(path, operation.put_obj)
-            return ResponseLoader.load_operation_response(response)
+            if isinstance(operation, PutTransaction):
+                response = self._web.put(path, operation.put_obj)
+                return ResponseLoader.load_operation_response(response)
 
-        if isinstance(operation, DeleteTransaction):
-            response = self._web.delete(path)
-            return ResponseLoader.load_operation_response(response)
+            if isinstance(operation, DeleteTransaction):
+                response = self._web.delete(path)
+                return ResponseLoader.load_operation_response(response)
 
-        return Error(400, 'Operation not defined')
+            return Error(0, 'Operation not defined')
+
+        except Exception as ex:
+            return Error(0, ex.__str__())
 
     # private members
 

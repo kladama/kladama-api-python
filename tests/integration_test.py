@@ -55,6 +55,20 @@ class TransactionsIntegrationTest(unittest.TestCase):
         # cleanup
         self._delete_test_aoi(self.user, self.aoi_name)
 
+    def test_create_existing_subscription(self):
+        session = _get_dev_session()
+
+        transaction = Transactions() \
+            .periodic_subsc \
+            .for_user('dev_it') \
+            .with_variable('ecmwf.era5.D1_SURF_SOLAR_RAD') \
+            .with_operation('MEAN') \
+            .with_aoi('aoi-integ')
+
+        response = Context(session).execute(transaction)
+
+        self.assertEqual(response.response_type, ResponseType.REDIRECTION)
+
     def test_check_reschedule_clear_schedule_by_user(self):
         # when
         response = self._check_schedule('dev')
