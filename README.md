@@ -28,8 +28,11 @@ session = kld.authenticate(env, api_token)
 query = kld.Queries().var
 
 response = kld.Context(session).get(query)
-for var in response.result:
-    print(var.name, '-', var.description, 'in', var.link)
+
+if isinstance(response, kld.Success):
+
+    for var in response.result:
+        print(var.name, '-', var.description, 'in', var.link)
 ```
 
 ## How to check if a GeoJson data can be used as a valid AoI in Kladama
