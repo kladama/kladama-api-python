@@ -2,10 +2,20 @@ import abc
 import json
 import re
 
+from enum import Enum
 from .entities import *
 
 
+class ResponseType(Enum):
+    OK = 0
+    REDIRECTION = 1
+    ERROR = 2
+
+
 class ApiResponse(ABC):
+
+    def __init__(self, code: int):
+        self._code = code
 
     @property
     @abc.abstractmethod
@@ -13,28 +23,30 @@ class ApiResponse(ABC):
         pass
 
     @property
-    @abc.abstractmethod
-    def type(self) -> str:
-        pass
+    def code(self) -> int:
+        return self._code
+
+    @property
+    def response_type(self) -> ResponseType:
+
+        if 200 <= self.code < 300:
+            return ResponseType.OK
+
+        if 300 <= self.code < 400:
+            return ResponseType.REDIRECTION
+
+        return ResponseType.ERROR
 
 
 class Error(ApiResponse):
 
     def __init__(self, code: int, message: str):
-        self._code = code
+        ApiResponse.__init__(self, code)
         self._message = message
 
     @property
     def is_success(self):
         return False
-
-    @property
-    def type(self) -> str:
-        return ResponseLoader.get_type_from(self.code)
-
-    @property
-    def code(self):
-        return self._code
 
     @property
     def message(self) -> str:
@@ -46,9 +58,9 @@ class Error(ApiResponse):
 
 class Success(ApiResponse):
 
-    def __init__(self, result, type):
+    def __init__(self, code: int, result):
+        ApiResponse.__init__(self, code)
         self._result = result
-        self._type = type
 
     @property
     def is_success(self):
@@ -58,12 +70,8 @@ class Success(ApiResponse):
     def result(self):
         return self._result
 
-    @property
-    def type(self):
-        return self._type
-
     def __str__(self):
-        return 'Success: {0}'.format(self._result)
+        return 'Success {0}: {1}'.format(self.code, self._result)
 
 
 class ResponseLoader:
@@ -71,16 +79,15 @@ class ResponseLoader:
     @staticmethod
     def load_get_response(response, entities_expected) -> ApiResponse:
         if ResponseLoader._is_success_response(response):
-            success_type = ResponseLoader.get_type_from(response.status_code)
 
             if ResponseLoader._is_empty_response(response):
-                return Success(None, success_type)
+                return Success(response.status_code, None)
 
             if ResponseLoader._is_json(response):
-                return Success(ResponseLoader._load_json(response, entities_expected), success_type)
+                return Success(response.status_code, ResponseLoader._load_json(response, entities_expected))
 
             if ResponseLoader._is_binary(response):
-                return Success(ResponseLoader._load_binary_result(response), success_type)
+                return Success(response.status_code, ResponseLoader._load_binary_result(response))
 
             return Error(0, 'Unrecognized http response')
 
@@ -90,12 +97,11 @@ class ResponseLoader:
     def load_operation_response(response) -> ApiResponse:
         if ResponseLoader._is_success_response(response):
             content = ResponseLoader._get_content_as_string(response)
-            success_type = ResponseLoader.get_type_from(response.status_code)
 
             if ResponseLoader._is_json(response):
-                return Success(json.loads(content), success_type)
+                return Success(response.status_code, json.loads(content))
 
-            return Success(content, success_type)
+            return Success(response.status_code, content)
 
         return ResponseLoader._get_error(response)
 
@@ -160,15 +166,6 @@ class ResponseLoader:
     @staticmethod
     def _is_success_response(response):
         return 200 <= response.status_code < 400
-
-    @staticmethod
-    def get_type_from(status_code: int):
-        if 200 <= status_code < 300:
-            return 'ok'
-        if 300 <= status_code < 400:
-            return 'redirection'
-
-        return 'error'
 
     @staticmethod
     def _is_json(response):
