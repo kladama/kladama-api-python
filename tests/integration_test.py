@@ -67,7 +67,7 @@ class TransactionsIntegrationTest(unittest.TestCase):
 
         response = Context(session).execute(transaction)
 
-        self.assertEqual(response.response_type, ResponseType.REDIRECTION)
+        self.assertEqual(response.type, ResultType.REDIRECTION)
 
     def test_check_reschedule_clear_schedule_by_user(self):
         # when
