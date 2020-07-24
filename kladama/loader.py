@@ -6,7 +6,7 @@ from enum import Enum
 from .entities import *
 
 
-class ResponseType(Enum):
+class ResultType(Enum):
     OK = 0
     REDIRECTION = 1
     ERROR = 2
@@ -27,15 +27,15 @@ class ApiResponse(ABC):
         return self._code
 
     @property
-    def response_type(self) -> ResponseType:
+    def type(self) -> ResultType:
 
         if 200 <= self.code < 300:
-            return ResponseType.OK
+            return ResultType.OK
 
         if 300 <= self.code < 400:
-            return ResponseType.REDIRECTION
+            return ResultType.REDIRECTION
 
-        return ResponseType.ERROR
+        return ResultType.ERROR
 
 
 class Error(ApiResponse):
