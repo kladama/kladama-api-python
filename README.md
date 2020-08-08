@@ -163,7 +163,6 @@ else:
 
 ```python
 
-import base64 as b64
 import kladama as kld
 
 env = kld.Environments().prod
@@ -184,5 +183,7 @@ elif response.result is None:
     print('response is successful but empty')
 else:
     assert isinstance(response.result, kld.BinaryResult)
-    print('Name: ', response.name, ' Binary Content:\n', b64.b64encode(response.content).decode('utf-8'))
+    print('Saving to file: ', response.name)
+    with open(response.name, 'wb') as fh:
+        fh.write(response.content)
 ```
