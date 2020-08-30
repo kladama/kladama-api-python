@@ -126,6 +126,15 @@ transaction = kld.Transactions()\
 response = kld.Context(session).execute(transaction)
 if not isinstance(response, kld.Success):
     print(response.__str__())
+
+# Also, you can add an AoI from a JSON file
+transaction = kld.Transactions()\
+    .add_aoi\
+    .for_user('<your user>')\
+    .with_name('<aoi name>')\
+    .with_description("Test AOI")\
+    .with_category("Test")\
+    .from_file('<JSON filename>')
 ```
 
 ## How to create a Periodic Subscription to a variable
