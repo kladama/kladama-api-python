@@ -29,16 +29,16 @@ class Context:
 
         try:
             if isinstance(operation, PostTransaction):
-                response = self._web.post(path, operation.post_obj)
-                return ResponseLoader.load_operation_response(response)
+                with self._web.post(path, operation.post_obj) as response:
+                    return ResponseLoader.load_operation_response(response)
 
             if isinstance(operation, PutTransaction):
-                response = self._web.put(path, operation.put_obj)
-                return ResponseLoader.load_operation_response(response)
+                with self._web.put(path, operation.put_obj) as response:
+                    return ResponseLoader.load_operation_response(response)
 
             if isinstance(operation, DeleteTransaction):
-                response = self._web.delete(path)
-                return ResponseLoader.load_operation_response(response)
+                with self._web.delete(path) as response:
+                    return ResponseLoader.load_operation_response(response)
 
             return Error(0, 'Operation not defined')
 
@@ -59,11 +59,11 @@ class Context:
 
         if info_query.method in switcher:
             caller = switcher[info_query.method]
-            response = caller()
-            return ResponseLoader.load_get_response(response, False)
+            with caller() as response:
+                return ResponseLoader.load_get_response(response, False)
 
         return Error(400, 'Not valid info query')
 
     def _get_query_response(self, query):
-        response = self._web.get(query.url_path)
-        return ResponseLoader.load_get_response(response, True)
+        with self._web.get(query.url_path) as response:
+            return ResponseLoader.load_get_response(response, True)
