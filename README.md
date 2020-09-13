@@ -148,18 +148,18 @@ env = kld.Environments().prod
 api_token = '<your provided token>'
 session = kld.authenticate(env, api_token)
 
+# could be any other Spatial Operation (MIN, MAX, STD, etc)
 transaction = kld.Transactions()\
     .periodic_subsc\
     .for_user('<your user>')\
     .with_variable('<var name>')\
-    .with_operation('MEAN')\ # could be any other Spatial Operation (MIN, MAX, STD, etc)
+    .with_operation('MEAN')\
     .with_aoi('<aoi name>')
 
 response = kld.Context(session).execute(transaction)
 
 if isinstance(response, kld.Success):
-
-    if response.type == 'ok':
+    if response.type == kld.ResultType.OK:
         code = response.result['code'] # property 'code' contains ID of new created subscription
         print("New subscription code: ", code)
     else:
