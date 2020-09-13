@@ -165,7 +165,7 @@ if isinstance(response, kld.Success):
     else:
         print("Redirect to: ", response.result['href']) # property 'href' contains URI of identical subscription resource
 else:
-    print(response.__str__())
+    print('Error code: ', response.code, 'Message: ', response.message)
  ```
 
 ## How to get last data from a periodic subscription
@@ -193,6 +193,6 @@ elif response.result is None:
 else:
     assert isinstance(response.result, kld.BinaryResult)
     print('Saving to file: ', response.name)
-    with open(response.name, 'wb') as fh:
-        fh.write(response.content)
+    with open(response.result.name, 'wb') as fh:
+        fh.write(response.result.content)
 ```
