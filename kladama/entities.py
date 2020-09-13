@@ -148,6 +148,17 @@ class Schedule(EntityDTO, Linkable):
         return self._cron_exp
 
 
+class SpatialOperation(EntityDTO, Describable):
+
+    def __init__(self, obj):
+        Describable.__init__(self, obj)
+        self._type = obj['type']
+
+    @property
+    def type(self):
+        return self._type
+
+
 class Source(EntityDTO, Describable, Linkable):
 
     def __init__(self, obj):
@@ -163,7 +174,7 @@ class Subscription(EntityDTO, Linkable):
         self._owner = obj['owner']
         self._type = obj['type']
         self._created_timestamp = obj['created_timestamp']
-        self._spatial_operation = obj['spatial_operation']
+        self._spatial_operation = SpatialOperation(obj['spatial_operation'])
         self._status = obj['status']
         self._schedule = obj['schedule']
         self._aoi = obj['area_of_interest']

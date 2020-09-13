@@ -662,6 +662,25 @@ class QueriesIntegrationTest(unittest.TestCase):
 
         print('\n')
 
+    def test_spatial_operations(self):
+        print('Testing Spatial Operations ========================')
+
+        # given
+        session = _get_dev_session()
+        query = Queries().oper
+
+        # when
+        res = Context(session).get(query)
+
+        # then
+        self.assertIsInstance(res, Success, res.__str__())
+        self.assertTrue(len(res.result) > 0)
+        for spatial_operation in res.result:
+            self.assertIsInstance(spatial_operation, SpatialOperation)
+            print(spatial_operation.name, ' of type: ', spatial_operation.type)
+
+        print('\n')
+
     def test_users(self):
         print('Testing Users ========================')
 

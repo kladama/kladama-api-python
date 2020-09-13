@@ -401,6 +401,13 @@ class SourceQuery(EndpointQuery, ByKeyQueryable, ByPhenomenaQueryable, ForecastQ
         return AfterPhenomenaGetForecastObservedQueryable(self, phenomena)
 
 
+class SpatialOperationQuery(EndpointQuery):
+
+    @property
+    def sub_url(self):
+        return '/oper'
+
+
 class SubscriptionQuery(EndpointQuery, ByKeyQueryable, ByUserQueryable, ByStatusQueryable):
 
     @property
@@ -442,6 +449,10 @@ class Queries:
     @property
     def aoi(self):
         return AreaOfInterestQuery()
+
+    @property
+    def oper(self):
+        return SpatialOperationQuery()
 
     @property
     def org(self):
