@@ -192,7 +192,7 @@ elif response.result is None:
     print('response is successful but empty')
 else:
     assert isinstance(response.result, kld.BinaryResult)
-    print('Saving to file: ', response.name)
+    print('Saving to file: ', response.result.name)
     with open(response.result.name, 'wb') as fh:
         fh.write(response.result.content)
 ```
