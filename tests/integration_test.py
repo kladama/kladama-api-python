@@ -643,6 +643,7 @@ class QueriesIntegrationTest(unittest.TestCase):
             print(phenomena.name, ':', phenomena.description, 'in', phenomena.link)
             print('\n')
 
+    @unittest.skip('do not run admin test for the moment')
     def test_organizations(self):
         print('Testing Organizations ========================')
 
@@ -681,6 +682,7 @@ class QueriesIntegrationTest(unittest.TestCase):
 
         print('\n')
 
+    @unittest.skip('do not run admin test for the moment')
     def test_users(self):
         print('Testing Users ========================')
 
@@ -700,6 +702,7 @@ class QueriesIntegrationTest(unittest.TestCase):
 
         print('\n')
 
+    @unittest.skip('do not run admin test for the moment')
     def test_schedules(self):
         print('Testing Schedules ========================')
 
@@ -736,6 +739,7 @@ class QueriesIntegrationTest(unittest.TestCase):
 
         print('\n')
 
+    @unittest.skip('do not run admin test for the moment')
     def test_subscriptions(self):
         print('Testing Subscriptions ========================')
 
@@ -755,6 +759,7 @@ class QueriesIntegrationTest(unittest.TestCase):
 
         print('\n')
 
+    @unittest.skip('do not run admin test for the moment')
     def test_subscriptions_by_active_status(self):
         print('Testing Subscriptions ========================')
 
