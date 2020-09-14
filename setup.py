@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name="kladama-api", # Replace with your own username
-    version="1.0.7",
+    version="1.0.8",
     author="Plexilar",
     author_email="hdkrus@gmail.com",
     description="Kladama API package",
