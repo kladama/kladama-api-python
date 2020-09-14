@@ -144,6 +144,7 @@ class ResponseLoader:
             'phenomena': Phenomena,
             'triggers': Schedule,
             'sources': Source,
+            'operations': SpatialOperation,
             'subscriptions': Subscription,
             'users': User,
             'variables': Variable,

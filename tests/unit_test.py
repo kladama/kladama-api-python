@@ -35,6 +35,10 @@ class UnitTest(unittest.TestCase):
         assert Queries().org.by_key('organization-name').url_path == '/org/organization-name'
 
     @staticmethod
+    def test_spatial_operation_urls():
+        assert Queries().oper.url_path == '/oper'
+
+    @staticmethod
     def test_source_urls():
         assert Queries().src.url_path == '/src'
         assert Queries().src.forecast.url_path == '/src/forecast'
