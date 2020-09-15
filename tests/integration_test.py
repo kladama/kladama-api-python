@@ -61,7 +61,7 @@ class TransactionsIntegrationTest(unittest.TestCase):
         transaction = Transactions() \
             .periodic_subsc \
             .for_user('dev_it') \
-            .with_variable('ecmwf.era5.D1_SURF_SOLAR_RAD') \
+            .with_variable('plexilar.integration.var') \
             .with_operation('MEAN') \
             .with_aoi('aoi-integ')
 
