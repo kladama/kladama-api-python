@@ -240,15 +240,15 @@ class Variable(EntityDTO, Describable, Linkable):
         Describable.__init__(self, obj)
         Linkable.__init__(self, obj)
         self._type = obj['type']
-        self._friendly_name = obj['friendly_name']
+        self._parent_name = obj['parent_name']
         self._spatial_resolution = obj['spatial_resolution']
         self._temporal_resolution = obj['temporal_resolution']
         self._phenomena = Phenomena(obj['phenomenon'])
         self._source = Source(obj['source'])
 
     @property
-    def friendly_name(self):
-        return self._friendly_name
+    def parent_name(self):
+        return self._parent_name
 
     @property
     def phenomena(self):
