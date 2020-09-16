@@ -811,7 +811,10 @@ class QueriesIntegrationTest(unittest.TestCase):
 
         # then
         self.assertIsInstance(res, Success, res.__str__())
-        print(res.__str__())
+        for date in res.result:
+            self.assertIsInstance(date, Date)
+            print('date: ', date.iso_str)
+
         print('\n')
 
     def test_subscriptions_by_user_with_dates(self):
@@ -826,7 +829,10 @@ class QueriesIntegrationTest(unittest.TestCase):
 
         # then
         self.assertIsInstance(res, Success, res.__str__())
-        print(res.__str__())
+        for date in res.result:
+            self.assertIsInstance(date, Date)
+            print('date: ', date.iso_str)
+
         print('\n')
 
     def test_around(self):

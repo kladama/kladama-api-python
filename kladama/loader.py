@@ -140,6 +140,7 @@ class ResponseLoader:
     def _try_load_entities(json_obj):
         entities = {
             'areas_of_interest': AreaOfInterest,
+            'dates': Date,
             'organizations': Organization,
             'phenomena': Phenomena,
             'triggers': Schedule,
