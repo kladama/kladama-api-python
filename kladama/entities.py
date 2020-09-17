@@ -68,10 +68,9 @@ class BinaryResult(EntityDTO, Identifiable):
         return self._content
 
 
-class Date(EntityDTO, Linkable):
+class Date(EntityDTO):
 
     def __init__(self, obj):
-        Linkable.__init__(self, obj)
         self._year = obj['year']
         self._month = obj['month']
         self._day = obj['day']
