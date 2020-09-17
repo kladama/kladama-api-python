@@ -800,7 +800,7 @@ class QueriesIntegrationTest(unittest.TestCase):
         print('\n')
 
     def test_subscriptions_by_user_get_dates(self):
-        print('Testing Subscriptions ========================')
+        print('Testing Subscriptions Dates ========================')
 
         # given
         session = _get_dev_session()
@@ -811,11 +811,14 @@ class QueriesIntegrationTest(unittest.TestCase):
 
         # then
         self.assertIsInstance(res, Success, res.__str__())
-        print(res.__str__())
+        for date in res.result:
+            self.assertIsInstance(date, Date)
+            print('date: ', date.iso_str)
+
         print('\n')
 
     def test_subscriptions_by_user_with_dates(self):
-        print('Testing Subscriptions ========================')
+        print('Testing Subscriptions Dates ========================')
 
         # given
         session = _get_dev_session()
@@ -826,7 +829,10 @@ class QueriesIntegrationTest(unittest.TestCase):
 
         # then
         self.assertIsInstance(res, Success, res.__str__())
-        print(res.__str__())
+        for date in res.result:
+            self.assertIsInstance(date, Date)
+            print('date: ', date.iso_str)
+
         print('\n')
 
     def test_around(self):
@@ -846,7 +852,11 @@ class QueriesIntegrationTest(unittest.TestCase):
     def test_around_empty(self):
         # given
         session = _get_dev_session()
-        query = Queries().subsc.by_user(self._user).by_key(self._empty_subscription).results.around(5, '20200105', '20200115')
+        query = Queries().subsc\
+            .by_user(self._user)\
+            .by_key(self._empty_subscription)\
+            .results\
+            .around(5, '20200105', '20200115')
 
         # when
         res = Context(session).get(query)
@@ -910,7 +920,12 @@ class QueriesIntegrationTest(unittest.TestCase):
     def test_last_years(self):
         # given
         session = _get_dev_session()
-        query = Queries().subsc.by_user(self._user).by_key(self._subscription).results.last_n_years(5, '20200519', '20200622')
+        query = Queries()\
+            .subsc\
+            .by_user(self._user)\
+            .by_key(self._subscription)\
+            .results\
+            .last_n_years(5, '20200519', '20200622')
 
         # when
         res = Context(session).get(query)
@@ -924,7 +939,12 @@ class QueriesIntegrationTest(unittest.TestCase):
     def test_last_years_empty(self):
         # given
         session = _get_dev_session()
-        query = Queries().subsc.by_user(self._user).by_key(self._empty_subscription).results.last_n_years(5, '20200105', '20200115')
+        query = Queries()\
+            .subsc\
+            .by_user(self._user)\
+            .by_key(self._empty_subscription)\
+            .results\
+            .last_n_years(5, '20200105', '20200115')
 
         # when
         res = Context(session).get(query)
@@ -950,7 +970,12 @@ class QueriesIntegrationTest(unittest.TestCase):
     def test_subscriptions_result_dates_empty(self):
         # given
         session = _get_dev_session()
-        query = Queries().subsc.by_user(self._user).by_key(self._empty_subscription).results.last_n_years(5, '20200105', '20200115')
+        query = Queries()\
+            .subsc\
+            .by_user(self._user)\
+            .by_key(self._empty_subscription)\
+            .results\
+            .last_n_years(5, '20200105', '20200115')
 
         # when
         res = Context(session).get(query)

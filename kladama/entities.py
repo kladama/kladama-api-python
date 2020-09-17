@@ -68,6 +68,31 @@ class BinaryResult(EntityDTO, Identifiable):
         return self._content
 
 
+class Date(EntityDTO):
+
+    def __init__(self, obj):
+        self._year = obj['year']
+        self._month = obj['month']
+        self._day = obj['day']
+        self._iso_str = obj['iso_str']
+
+    @property
+    def day(self):
+        return self._day
+
+    @property
+    def month(self):
+        return self._month
+
+    @property
+    def year(self):
+        return self._year
+
+    @property
+    def iso_str(self):
+        return self._iso_str
+
+
 class Organization(EntityDTO, Identifiable, Linkable):
 
     def __init__(self, obj):
