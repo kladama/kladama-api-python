@@ -57,6 +57,19 @@ class AreaOfInterest(EntityDTO, Describable, Linkable):
         Linkable.__init__(self, obj)
 
 
+class BinaryStream(EntityDTO, Identifiable):
+
+    def __init__(self, obj):
+        Identifiable.__init__(self, obj)
+        self._request = obj['request']
+
+    def read(self, size: int):
+        return self._request.iter_content(chunk_size=size)
+
+    def close(self):
+        self._request.close()
+
+
 class BinaryResult(EntityDTO, Identifiable):
 
     def __init__(self, obj):
