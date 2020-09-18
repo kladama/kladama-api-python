@@ -93,6 +93,33 @@ class Date(EntityDTO):
         return self._iso_str
 
 
+class Mask(EntityDTO, Describable, Linkable):
+
+    def __init__(self, obj):
+        Describable.__init__(self, obj)
+        Linkable.__init__(self, obj)
+        self._category = obj['category']
+        self._resolution = obj['resolution']
+        self._threshold = obj['threshold']
+        self._owner = obj['owner']
+
+    @property
+    def category(self):
+        return self._category
+
+    @property
+    def resolution(self):
+        return self._resolution
+
+    @property
+    def threshold(self):
+        return self._threshold
+
+    @property
+    def owner(self):
+        return self._owner
+
+
 class Organization(EntityDTO, Identifiable, Linkable):
 
     def __init__(self, obj):
@@ -199,11 +226,13 @@ class Subscription(EntityDTO, Linkable):
         self._owner = obj['owner']
         self._type = obj['type']
         self._created_timestamp = obj['created_timestamp']
+        self._mask = Mask(obj['mask']) if obj['mask'] is not None else None
         self._spatial_operation = SpatialOperation(obj['spatial_operation'])
         self._status = obj['status']
         self._schedule = obj['schedule']
         self._aoi = obj['area_of_interest']
         self._variable = Variable(obj['variable'])
+
 
     @property
     def code(self):
@@ -220,6 +249,10 @@ class Subscription(EntityDTO, Linkable):
     @property
     def created_timestamp(self):
         return self._created_timestamp
+
+    @property
+    def mask(self):
+        return self._mask
 
     @property
     def spatial_operation(self):
