@@ -233,7 +233,6 @@ class Subscription(EntityDTO, Linkable):
         self._aoi = obj['area_of_interest']
         self._variable = Variable(obj['variable'])
 
-
     @property
     def code(self):
         return self._code
