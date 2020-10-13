@@ -14,6 +14,7 @@ def _get_dev_session():
 
 class TransactionsIntegrationTest(unittest.TestCase):
     user = 'dev'
+    var_name = 'plexilar.integration.var'
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -380,16 +381,11 @@ class TransactionsIntegrationTest(unittest.TestCase):
 
     def _create_test_periodic_subscription(self, user, aoi_id):
         ctx = TransactionsIntegrationTest._get_context()
-        var_query = Queries().var
-        variables = ctx.get(var_query)
-        self.failIf(len(variables.result) == 0, "Cannot find variables to be used in subscriptions")
-
-        first_var: Variable = variables.result[0]
 
         create_transaction = Transactions() \
             .periodic_subsc \
             .for_user(user) \
-            .with_variable(first_var.name) \
+            .with_variable(self.var_name) \
             .with_operation("MEAN") \
             .with_aoi(aoi_id)
 
@@ -454,6 +450,9 @@ class QueriesIntegrationTest(unittest.TestCase):
     _user = 'dev_it'
     _empty_subscription = 'FA66FH1EUG2KSKUZPFIHNLY7F536SM'
     _subscription = '35XY51E5M2Z1QI6VRDB766LHPO038K'
+    _subsc_date_before_range = '20200910'
+    _subsc_date_after_range = '20201101'
+    _subsc_date_in_range = '20200915'
 
     def test_areas_of_interest(self):
         print('Testing Areas of Interest ========================')
@@ -838,7 +837,10 @@ class QueriesIntegrationTest(unittest.TestCase):
     def test_around(self):
         # given
         session = _get_dev_session()
-        query = Queries().subsc.by_user(self._user).by_key(self._subscription).results.around(5, '20200519', '20200622')
+        query = Queries()\
+            .subsc.by_user(self._user)\
+            .by_key(self._subscription).results\
+            .around(5, self._subsc_date_before_range, self._subsc_date_after_range)
 
         # when
         res = Context(session).get(query)
@@ -925,7 +927,7 @@ class QueriesIntegrationTest(unittest.TestCase):
             .by_user(self._user)\
             .by_key(self._subscription)\
             .results\
-            .last_n_years(5, '20200519', '20200622')
+            .last_n_years(5, self._subsc_date_in_range)
 
         # when
         res = Context(session).get(query)
@@ -956,7 +958,11 @@ class QueriesIntegrationTest(unittest.TestCase):
     def test_subscriptions_result_dates(self):
         # given
         session = _get_dev_session()
-        query = Queries().subsc.by_user(self._user).by_key(self._subscription).results.dates('20200519', '20200622')
+        query = Queries()\
+            .subsc\
+            .by_user(self._user)\
+            .by_key(self._subscription).results\
+            .dates(self._subsc_date_in_range)
 
         # when
         res = Context(session).get(query)
@@ -986,10 +992,12 @@ class QueriesIntegrationTest(unittest.TestCase):
 
     def test_period(self):
         # given
-        from_ = '20200101'
-        to = '20200701'
         session = _get_dev_session()
-        query = Queries().subsc.by_user(self._user).by_key(self._subscription).results.period(from_, to)
+        query = Queries()\
+            .subsc\
+            .by_user(self._user)\
+            .by_key(self._subscription).results\
+            .period(self._subsc_date_before_range, self._subsc_date_after_range)
 
         # when
         res = Context(session).get(query)
@@ -998,7 +1006,7 @@ class QueriesIntegrationTest(unittest.TestCase):
         self.assertIsInstance(res, Success, res.__str__())
         self.assertIsInstance(res.result, BinaryResult)
         self.assertIn(self._subscription, res.result.name)
-        self.assertIn('{0}_TO_{1}'.format(from_, to), res.result.name)
+        self.assertIn('{0}_TO_{1}'.format(self._subsc_date_before_range, self._subsc_date_after_range), res.result.name)
         self.assertTrue(len(res.result.content) > 0)
 
     def test_period_empty(self):
